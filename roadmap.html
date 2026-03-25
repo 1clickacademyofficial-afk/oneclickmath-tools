@@ -566,8 +566,12 @@
       position: relative;
       padding: var(--space-md) var(--space-md) var(--space-sm);
       border-radius: var(--radius2);
-      background: rgba(255,255,255,.93);
-      border: 1px solid hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / .26);
+      background: linear-gradient(
+        180deg,
+        hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / .18),
+        rgba(255,255,255,.96)
+      );
+      border: 1px solid hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / .38);
       overflow:hidden;
       transition: transform .15s ease, border-color .15s ease, background .15s ease, opacity .28s var(--ease-out-quint), filter .28s var(--ease-out-quint);
       scroll-margin-top: 80px;
@@ -584,7 +588,7 @@
         linear-gradient(135deg,
           hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / .24),
           transparent 55%);
-      opacity: .55;
+      opacity: .34;
       pointer-events:none;
     }
 
@@ -706,8 +710,14 @@
       box-shadow: 0 0 0 1px rgba(24,167,143,.28), 0 0 18px rgba(24,167,143,.32);
     }
     main.is-smart-focus .topic:not(.is-current){
-      opacity: .5;
-      filter: saturate(.62);
+      opacity: .9;
+      filter: saturate(.96);
+    }
+    @media (max-width: 900px){
+      main.is-smart-focus .topic:not(.is-current){
+        opacity: 1;
+        filter: none;
+      }
     }
 
     .topic__top{
