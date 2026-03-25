@@ -169,6 +169,28 @@
         opacity: 1;
         filter: none;
       }
+      /* Mobile/Tablet: keep all topic cards color-balanced */
+      .topic.is-current{
+        transform: none;
+        border-color: hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / .38);
+        background: linear-gradient(
+          180deg,
+          hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / .18),
+          rgba(255,255,255,.96)
+        );
+      }
+      .topic.is-current::after{
+        display:none;
+      }
+      .topic.is-current .topic__inner::before{
+        display:none;
+      }
+      .topic.is-current .badge{
+        border: 1px solid rgba(30,43,57,.2);
+        background: rgba(255,255,255,.98);
+        color: #24384b;
+        box-shadow: none;
+      }
     }
     @media (max-width: 700px){
       .app{
