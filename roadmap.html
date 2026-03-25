@@ -179,6 +179,18 @@
           rgba(255,255,255,.96)
         );
       }
+      .topic.is-current[data-level="m1"]{
+        border-color: rgba(242,138,63,.42);
+        background: linear-gradient(180deg, rgba(242,138,63,.22), rgba(255,247,240,.97));
+      }
+      .topic.is-current[data-level="m2"]{
+        border-color: rgba(47,125,225,.42);
+        background: linear-gradient(180deg, rgba(47,125,225,.22), rgba(240,247,255,.97));
+      }
+      .topic.is-current[data-level="m3"]{
+        border-color: rgba(24,167,143,.42);
+        background: linear-gradient(180deg, rgba(24,167,143,.22), rgba(238,252,249,.97));
+      }
       .topic.is-current::after{
         display:none;
       }
@@ -598,9 +610,31 @@
       transition: transform .15s ease, border-color .15s ease, background .15s ease, opacity .28s var(--ease-out-quint), filter .28s var(--ease-out-quint);
       scroll-margin-top: 80px;
     }
-    .topic[data-level="m1"]{ border-color: rgba(242,138,63,.34); }
-    .topic[data-level="m2"]{ border-color: rgba(47,125,225,.34); }
-    .topic[data-level="m3"]{ border-color: rgba(24,167,143,.34); }
+    .topic[data-level="m1"]{
+      border-color: rgba(242,138,63,.42);
+      background: linear-gradient(180deg, rgba(242,138,63,.22), rgba(255,247,240,.97));
+    }
+    .topic[data-level="m2"]{
+      border-color: rgba(47,125,225,.42);
+      background: linear-gradient(180deg, rgba(47,125,225,.22), rgba(240,247,255,.97));
+    }
+    .topic[data-level="m3"]{
+      border-color: rgba(24,167,143,.42);
+      background: linear-gradient(180deg, rgba(24,167,143,.22), rgba(238,252,249,.97));
+    }
+    /* Fallback coloring by section order (if data-level is missing) */
+    .level:nth-of-type(1) .topic{
+      border-color: rgba(242,138,63,.42);
+      background: linear-gradient(180deg, rgba(242,138,63,.22), rgba(255,247,240,.97));
+    }
+    .level:nth-of-type(2) .topic{
+      border-color: rgba(47,125,225,.42);
+      background: linear-gradient(180deg, rgba(47,125,225,.22), rgba(240,247,255,.97));
+    }
+    .level:nth-of-type(3) .topic{
+      border-color: rgba(24,167,143,.42);
+      background: linear-gradient(180deg, rgba(24,167,143,.22), rgba(238,252,249,.97));
+    }
 
     .topic:before{
       content:"";
@@ -1610,40 +1644,4 @@
           el.setAttribute('aria-label', `ไปยังขั้น ${String(i).padStart(2, '0')} ${getStepTitle(i)}`);
           el.setAttribute('aria-controls', 'step-' + String(i).padStart(2, '0'));
         }
-        el.addEventListener('click', () => {
-          const i = getI(el);
-          if (!Number.isFinite(i)) return;
-          pendingStep = i;
-          pendingUntil = performance.now() + 900;
-          setCurrent(i);
-          showCheer(i);
-          const targetId = 'step-' + String(i).padStart(2, '0');
-          const target = topicByStep.get(i) || document.getElementById(targetId);
-          if (!target) return;
-          showTopicBurst(i, target);
-          const compact = window.innerWidth <= 900;
-          target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: compact ? 'start' : 'center' });
-        });
-      });
-
-      // Keep topic colors stable while scrolling on mobile/tablet.
-
-      // Scroll-trigger only the final course sales block.
-      if ('IntersectionObserver' in window && enrollCta && offerCard) {
-        const ctaIo = new IntersectionObserver((entries) => {
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            offerCard.classList.remove('is-spotlight');
-            void offerCard.offsetWidth;
-            offerCard.classList.add('is-spotlight');
-            if (offerPulseTimer) clearTimeout(offerPulseTimer);
-            offerPulseTimer = setTimeout(() => offerCard.classList.remove('is-spotlight'), 2600);
-          }
-        }, { threshold: 0.45 });
-        ctaIo.observe(enrollCta);
-      }
-    })();
-  </script>
-</body>
-</html>
-
+        el.ad
