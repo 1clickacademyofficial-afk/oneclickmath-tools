@@ -1383,8 +1383,7 @@
       let lastAutoBurstStep = 1;
       let lastAutoBurstAt = 0;
       const isCompactViewport = () => window.innerWidth <= 900;
-      let focusRaf = 0;
-      let lastFocusScore = 0;
+      const enrollCta = document.querySelector('.enroll-cta');
 
       const getI = (el) => {
         const v = (el && el.style && el.style.getPropertyValue('--i')) || '';
@@ -1445,51 +1444,10 @@
         }
         heroNext.textContent = `ถัดไป: ${String(next).padStart(2, '0')} ${getStepTitle(next)}`;
       };
-      const updateDynamicFocus = () => {
-        if (!main || !isCompactViewport()) return;
-        const vh = window.innerHeight || 1;
-        let bestStep = null;
-        let bestFocus = -1;
-        topics.forEach((topic) => {
-          const rect = topic.getBoundingClientRect();
-          const visiblePx = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
-          const visRatio = visiblePx / Math.max(1, Math.min(rect.height, vh));
-          const center = rect.top + rect.height * 0.5;
-          const centerDist = Math.abs(center - vh * 0.34);
-          const centerScore = Math.max(0, 1 - (centerDist / (vh * 0.72)));
-          const focus = Math.max(0, Math.min(1, (visRatio * 0.62) + (centerScore * 0.76)));
-          topic.style.setProperty('--focus', focus.toFixed(3));
-          const i = getI(topic);
-          if (Number.isFinite(i) && focus > bestFocus) {
-            bestFocus = focus;
-            bestStep = i;
-          }
-        });
-        if (Number.isFinite(bestStep)) {
-          // Hysteresis: avoid flipping to a weaker candidate near viewport edges.
-          if (bestStep !== pendingStep && bestFocus < (lastFocusScore - 0.06)) return;
-          setCurrent(bestStep);
-          pendingStep = bestStep;
-          lastFocusScore = bestFocus;
-        }
-      };
-      const requestDynamicFocus = () => {
-        if (!isCompactViewport()) return;
-        if (focusRaf) return;
-        focusRaf = requestAnimationFrame(() => {
-          focusRaf = 0;
-          updateDynamicFocus();
-        });
-      };
       const syncViewportMode = () => {
         if (!main) return;
-        const compact = isCompactViewport();
-        main.classList.toggle('is-dynamic-focus', compact);
-        if (!compact) {
-          topics.forEach((t) => t.style.removeProperty('--focus'));
-          return;
-        }
-        requestDynamicFocus();
+        main.classList.remove('is-dynamic-focus');
+        topics.forEach((t) => t.style.removeProperty('--focus'));
       };
 
       const setCurrent = (i) => {
@@ -1512,13 +1470,6 @@
           }
         }
         lastSectionIndex = sectionIndex;
-        if (offerCard && i >= 8) {
-          offerCard.classList.remove('is-spotlight');
-          void offerCard.offsetWidth;
-          offerCard.classList.add('is-spotlight');
-          if (offerPulseTimer) clearTimeout(offerPulseTimer);
-          offerPulseTimer = setTimeout(() => offerCard.classList.remove('is-spotlight'), 3200);
-        }
         sideItems.forEach((el) => {
           const isCur = getI(el) === i;
           if (isCur) el.setAttribute('aria-current', 'step');
@@ -1632,11 +1583,7 @@
       setRailProgress(1);
       updateNextHint(1);
       levels.forEach((el, idx) => el.classList.toggle('is-active-section', idx === 0));
-      window.addEventListener('scroll', requestDynamicFocus, { passive: true });
-      window.addEventListener('resize', () => {
-        syncViewportMode();
-        requestDynamicFocus();
-      });
+      window.addEventListener('resize', syncViewportMode);
 
       // Click to smooth-scroll to the corresponding topic card.
       sideItems.forEach((el) => {
@@ -1686,9 +1633,23 @@
             lastAutoBurstStep = i;
             lastAutoBurstAt = now;
           }
-          requestDynamicFocus();
         }, { threshold: [0.35, 0.55, 0.72] });
         topics.forEach((t) => io.observe(t));
+      }
+
+      // Scroll-trigger only the final course sales block.
+      if ('IntersectionObserver' in window && enrollCta && offerCard) {
+        const ctaIo = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            offerCard.classList.remove('is-spotlight');
+            void offerCard.offsetWidth;
+            offerCard.classList.add('is-spotlight');
+            if (offerPulseTimer) clearTimeout(offerPulseTimer);
+            offerPulseTimer = setTimeout(() => offerCard.classList.remove('is-spotlight'), 2600);
+          }
+        }, { threshold: 0.45 });
+        ctaIo.observe(enrollCta);
       }
     })();
   </script>
