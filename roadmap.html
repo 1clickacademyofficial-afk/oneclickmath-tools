@@ -165,23 +165,9 @@
       .section-bridge{
         display: none;
       }
-      main.is-dynamic-focus .topic{
-        background: linear-gradient(
-          180deg,
-          hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / calc(.08 + (var(--focus) * .34))),
-          rgba(255,255,255, calc(.84 + (var(--focus) * .14)))
-        );
-        border-color: hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 50% / calc(.18 + (var(--focus) * .44)));
-        opacity: calc(.36 + (var(--focus) * .74));
-        filter: saturate(calc(.72 + (var(--focus) * .5)));
-        transform: translateY(calc((1 - var(--focus)) * 2px));
-      }
-      main.is-dynamic-focus .topic::before{
-        opacity: calc(.2 + (var(--focus) * .5));
-      }
-      main.is-smart-focus.is-dynamic-focus .topic:not(.is-current){
-        opacity: calc(.36 + (var(--focus) * .74));
-        filter: saturate(calc(.72 + (var(--focus) * .5)));
+      main.is-smart-focus .topic:not(.is-current){
+        opacity: 1;
+        filter: none;
       }
     }
     @media (max-width: 700px){
@@ -1608,34 +1594,7 @@
         });
       });
 
-      // Auto-follow while scrolling on tablet/phone only.
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver((entries) => {
-          if (!isCompactViewport()) return;
-          let best = null;
-          const viewportCenter = window.innerHeight * 0.34;
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            const rect = entry.boundingClientRect;
-            const entryCenter = rect.top + rect.height * 0.5;
-            const dist = Math.abs(entryCenter - viewportCenter);
-            if (!best || dist < best.dist || (dist === best.dist && entry.intersectionRatio > best.entry.intersectionRatio)) {
-              best = { entry, dist };
-            }
-          }
-          if (!best) return;
-          const i = getI(best.entry.target);
-          if (!Number.isFinite(i)) return;
-          setCurrent(i);
-          const now = performance.now();
-          if (i !== lastAutoBurstStep || (now - lastAutoBurstAt) > 900) {
-            showTopicBurst(i, best.entry.target);
-            lastAutoBurstStep = i;
-            lastAutoBurstAt = now;
-          }
-        }, { threshold: [0.35, 0.55, 0.72] });
-        topics.forEach((t) => io.observe(t));
-      }
+      // Keep topic colors stable while scrolling on mobile/tablet.
 
       // Scroll-trigger only the final course sales block.
       if ('IntersectionObserver' in window && enrollCta && offerCard) {
