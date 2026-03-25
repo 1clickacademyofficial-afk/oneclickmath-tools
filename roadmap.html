@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Roadmap การเรียนคณิตคลิกเดียว</title>
+  <title>Roadmap การเรียน (ขั้นบันได)</title>
   <script>
     window.MathJax = {
       tex: { inlineMath: [['\\(', '\\)']] },
@@ -95,6 +95,15 @@
       line-height: 1.05;
       text-wrap: balance;
     }
+    .hero__title .hero-em-roadmap{
+      color:#156a5d;
+      font-weight: 700;
+    }
+    .hero__title .hero-em-mathclick{
+      color:#1f4f93;
+      font-weight: 700;
+      text-shadow: 0 6px 16px rgba(24,167,143,.22);
+    }
     .hero__tip{
       min-width: 280px;
       padding: 14px 14px;
@@ -155,6 +164,24 @@
       }
       .section-bridge{
         display: none;
+      }
+      main.is-dynamic-focus .topic{
+        background: linear-gradient(
+          180deg,
+          hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / calc(.08 + (var(--focus) * .34))),
+          rgba(255,255,255, calc(.84 + (var(--focus) * .14)))
+        );
+        border-color: hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 50% / calc(.18 + (var(--focus) * .44)));
+        opacity: calc(.36 + (var(--focus) * .74));
+        filter: saturate(calc(.72 + (var(--focus) * .5)));
+        transform: translateY(calc((1 - var(--focus)) * 2px));
+      }
+      main.is-dynamic-focus .topic::before{
+        opacity: calc(.2 + (var(--focus) * .5));
+      }
+      main.is-smart-focus.is-dynamic-focus .topic:not(.is-current){
+        opacity: calc(.36 + (var(--focus) * .74));
+        filter: saturate(calc(.72 + (var(--focus) * .5)));
       }
     }
     @media (max-width: 700px){
@@ -549,6 +576,7 @@
     }
 
     .topic{
+      --focus: .12;
       position: relative;
       padding: var(--space-md) var(--space-md) var(--space-sm);
       border-radius: var(--radius2);
@@ -992,7 +1020,7 @@
   <div class="app">
     <header class="hero">
       <div>
-        <h1 class="hero__title">Roadmap การเรียนคณิตแบบขั้นบันได</h1>
+        <h1 class="hero__title"><span class="hero-em-roadmap">Roadmap</span> ปรับพื้นฐาน สไตล์<span class="hero-em-mathclick">คณิตคลิกเดียว</span></h1>
       </div>
     </header>
 
@@ -1352,7 +1380,10 @@
       let pendingUntil = 0;
       let lastSectionIndex = 1;
       let offerPulseTimer = null;
+      let lastAutoBurstStep = 1;
+      let lastAutoBurstAt = 0;
       const isCompactViewport = () => window.innerWidth <= 900;
+      let focusRaf = 0;
 
       const getI = (el) => {
         const v = (el && el.style && el.style.getPropertyValue('--i')) || '';
@@ -1412,6 +1443,46 @@
           return;
         }
         heroNext.textContent = `ถัดไป: ${String(next).padStart(2, '0')} ${getStepTitle(next)}`;
+      };
+      const updateDynamicFocus = () => {
+        if (!main || !isCompactViewport()) return;
+        const vh = window.innerHeight || 1;
+        let bestStep = null;
+        let bestFocus = -1;
+        topics.forEach((topic) => {
+          const rect = topic.getBoundingClientRect();
+          const visiblePx = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+          const visRatio = visiblePx / Math.max(1, Math.min(rect.height, vh));
+          const center = rect.top + rect.height * 0.5;
+          const centerDist = Math.abs(center - vh * 0.46);
+          const centerScore = Math.max(0, 1 - (centerDist / (vh * 0.72)));
+          const focus = Math.max(0, Math.min(1, (visRatio * 0.62) + (centerScore * 0.76)));
+          topic.style.setProperty('--focus', focus.toFixed(3));
+          const i = getI(topic);
+          if (Number.isFinite(i) && focus > bestFocus) {
+            bestFocus = focus;
+            bestStep = i;
+          }
+        });
+        if (Number.isFinite(bestStep)) setCurrent(bestStep);
+      };
+      const requestDynamicFocus = () => {
+        if (!isCompactViewport()) return;
+        if (focusRaf) return;
+        focusRaf = requestAnimationFrame(() => {
+          focusRaf = 0;
+          updateDynamicFocus();
+        });
+      };
+      const syncViewportMode = () => {
+        if (!main) return;
+        const compact = isCompactViewport();
+        main.classList.toggle('is-dynamic-focus', compact);
+        if (!compact) {
+          topics.forEach((t) => t.style.removeProperty('--focus'));
+          return;
+        }
+        requestDynamicFocus();
       };
 
       const setCurrent = (i) => {
@@ -1549,10 +1620,16 @@
         side.classList.add('is-smart-focus');
         main.classList.add('is-smart-focus');
       }
+      syncViewportMode();
       setRailTheme(1);
       setRailProgress(1);
       updateNextHint(1);
       levels.forEach((el, idx) => el.classList.toggle('is-active-section', idx === 0));
+      window.addEventListener('scroll', requestDynamicFocus, { passive: true });
+      window.addEventListener('resize', () => {
+        syncViewportMode();
+        requestDynamicFocus();
+      });
 
       // Click to smooth-scroll to the corresponding topic card.
       sideItems.forEach((el) => {
@@ -1596,6 +1673,13 @@
           const i = getI(best.entry.target);
           if (!Number.isFinite(i)) return;
           setCurrent(i);
+          const now = performance.now();
+          if (i !== lastAutoBurstStep || (now - lastAutoBurstAt) > 900) {
+            showTopicBurst(i, best.entry.target);
+            lastAutoBurstStep = i;
+            lastAutoBurstAt = now;
+          }
+          requestDynamicFocus();
         }, { threshold: [0.35, 0.55, 0.72] });
         topics.forEach((t) => io.observe(t));
       }
