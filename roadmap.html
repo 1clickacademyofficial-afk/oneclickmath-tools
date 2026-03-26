@@ -872,6 +872,9 @@
       .side{ position: static; }
       .toast{ right: 8px; bottom: 8px; max-width: min(92vw, 300px); }
     }
+    @media (min-width: 901px){
+      .mobile-hud{ display:none; }
+    }
 
     /* ซ่อนกรอบวิดีโอ placeholder เมื่อยังไม่ได้ใส่ลิงก์ */
     .video-placeholder:empty{
@@ -916,6 +919,64 @@
     .toast.is-visible{
       opacity: 1;
       transform: translateY(0);
+    }
+    .mobile-hud{
+      position: fixed;
+      right: 10px;
+      top: 10px;
+      z-index: 25;
+      min-width: 156px;
+      max-width: min(72vw, 240px);
+      padding: .45rem .55rem;
+      border-radius: 12px;
+      border: 1px solid rgba(30,43,57,.18);
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 10px 24px rgba(20,43,74,.14);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: opacity .22s var(--ease-out-quint), transform .22s var(--ease-out-quint);
+    }
+    .mobile-hud.is-visible{
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .mobile-hud__top{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: .55rem;
+      font-size: .8rem;
+      color:#3f5568;
+      line-height: 1.2;
+    }
+    .mobile-hud__step{
+      font-weight: 700;
+      color:#1e2f42;
+      font-variant-numeric: tabular-nums;
+    }
+    .mobile-hud__title{
+      margin-top: .18rem;
+      font-size: .84rem;
+      color:#284159;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mobile-hud__bar{
+      margin-top: .35rem;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(30,43,57,.12);
+      overflow:hidden;
+    }
+    .mobile-hud__fill{
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(47,125,225,.95), rgba(24,167,143,.95));
+      transition: width .3s var(--ease-out-quint);
     }
     .enroll-cta{
       margin-top: var(--space-lg);
@@ -1408,6 +1469,14 @@
     </div>
   </div>
   <div class="toast" id="delight-toast" aria-live="polite" aria-atomic="true"></div>
+  <div class="mobile-hud" id="mobile-hud" aria-live="polite" aria-atomic="true">
+    <div class="mobile-hud__top">
+      <span class="mobile-hud__step" id="mobile-hud-step">01/12</span>
+      <span>กำลังเรียน</span>
+    </div>
+    <div class="mobile-hud__title" id="mobile-hud-title">จำนวนเต็ม</div>
+    <div class="mobile-hud__bar"><div class="mobile-hud__fill" id="mobile-hud-fill"></div></div>
+  </div>
   <script>
     (function () {
       const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1422,6 +1491,10 @@
       const heroHint = document.getElementById('hero-hint');
       const heroNext = document.getElementById('hero-next');
       const toast = document.getElementById('delight-toast');
+      const mobileHud = document.getElementById('mobile-hud');
+      const mobileHudStep = document.getElementById('mobile-hud-step');
+      const mobileHudTitle = document.getElementById('mobile-hud-title');
+      const mobileHudFill = document.getElementById('mobile-hud-fill');
       const cheerByLevel = {
         m1: ['พื้นฐานแน่นขึ้นอีกขั้น', 'ดีมาก โครงสร้างตัวเลขเริ่มชัดแล้ว', 'เก่งมาก พื้นฐานกำลังแข็งแรง'],
         m2: ['ยอดเยี่ยม คิดเชิงสมการได้ดีขึ้น', 'จังหวะดีมาก แก้โจทย์เป็นระบบขึ้น', 'เก่งมาก โครงสร้างปัญหาชัดขึ้น'],
@@ -1509,6 +1582,18 @@
         }
         heroNext.textContent = `ถัดไป: ${String(next).padStart(2, '0')} ${getStepTitle(next)}`;
       };
+      const updateMobileHud = (i) => {
+        if (!mobileHud || !mobileHudStep || !mobileHudTitle || !mobileHudFill) return;
+        if (!isCompactViewport()) {
+          mobileHud.classList.remove('is-visible');
+          return;
+        }
+        const step = clampStep(i);
+        mobileHudStep.textContent = `${String(step).padStart(2, '0')}/${LEVEL_END}`;
+        mobileHudTitle.textContent = getStepTitle(step);
+        mobileHudFill.style.width = `${((step / LEVEL_END) * 100).toFixed(2)}%`;
+        mobileHud.classList.add('is-visible');
+      };
       const syncViewportMode = () => {
         if (!main) return;
         main.classList.remove('is-dynamic-focus');
@@ -1543,6 +1628,7 @@
         setRailTheme(i);
         setRailProgress(i);
         updateNextHint(i);
+        updateMobileHud(i);
       };
 
       const getStepTitle = (i) => {
