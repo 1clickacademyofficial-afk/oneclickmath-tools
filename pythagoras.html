@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <title>ทฤษฎีบทพีทาโกรัส — โต้ตอบ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <style>
+    :root {
+      --paper: #eaf1f9;
+      --paper-2: #fbfcfe;
+      --ink: #0c1a2e;
+      --ink-muted: #4a5f78;
+      --rule: #c4d0e8;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-bright: #3b82f6;
+      --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--paper));
+      --font-th: "Sarabun", "Noto Sans Thai", "Thonburi", "Leelawadee UI", system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      --dur-normal: 0.26s;
+      --dur-panel: 0.44s;
+      --tap-min: 44px;
+      --radius-lg: 1rem;
+      --radius-pill: 999px;
+      --shadow-card: 0 1px 0 rgba(29, 78, 216, 0.05), 0 8px 28px -12px rgba(15, 40, 90, 0.14);
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --content-max: min(36rem, 100vw - 1.5rem);
+      --grid-cell: 24px;
+      --grid-line: color-mix(in srgb, var(--accent) 9%, transparent);
+      --grid-line-major: color-mix(in srgb, var(--accent) 22%, var(--rule));
+    }
+
+    @media (min-width: 768px) { :root { --content-max: min(40rem, 100vw - 2rem); } }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: var(--font-th);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--paper)) 0%, var(--paper) 58%),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(180deg, var(--grid-line) 1px, transparent 1px),
+        repeating-linear-gradient(90deg, transparent 0, transparent calc(var(--grid-cell) * 5 - 1px), var(--grid-line-major) calc(var(--grid-cell) * 5 - 1px), var(--grid-line-major) calc(var(--grid-cell) * 5)),
+        repeating-linear-gradient(180deg, transparent 0, transparent calc(var(--grid-cell) * 5 - 1px), var(--grid-line-major) calc(var(--grid-cell) * 5 - 1px), var(--grid-line-major) calc(var(--grid-cell) * 5));
+      background-size: 100% 100%, var(--grid-cell) var(--grid-cell), var(--grid-cell) var(--grid-cell), calc(var(--grid-cell) * 5) 100%, 100% calc(var(--grid-cell) * 5);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-feature-settings: "kern" 1;
+      padding: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-top, 0px))
+        max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-right, 0px))
+        max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-bottom, 0px))
+        max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-left, 0px));
+      overflow-x: hidden;
+    }
+
+    #main {
+      width: min(100%, calc(var(--content-max) + var(--space-6)));
+      max-width: 100%;
+      margin-inline: auto;
+    }
+
+    .app-header {
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-2);
+      border-left: 3px solid color-mix(in srgb, var(--accent) 75%, var(--rule));
+      animation: headerIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes headerIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      margin: 0 0 var(--space-2);
+      padding: 0.45rem 1.1rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #f8fafc;
+      background: linear-gradient(145deg, #1e3a8a 0%, #1d4ed8 42%, #3b82f6 100%);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      transition: transform 0.22s var(--ease-out-quart), box-shadow 0.22s var(--ease-out-quart);
+    }
+
+    h1 {
+      font-size: clamp(1.45rem, 4.2vw, 1.92rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin: 0;
+      color: color-mix(in srgb, var(--accent) 8%, var(--ink));
+    }
+
+    .subtitle {
+      color: var(--ink-muted);
+      font-size: 1rem;
+      font-weight: 500;
+      margin: var(--space-2) 0 0;
+      line-height: 1.6;
+      max-width: 36rem;
+    }
+
+    .flashcard {
+      background: var(--paper-2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) clamp(0.85rem, 4vw, var(--space-5)) var(--space-5);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--rule);
+      animation: viewIn 0.52s var(--ease-out-quart) both;
+    }
+
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 380px) {
+      .flashcard {
+        padding-inline: var(--space-3);
+      }
+    }
+
+    .panel-hint {
+      font-size: clamp(0.9rem, 3.1vw, 0.94rem);
+      font-weight: 500;
+      color: var(--ink);
+      margin: 0 0 var(--space-3);
+      line-height: 1.65;
+    }
+
+    .formula-bar {
+      text-align: left;
+      margin: 0 0 var(--space-4);
+      padding: var(--space-4) var(--space-4);
+      border-radius: 0.75rem;
+      background: color-mix(in srgb, var(--accent) 5%, var(--paper-2));
+      border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--rule));
+      border-left-width: 4px;
+      border-left-color: color-mix(in srgb, var(--accent) 55%, var(--rule));
+      font-size: clamp(0.98rem, 3.2vw, 1.1rem);
+      font-weight: 500;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      transition: box-shadow 0.28s var(--ease-out-quart), border-color 0.28s var(--ease-out-quart);
+    }
+
+    .mode-panel.is-showing .formula-bar {
+      box-shadow: 0 4px 20px -8px color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+
+    @keyframes formulaStepIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mode-panel.is-showing ol.formula-steps > li {
+      animation: formulaStepIn 0.4s var(--ease-out-quart) both;
+    }
+
+    .mode-panel.is-showing ol.formula-steps > li:nth-child(1) { animation-delay: 0.04s; }
+    .mode-panel.is-showing ol.formula-steps > li:nth-child(2) { animation-delay: 0.11s; }
+    .mode-panel.is-showing ol.formula-steps > li:nth-child(3) { animation-delay: 0.18s; }
+
+    .formula-bar .katex-display {
+      margin: 0;
+    }
+
+    .formula-bar .katex {
+      font-size: 1em;
+    }
+
+    .formula-bar .katex .text,
+    .formula-bar .katex .tex-text {
+      font-family: var(--font-th) !important;
+    }
+
+    ol.formula-steps {
+      margin: 0;
+      padding: 0 0 0 1.35rem;
+      text-align: left;
+      width: 100%;
+      max-width: 100%;
+      list-style-position: outside;
+    }
+
+    ol.formula-steps > li {
+      margin: 0.5rem 0;
+      padding-left: 0.4rem;
+      line-height: 1.62;
+    }
+
+    ol.formula-steps > li::marker {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 0.95em;
+    }
+
+    ol.formula-steps .step-muted {
+      opacity: 0.92;
+      font-size: 0.98em;
+    }
+
+    .tri-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 0.5rem;
+      background: color-mix(in srgb, var(--accent) 3%, var(--paper-2));
+      border: 1px solid var(--rule);
+      transition: border-color 0.25s var(--ease-out-quart), box-shadow 0.25s var(--ease-out-quart);
+    }
+
+    @media (hover: hover) {
+      .tri-wrap:hover {
+        border-color: color-mix(in srgb, var(--accent) 28%, var(--rule));
+        box-shadow: 0 2px 14px -6px color-mix(in srgb, var(--accent) 35%, transparent);
+      }
+    }
+
+    .tri-wrap svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: clamp(220px, 52vw, 320px);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .handle {
+      cursor: grab;
+      fill: var(--accent-bright);
+      stroke: #fff;
+      stroke-width: 2;
+      filter: drop-shadow(0 1px 3px rgba(29, 78, 216, 0.32));
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 0.2s var(--ease-out-quart), filter 0.2s var(--ease-out-quart);
+    }
+
+    .handle:active { cursor: grabbing; }
+
+    @media (pointer: coarse) {
+      .handle {
+        transform: scale(1.22);
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .handle:hover {
+        transform: scale(1.08);
+        filter: drop-shadow(0 3px 8px rgba(29, 78, 216, 0.4));
+      }
+      .handle:active {
+        transform: scale(0.97);
+      }
+    }
+
+    .side-label {
+      font-weight: 600;
+      fill: var(--ink);
+      font-family: var(--font-th);
+      paint-order: stroke fill;
+      stroke: color-mix(in srgb, var(--paper-2) 85%, transparent);
+      stroke-width: 2px;
+    }
+
+    .helper-text {
+      font-size: clamp(0.78rem, 2.9vw, 0.82rem);
+      color: var(--ink-muted);
+      margin-top: var(--space-3);
+      text-align: center;
+      line-height: 1.5;
+      padding-inline: var(--space-1);
+    }
+
+    .mode-tabs-track {
+      position: relative;
+      margin-bottom: var(--space-4);
+      padding: 5px;
+      border-radius: var(--radius-pill);
+      background: color-mix(in srgb, var(--rule) 42%, var(--paper-2));
+      border: 1px solid var(--rule);
+    }
+
+    .mode-tabs-indicator {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: calc((100% - 10px - 0.5rem) / 2);
+      height: calc(100% - 10px);
+      border-radius: var(--radius-pill);
+      background: var(--paper-2);
+      box-shadow: 0 2px 12px rgba(30, 58, 138, 0.14), 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+      transition: transform 0.34s var(--ease-out-quart);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .mode-tabs-track[data-active="2"] .mode-tabs-indicator {
+      transform: translateX(calc(100% + 0.5rem));
+    }
+
+    .mode-tabs {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin: 0;
+    }
+
+    .mode-tabs .mode-tab-btn {
+      font-family: inherit;
+      font-size: clamp(0.82rem, 2.8vw, 0.9rem);
+      font-weight: 600;
+      line-height: 1.25;
+      text-align: center;
+      min-height: var(--tap-min);
+      padding: 0.5rem 0.65rem;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: color 0.22s var(--ease-out-quart), transform 0.15s var(--ease-out-quart);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mode-tabs .mode-tab-btn:hover {
+      color: var(--ink);
+    }
+
+    .mode-tabs .mode-tab-btn[aria-selected="true"] {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .mode-tabs .mode-tab-btn:active {
+      transform: scale(0.98);
+    }
+
+    .mode-tabs .mode-tab-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .mode-panel[hidden] { display: none !important; }
+
+    @keyframes modePanelReveal {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mode-panel.is-showing:not([hidden]) {
+      animation: modePanelReveal var(--dur-panel) var(--ease-out-quart) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mode-tabs-indicator {
+        transition: none;
+      }
+      .mode-panel.is-showing:not([hidden]) {
+        animation: none;
+      }
+      .mode-panel.is-showing ol.formula-steps > li {
+        animation: none !important;
+      }
+    }
+
+    .fluid-2d-wrap {
+      position: relative;
+      width: 100%;
+      min-height: min(78vw, 440px);
+      max-height: min(72vh, 92dvw);
+      border-radius: 50%;
+      overflow: visible;
+      border: 3px solid color-mix(in srgb, var(--rule) 60%, #94a3b8);
+      background: radial-gradient(circle at 42% 38%, #f8fafc 0%, #e2e8f0 55%, #cbd5e1 100%);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.65), 0 12px 32px rgba(30, 58, 138, 0.18);
+      touch-action: none;
+      margin-inline: auto;
+      aspect-ratio: 1;
+      max-width: min(100%, 440px);
+    }
+
+    @keyframes fluidDiscIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .fluid-2d-wrap.fluid-2d-wrap--enter {
+      animation: fluidDiscIn 0.5s var(--ease-out-quart) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fluid-2d-wrap.fluid-2d-wrap--enter {
+        animation: none;
+      }
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+      .fluid-2d-wrap {
+        min-height: min(55dvh, 85vw);
+        max-height: min(58dvh, 400px);
+      }
+    }
+
+    .fluid-2d-wrap .fluid-2d-main-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .fluid2-tri {
+      fill: rgba(250, 204, 21, 0.88);
+      stroke: #b45309;
+      stroke-width: 1.5;
+    }
+
+    .fluid2-sq-wire {
+      fill: none;
+      stroke: rgba(30, 41, 59, 0.55);
+      stroke-width: 2;
+    }
+
+    .fluid2-liq-a {
+      fill: url(#fluid2GradA);
+      stroke: rgba(255, 255, 255, 0.42);
+      stroke-width: 0.85;
+      stroke-linejoin: round;
+      opacity: 0.98;
+    }
+
+    .fluid2-liq-b {
+      fill: url(#fluid2GradB);
+      stroke: rgba(255, 255, 255, 0.35);
+      stroke-width: 0.85;
+      stroke-linejoin: round;
+      opacity: 0.98;
+    }
+
+    .fluid2-liq-c {
+      fill: url(#fluid2GradC);
+      stroke: rgba(255, 255, 255, 0.38);
+      stroke-width: 0.85;
+      stroke-linejoin: round;
+      opacity: 0.97;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fluid2-liq-a,
+      .fluid2-liq-b,
+      .fluid2-liq-c {
+        stroke-width: 0;
+      }
+    }
+
+    .fluid2-gloss-a,
+    .fluid2-gloss-b,
+    .fluid2-gloss-c {
+      pointer-events: none;
+      mix-blend-mode: soft-light;
+      opacity: 0.88;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fluid2-gloss-a,
+      .fluid2-gloss-b,
+      .fluid2-gloss-c {
+        opacity: 0;
+      }
+    }
+
+    .fluid2-rightmark {
+      fill: none;
+      stroke: #64748b;
+      stroke-width: 1.2;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .brand-pill:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.38);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flashcard,
+      .app-header {
+        animation: none !important;
+      }
+      .brand-pill,
+      .formula-bar,
+      .tri-wrap,
+      .handle {
+        transition: none !important;
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .brand-pill:hover { transform: none; }
+        .handle:hover { transform: none; }
+      }
+      @media (pointer: coarse) {
+        .handle { transform: none; }
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <main id="main">
+    <header class="app-header">
+      <span class="brand-pill">Interactive</span>
+      <h1>ทฤษฎีบทพีทาโกรัส</h1>
+      <p class="subtitle">ลากปรับขาที่มุมฉาก <strong>a</strong> กับ <strong>b</strong> (จำนวนเต็ม 1–10) — ระบบคำนวณ <strong>c</strong> ตามพีทาโกรัส</p>
+    </header>
+
+    <div class="flashcard">
+      <div class="mode-tabs-track" id="modeTabsTrack" data-active="1">
+        <span class="mode-tabs-indicator" aria-hidden="true"></span>
+        <div class="mode-tabs" role="tablist" aria-label="โหมด">
+          <button type="button" role="tab" class="mode-tab-btn" id="tab1" aria-selected="true" aria-controls="panel1">ลาก a, b</button>
+          <button type="button" role="tab" class="mode-tab-btn" id="tab2" aria-selected="false" aria-controls="panel2">หมุนเทน้ำ (2D)</button>
+        </div>
+      </div>
+
+      <div class="mode-panel is-showing" id="panel1" role="tabpanel" aria-labelledby="tab1">
+        <p class="panel-hint">ลากวงกลมที่<strong>ปลายขาแนวนอน</strong>เพื่อเปลี่ยน <strong>a</strong> หรือที่<strong>ปลายขาตั้ง</strong>เพื่อเปลี่ยน <strong>b</strong></p>
+        <div class="formula-bar" id="formulaBar1">
+          <ol class="formula-steps" aria-label="ขั้นตอน">
+            <li><span id="tex1s1"></span></li>
+            <li class="step-muted"><span id="tex1s2"></span></li>
+            <li><span id="tex1s3"></span></li>
+          </ol>
+        </div>
+        <div class="tri-wrap">
+          <svg id="svgInteractive" viewBox="-50 -35 560 450" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <circle cx="4" cy="4" r="2" fill="var(--ink-muted)" />
+              </marker>
+            </defs>
+            <path id="triPath" fill="color-mix(in srgb, var(--accent) 14%, transparent)" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" />
+            <rect id="rightAngleMark" fill="none" stroke="#64748b" stroke-width="1.2" />
+            <text id="labelA" class="side-label" text-anchor="middle" />
+            <text id="labelB" class="side-label" text-anchor="middle" />
+            <text id="labelC" class="side-label" text-anchor="middle" />
+            <circle id="handleA" class="handle" r="11" />
+            <circle id="handleB" class="handle" r="11" />
+          </svg>
+        </div>
+        <p class="helper-text">บนมือถือลากที่วงกลมได้เช่นกัน</p>
+      </div>
+
+      <div class="mode-panel" id="panel2" role="tabpanel" aria-labelledby="tab2" hidden>
+        <div id="fluid2dMount" class="fluid-2d-wrap" aria-label="หมุนเทน้ำ a² b² c²">
+          <svg id="svgFluid2d" class="fluid-2d-main-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /** ความยาวขาเป็นจำนวนเต็ม 1–10; บนจอขยายด้วย UNIT พิกเซล */
+      var UNIT = 28;
+      /** viewBox คงที่ — กลางกรอบ = จุดศูนย์กลางสามเหลี่ยม (centroid) ตลอด */
+      var TRI_VIEW_BOX = '-50 -35 560 450';
+      var CX = 230;
+      var CY = 190;
+      var LERP_TRI = 0.2;
+      /** ขั้นตอนเดียวตอนลาก — ตอบสนองทันที ไม่รอ rAF เฟรมแรก */
+      var LERP_DRAG = 0.42;
+
+      var tri = {
+        aLen: 3,
+        bLen: 4
+      };
+
+      /** a,b = ความยาวหน่วย (float สำหรับภาพ) — lerp เข้าหา tri.aLen / tri.bLen */
+      var aVis = tri.aLen;
+      var bVis = tri.bLen;
+      var rafTri = null;
+
+      /** ขยายขาสั้นให้ไม่เละ — คงอัตราส่วน a:b */
+      var MIN_LEG_PX = 56;
+
+      function triMeshVisual(ua, ub) {
+        var baseA = ua * UNIT;
+        var baseB = ub * UNIT;
+        var m0 = Math.min(baseA, baseB);
+        var boost = m0 > 0 && m0 < MIN_LEG_PX ? MIN_LEG_PX / m0 : 1;
+        var a = baseA * boost;
+        var b = baseB * boost;
+        var ox = CX - a / 3;
+        var oy = CY + b / 3;
+        return {
+          ox: ox,
+          oy: oy,
+          ax: ox + a,
+          ay: oy,
+          bx: ox,
+          by: oy - b,
+          a: a,
+          b: b,
+          minLeg: Math.min(a, b),
+          hypot: Math.hypot(a, b)
+        };
+      }
+
+      function prefersReducedMotion() {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      }
+
+      function scheduleTriFrame() {
+        if (rafTri != null) return;
+        rafTri = window.requestAnimationFrame(stepTri);
+      }
+
+      function stepTri() {
+        rafTri = null;
+        var k = prefersReducedMotion() ? 1 : LERP_TRI;
+        aVis += (tri.aLen - aVis) * k;
+        bVis += (tri.bLen - bVis) * k;
+        if (Math.abs(tri.aLen - aVis) < 0.0008) aVis = tri.aLen;
+        if (Math.abs(tri.bLen - bVis) < 0.0008) bVis = tri.bLen;
+        renderInteractive();
+        if (Math.abs(tri.aLen - aVis) > 1e-5 || Math.abs(tri.bLen - bVis) > 1e-5) {
+          scheduleTriFrame();
+        }
+      }
+
+      /** ข้อความป้ายด้าน c (ไม่ซ้ำ «=» กับ ≈) */
+      function labelCSideText(av, bv) {
+        var ar = Math.round(av);
+        var br = Math.round(bv);
+        if (Math.abs(av - ar) < 0.025 && Math.abs(bv - br) < 0.025) {
+          var s = ar * ar + br * br;
+          var r = Math.round(Math.sqrt(s));
+          if (r * r === s) return 'c = ' + r;
+        }
+        var c = Math.sqrt(av * av + bv * bv);
+        return 'c ≈ ' + c.toFixed(2);
+      }
+
+      function renderTexLine(el, tex, displayMode) {
+        if (!el) return;
+        if (typeof katex === 'undefined') {
+          el.textContent = tex.replace(/\\[a-zA-Z]+\{([^}]*)\}/g, '$1').replace(/\\/g, '');
+          return;
+        }
+        try {
+          katex.render(tex, el, { displayMode: !!displayMode, throwOnError: false });
+        } catch (err) {
+          el.textContent = tex;
+        }
+      }
+
+      function renderFormulaPanels() {
+        var a = tri.aLen, b = tri.bLen;
+        var a2 = a * a, b2 = b * b, sum = a2 + b2;
+        var sr = Math.sqrt(sum);
+        var rInt = Math.round(sr);
+        var approx = sr.toFixed(2);
+
+        var step2same =
+          rInt * rInt === sum
+            ? 'a=' + a + ',\\; b=' + b + ',\\; c=' + rInt
+            : 'a=' + a + ',\\; b=' + b + ',\\; c=\\sqrt{' + sum + '}\\approx ' + approx;
+
+        var step3same =
+          a +
+          '^{2}+' +
+          b +
+          '^{2}=' +
+          a2 +
+          '+' +
+          b2 +
+          '=' +
+          sum +
+          (rInt * rInt === sum
+            ? '=' + rInt + '^{2}'
+            : '=c^{2}\\;\\text{(}c\\approx ' + approx + '\\text{)}');
+
+        renderTexLine(document.getElementById('tex1s1'), 'a^{2}+b^{2}=c^{2}', false);
+        renderTexLine(document.getElementById('tex1s2'), '\\text{แทนค่า:}\\; ' + step2same, false);
+        renderTexLine(document.getElementById('tex1s3'), '\\text{คำนวณ:}\\; ' + step3same, false);
+        postHeight();
+      }
+
+      var svg = document.getElementById('svgInteractive');
+      var path = document.getElementById('triPath');
+      var mark = document.getElementById('rightAngleMark');
+      var labelA = document.getElementById('labelA');
+      var labelB = document.getElementById('labelB');
+      var labelC = document.getElementById('labelC');
+      var handleA = document.getElementById('handleA');
+      var handleB = document.getElementById('handleB');
+
+      function renderInteractive() {
+        var m = triMeshVisual(aVis, bVis);
+        var ox = m.ox, oy = m.oy, ax = m.ax, ay = m.ay, bx = m.bx, by = m.by;
+        var a = m.a, b = m.b;
+        var ml = m.minLeg;
+        var hp = m.hypot;
+        path.setAttribute('d', 'M ' + ox + ' ' + oy + ' L ' + ax + ' ' + ay + ' L ' + bx + ' ' + by + ' Z');
+        path.setAttribute('stroke-width', String(Math.max(2, Math.min(3.2, 1.4 + ml / 120))));
+
+        var mk = Math.max(6, Math.min(16, ml * 0.13 + 5));
+        mark.setAttribute('x', ox);
+        mark.setAttribute('y', oy - mk);
+        mark.setAttribute('width', mk);
+        mark.setAttribute('height', mk);
+        mark.setAttribute('stroke-width', String(Math.max(0.9, Math.min(1.4, mk / 14))));
+
+        var fs = Math.max(11, Math.min(15, 9.2 + ml * 0.028));
+        var padBelow = Math.max(14, Math.min(28, ml * 0.22 + 10));
+        var padLeft = Math.max(16, Math.min(32, ml * 0.24 + 12));
+        var offC = Math.max(18, Math.min(38, hp * 0.11 + 12));
+
+        labelA.setAttribute('font-size', fs);
+        labelA.setAttribute('x', (ox + ax) / 2);
+        labelA.setAttribute('y', oy + padBelow);
+        labelA.textContent = 'a = ' + tri.aLen;
+
+        labelB.setAttribute('font-size', fs);
+        labelB.setAttribute('x', ox - padLeft);
+        labelB.setAttribute('y', (oy + by) / 2);
+        labelB.textContent = 'b = ' + tri.bLen;
+
+        var mcx = (ax + bx) / 2, mcy = (ay + by) / 2;
+        var dx = bx - ax, dy = by - ay;
+        var len = Math.hypot(dx, dy) || 1;
+        var nx = (-dy / len) * offC, ny = (dx / len) * offC;
+        labelC.setAttribute('font-size', fs);
+        labelC.setAttribute('x', mcx + nx);
+        labelC.setAttribute('y', mcy + ny + 4);
+        labelC.textContent = labelCSideText(aVis, bVis);
+
+        var hR = Math.max(5.5, Math.min(11.5, ml * 0.165));
+        handleA.setAttribute('r', hR);
+        handleB.setAttribute('r', hR);
+        var hStroke = Math.max(1.2, Math.min(2.2, hR / 5.5));
+        handleA.setAttribute('stroke-width', hStroke);
+        handleB.setAttribute('stroke-width', hStroke);
+        handleA.setAttribute('cx', ax);
+        handleA.setAttribute('cy', ay);
+        handleB.setAttribute('cx', bx);
+        handleB.setAttribute('cy', by);
+      }
+
+      function svgPoint(evt) {
+        var pt = svg.createSVGPoint();
+        pt.x = evt.clientX;
+        pt.y = evt.clientY;
+        var ctm = svg.getScreenCTM();
+        if (!ctm || !ctm.inverse) return { x: 0, y: 0 };
+        pt = pt.matrixTransform(ctm.inverse());
+        return { x: pt.x, y: pt.y };
+      }
+
+      var drag = null;
+      function startDrag(which, evt) {
+        evt.preventDefault();
+        drag = which;
+        svg.setPointerCapture(evt.pointerId);
+      }
+      function moveDrag(evt) {
+        if (!drag) return;
+        var p = svgPoint(evt);
+        var prevA = tri.aLen;
+        var prevB = tri.bLen;
+        if (drag === 'a') {
+          var ua = (1.5 * (p.x - CX)) / UNIT;
+          tri.aLen = Math.min(10, Math.max(1, Math.round(ua)));
+        } else {
+          var ub = (1.5 * (CY - p.y)) / UNIT;
+          tri.bLen = Math.min(10, Math.max(1, Math.round(ub)));
+        }
+        if (tri.aLen !== prevA || tri.bLen !== prevB) {
+          renderFormulaPanels();
+        }
+        if (prefersReducedMotion()) {
+          aVis = tri.aLen;
+          bVis = tri.bLen;
+          renderInteractive();
+          return;
+        }
+        aVis += (tri.aLen - aVis) * LERP_DRAG;
+        bVis += (tri.bLen - bVis) * LERP_DRAG;
+        renderInteractive();
+        scheduleTriFrame();
+      }
+      function endDrag(evt) {
+        if (drag && svg.hasPointerCapture(evt.pointerId)) svg.releasePointerCapture(evt.pointerId);
+        drag = null;
+        scheduleTriFrame();
+      }
+
+      handleA.addEventListener('pointerdown', function (e) { startDrag('a', e); });
+      handleB.addEventListener('pointerdown', function (e) { startDrag('b', e); });
+      svg.addEventListener('pointermove', moveDrag);
+      svg.addEventListener('pointerup', endDrag);
+      svg.addEventListener('pointercancel', endDrag);
+
+      svg.setAttribute('viewBox', TRI_VIEW_BOX);
+      renderFormulaPanels();
+      renderInteractive();
+
+      function triMeshFromUnits(ua, ub) {
+        var a = ua * UNIT;
+        var b = ub * UNIT;
+        var ox = CX - a / 3;
+        var oy = CY + b / 3;
+        return {
+          ox: ox,
+          oy: oy,
+          ax: ox + a,
+          ay: oy,
+          bx: ox,
+          by: oy - b,
+          a: a,
+          b: b
+        };
+      }
+
+      function bboxPts(pts) {
+        var xs = pts.map(function (p) { return p.x; });
+        var ys = pts.map(function (p) { return p.y; });
+        return {
+          x: Math.min.apply(null, xs),
+          y: Math.min.apply(null, ys),
+          w: Math.max.apply(null, xs) - Math.min.apply(null, xs),
+          h: Math.max.apply(null, ys) - Math.min.apply(null, ys)
+        };
+      }
+
+      function polyCentroid(pts) {
+        var x = 0, y = 0, n = pts.length;
+        for (var i = 0; i < n; i++) {
+          x += pts[i].x;
+          y += pts[i].y;
+        }
+        return { x: x / n, y: y / n };
+      }
+
+      function squareOnHypotenuseOutside(A, B, O) {
+        var dx = B.x - A.x, dy = B.y - A.y;
+        var L = Math.hypot(dx, dy);
+        if (L < 1e-9) {
+          return [
+            { x: A.x, y: A.y },
+            { x: A.x, y: A.y },
+            { x: A.x, y: A.y },
+            { x: A.x, y: A.y }
+          ];
+        }
+        var nx = (-dy / L) * L;
+        var ny = (dx / L) * L;
+        var mx = (A.x + B.x) * 0.5, my = (A.y + B.y) * 0.5;
+        var wx = O.x - mx, wy = O.y - my;
+        if (nx * wx + ny * wy > 0) {
+          nx = -nx;
+          ny = -ny;
+        }
+        return [
+          { x: A.x, y: A.y },
+          { x: B.x, y: B.y },
+          { x: B.x + nx, y: B.y + ny },
+          { x: A.x + nx, y: A.y + ny }
+        ];
+      }
+
+      /**
+       * สามเหลี่ยม + สี่เหลี่ยมฝั่งเทน้ำ — รูปตามยกำลังสอง (ua, ub) แต่ไม่ใช้ CX/CY/UNIT ของแท็บลาก
+       * unitPx = พิกเซลต่อหนึ่งหน่วยความยาว (ปรับให้ย่อเข้าวง 520 ได้)
+       */
+      function triMeshFluidGeometry(ua, ub, unitPx) {
+        var a = ua * unitPx;
+        var b = ub * unitPx;
+        var ox = -a / 3;
+        var oy = b / 3;
+        var ax = ox + a,
+          ay = oy,
+          bx = ox,
+          by = oy - b;
+        var O = { x: ox, y: oy },
+          A = { x: ax, y: ay },
+          Bp = { x: bx, y: by };
+        var sqA = [
+          { x: ox, y: oy },
+          { x: ax, y: ay },
+          { x: ax, y: ay + a },
+          { x: ox, y: oy + a }
+        ];
+        var sqB = [
+          { x: ox, y: oy },
+          { x: bx, y: by },
+          { x: bx - b, y: by },
+          { x: ox - b, y: oy }
+        ];
+        var sqC = squareOnHypotenuseOutside(A, Bp, O);
+        return {
+          ox: ox,
+          oy: oy,
+          ax: ax,
+          ay: ay,
+          bx: bx,
+          by: by,
+          a: a,
+          b: b,
+          O: O,
+          A: A,
+          Bp: Bp,
+          sqA: sqA,
+          sqB: sqB,
+          sqC: sqC
+        };
+      }
+
+      function fluidFigureMaxSpan(ua, ub) {
+        var g = triMeshFluidGeometry(ua, ub, 1);
+        var allPts = [g.O, g.A, g.Bp].concat(g.sqA, g.sqB, g.sqC);
+        var bb = bboxPts(allPts);
+        return Math.max(bb.w, bb.h);
+      }
+
+      /** --- เทน้ำ 2D: หมุนแผ่นในระนาบจอ · โน้มถ่วงคงที่ · ผิวน้ำแนวนอนในพื้นที่แต่ละห้อง --- */
+      var P2 = {
+        raf: null,
+        svg: null,
+        pathLiqA: null,
+        pathLiqB: null,
+        pathLiqC: null,
+        pourRot: null,
+        quadA: null,
+        quadB: null,
+        quadC: null,
+        cenA: null,
+        cenB: null,
+        cenC: null,
+        capA: 1,
+        capB: 1,
+        capC: 1,
+        volA: 0,
+        volB: 0,
+        volC: 0,
+        totalVol: 0,
+        pivotX: 260,
+        pivotY: 260,
+        angleRad: 0,
+        lastPointerAng: null,
+        dragging: false,
+        ptrId: null,
+        pathGlA: null,
+        pathGlB: null,
+        pathGlC: null,
+        offX: 0,
+        offY: 0,
+        anglePrevFrame: 0,
+        lastFrameTs: 0,
+        sloshAng: 0,
+        sloshVel: 0,
+        slosh2Ang: 0,
+        slosh2Vel: 0
+      };
+
+      function polyArea(poly) {
+        var a = 0;
+        var n = poly.length;
+        for (var i = 0; i < n; i++) {
+          var p = poly[i], q = poly[(i + 1) % n];
+          a += p.x * q.y - q.x * p.y;
+        }
+        return Math.abs(a * 0.5);
+      }
+
+      function clipPolyGeq(poly, nx, ny, t) {
+        function ins(p) {
+          return p.x * nx + p.y * ny >= t - 1e-9;
+        }
+        function inter(p1, p2) {
+          var d1 = p1.x * nx + p1.y * ny - t;
+          var d2 = p2.x * nx + p2.y * ny - t;
+          var den = d1 - d2;
+          if (Math.abs(den) < 1e-12) return { x: p1.x, y: p1.y };
+          var u = d1 / den;
+          return { x: p1.x - u * (p1.x - p2.x), y: p1.y - u * (p1.y - p2.y) };
+        }
+        var inp = poly.slice();
+        var out = [];
+        var len = inp.length;
+        for (var i = 0; i < len; i++) {
+          var cur = inp[i];
+          var prev = inp[(i + len - 1) % len];
+          var cIn = ins(cur), pIn = ins(prev);
+          if (cIn) {
+            if (!pIn) out.push(inter(prev, cur));
+            out.push(cur);
+          } else if (pIn) out.push(inter(prev, cur));
+        }
+        return out;
+      }
+
+      function liquidPolygonFromVol(quad, gx, gy, vol) {
+        var full = polyArea(quad);
+        if (vol <= 1e-4 || full < 1e-8) return [];
+        if (vol >= full - 1e-3) return quad.slice();
+        var gL = Math.hypot(gx, gy) || 1;
+        var nx = gx / gL, ny = gy / gL;
+        var ds = quad.map(function (v) { return v.x * nx + v.y * ny; });
+        var tMin = Math.min.apply(null, ds);
+        var tMax = Math.max.apply(null, ds);
+        var span = Math.abs(tMax - tMin) + 1e-6;
+        var lo = tMin - span * 0.002;
+        var hi = tMax + span * 0.002;
+        var loA = lo, hiA = hi;
+        for (var iter = 0; iter < 48; iter++) {
+          var mid = (loA + hiA) * 0.5;
+          var a = polyArea(clipPolyGeq(quad, nx, ny, mid));
+          if (a > vol) loA = mid;
+          else hiA = mid;
+        }
+        var tf = (loA + hiA) * 0.5;
+        return clipPolyGeq(quad, nx, ny, tf);
+      }
+
+      /** น้ำในพื้นที่ห้อง: โน้มถ่วงลงบนจอ — คลิปที่ half-plane เทียบกับ v = q + off - pivot (ทศนิยมเดียวกับ SVG rotate) */
+      function liquidPolygonFromVolFigure(quad, gx, gy, vol, ox, oy, px, py) {
+        var wquad = quad.map(function (p) {
+          return { x: p.x + ox - px, y: p.y + oy - py };
+        });
+        var clipped = liquidPolygonFromVol(wquad, gx, gy, vol);
+        return clipped.map(function (p) {
+          return { x: p.x - ox + px, y: p.y - oy + py };
+        });
+      }
+
+      function polyToPathD(poly) {
+        if (!poly || poly.length < 3) return '';
+        return 'M ' + poly.map(function (p) { return p.x + ' ' + p.y; }).join(' L ') + ' Z';
+      }
+
+      function clampVol() {
+        P2.volA = Math.max(0, Math.min(P2.capA, P2.volA));
+        P2.volB = Math.max(0, Math.min(P2.capB, P2.volB));
+        P2.volC = Math.max(0, Math.min(P2.capC, P2.volC));
+        var s = P2.volA + P2.volB + P2.volC;
+        var tv = P2.totalVol;
+        if (s > 1e-8 && Math.abs(s - tv) > 1e-4) {
+          var k = tv / s;
+          P2.volA *= k;
+          P2.volB *= k;
+          P2.volC *= k;
+          P2.volA = Math.max(0, Math.min(P2.capA, P2.volA));
+          P2.volB = Math.max(0, Math.min(P2.capB, P2.volB));
+          P2.volC = Math.max(0, Math.min(P2.capC, P2.volC));
+        }
+      }
+
+      /** จุดต่ำสุดของห้องบนจอ: max w·n ตามจุดยอดสี่เหลี่ยม — สมมาตรซ้าย/ขวา ดีกว่าใช้แค่ centroid */
+      function fluid2QuadMaxDepth(quad, gx, gy, ox, oy, px, py) {
+        var mx = -Infinity;
+        for (var i = 0; i < quad.length; i++) {
+          var wx = quad[i].x + ox - px;
+          var wy = quad[i].y + oy - py;
+          var d = wx * gx + wy * gy;
+          if (d > mx) mx = d;
+        }
+        return mx;
+      }
+
+      /** เติมปริมาตรที่หายหลัง clamp โดยแบ่งให้ห้องที่ “ต่ำพอๆ กัน” ตามความจุ — หมุนกลับแล้วน้ำไม่ตันฝั่งเดียว */
+      function fluid2TopUpDeficit() {
+        var tv = P2.totalVol;
+        var tol = 2.5;
+        var gx = Math.sin(P2.angleRad);
+        var gy = Math.cos(P2.angleRad);
+        var ox = P2.offX,
+          oy = P2.offY,
+          px = P2.pivotX,
+          py = P2.pivotY;
+        var dA = fluid2QuadMaxDepth(P2.quadA, gx, gy, ox, oy, px, py);
+        var dB = fluid2QuadMaxDepth(P2.quadB, gx, gy, ox, oy, px, py);
+        var dC = fluid2QuadMaxDepth(P2.quadC, gx, gy, ox, oy, px, py);
+        for (var iter = 0; iter < 24; iter++) {
+          var sum = P2.volA + P2.volB + P2.volC;
+          var def = tv - sum;
+          if (def <= 1e-5) break;
+          var roomA = Math.max(0, P2.capA - P2.volA);
+          var roomB = Math.max(0, P2.capB - P2.volB);
+          var roomC = Math.max(0, P2.capC - P2.volC);
+          var dMx = -Infinity;
+          if (roomA > 1e-8) dMx = Math.max(dMx, dA);
+          if (roomB > 1e-8) dMx = Math.max(dMx, dB);
+          if (roomC > 1e-8) dMx = Math.max(dMx, dC);
+          if (dMx < -1e8) break;
+          var wA = 0,
+            wB = 0,
+            wC = 0;
+          if (roomA > 1e-8 && dA >= dMx - tol) wA = P2.capA;
+          if (roomB > 1e-8 && dB >= dMx - tol) wB = P2.capB;
+          if (roomC > 1e-8 && dC >= dMx - tol) wC = P2.capC;
+          var wSum = wA + wB + wC;
+          if (wSum < 1e-9) break;
+          P2.volA += (def * wA) / wSum;
+          P2.volB += (def * wB) / wSum;
+          P2.volC += (def * wC) / wSum;
+          P2.volA = Math.max(0, Math.min(P2.capA, P2.volA));
+          P2.volB = Math.max(0, Math.min(P2.capB, P2.volB));
+          P2.volC = Math.max(0, Math.min(P2.capC, P2.volC));
+        }
+      }
+
+      /** หมุนเวกเตอร์ปกติของผิวบนจอเล็กน้อยเพื่อเอฟเฟกต์คลื่น / slosh (เฉพาะเรนเดอร์) */
+      function fluid2NormalWithSlosh(gx, gy, slosh) {
+        var sn = Math.sin(slosh),
+          cn = Math.cos(slosh);
+        return { x: gx * cn - gy * sn, y: gx * sn + gy * cn };
+      }
+
+      /** ผสมหลายความถี่ให้ผิวโยกคล้ายน้ำ — เฟสคนละห้องเพื่อเลียคลื่นแยกกัน */
+      function fluid2SurfaceTiltForChamber(gx, gy, idx, tSec, s0, s2) {
+        if (prefersReducedMotion()) return 0;
+        var ph = idx === 0 ? 0 : idx === 1 ? 2.14 : -1.05;
+        var m =
+          0.085 * Math.sin(tSec * 2.35 + s0 * 2.1 + ph) +
+          0.048 * Math.sin(tSec * 5.2 - s2 * 3.2 + ph * 1.3) +
+          0.028 * Math.sin(tSec * 8.85 + ph * 2) +
+          0.55 * s2 * Math.sin(tSec * 6.1 + ph);
+        return m;
+      }
+
+      function fluid2SyncWaterFx(svg, nowMs, s0, s2, dragging) {
+        if (!svg || prefersReducedMotion()) return;
+        var t = nowMs * 0.001;
+        var disp = svg.querySelector('#fluid2F_disp');
+        var turb = svg.querySelector('#fluid2F_turb');
+        if (disp) {
+          var amp =
+            4.2 +
+            16 * Math.min(0.32, Math.abs(s0)) +
+            12 * Math.min(0.22, Math.abs(s2)) +
+            (dragging ? 4 : 0);
+          disp.setAttribute('scale', String(amp));
+        }
+        if (turb) {
+          turb.setAttribute(
+            'baseFrequency',
+            (0.032 + 0.006 * Math.sin(t * 1.1)).toFixed(4) +
+              ' ' +
+              (0.075 + 0.01 * Math.cos(t * 0.85)).toFixed(4)
+          );
+        }
+        var wob = (s0 + s2 * 0.6) * (180 / Math.PI) * 0.32;
+        var ga = svg.querySelector('#fluid2GradA');
+        var gb = svg.querySelector('#fluid2GradB');
+        if (ga)
+          ga.setAttribute(
+            'gradientTransform',
+            'rotate(' + (wob + 8 * Math.sin(t * 0.9)) + ' 0.5 0.5)'
+          );
+        if (gb)
+          gb.setAttribute(
+            'gradientTransform',
+            'rotate(' + (-wob * 0.9 + 10 * Math.cos(t * 0.75)) + ' 0.52 0.48)'
+          );
+        var gc = svg.querySelector('#fluid2GradC');
+        if (gc)
+          gc.setAttribute(
+            'gradientTransform',
+            'rotate(' + (wob * 0.7 + 6 * Math.sin(t * 1.05)) + ' 0.5 0.5)'
+          );
+        var gl = svg.querySelector('#fluid2Gloss');
+        if (gl)
+          gl.setAttribute(
+            'gradientTransform',
+            'translate(' + (0.12 * Math.sin(t * 1.15)).toFixed(3) + ' ' + (0.08 * Math.cos(t * 0.95)).toFixed(3) + ') rotate(' + (wob * 1.2 + 12 * Math.sin(t * 1.4)) + ' 0.38 0.22)'
+          );
+      }
+
+      function fluid2RenderLiquids() {
+        if (!P2.pathLiqA || !P2.quadA) return;
+        var gx = Math.sin(P2.angleRad);
+        var gy = Math.cos(P2.angleRad);
+        var ox = P2.offX,
+          oy = P2.offY,
+          px = P2.pivotX,
+          py = P2.pivotY;
+        var now =
+          typeof performance !== 'undefined' ? performance.now() : Date.now();
+        var tSec = now * 0.001;
+        var s0 = prefersReducedMotion() ? 0 : P2.sloshAng;
+        var s2 = prefersReducedMotion() ? 0 : P2.slosh2Ang;
+        function drawLiq(pathEl, glossEl, quad, vol, idx) {
+          var tilt = s0 + fluid2SurfaceTiltForChamber(gx, gy, idx, tSec, s0, s2);
+          var nv = fluid2NormalWithSlosh(gx, gy, tilt);
+          var d = polyToPathD(
+            liquidPolygonFromVolFigure(quad, nv.x, nv.y, vol, ox, oy, px, py)
+          );
+          pathEl.setAttribute('d', d);
+          if (glossEl) glossEl.setAttribute('d', d);
+        }
+        drawLiq(P2.pathLiqA, P2.pathGlA, P2.quadA, P2.volA, 0);
+        drawLiq(P2.pathLiqB, P2.pathGlB, P2.quadB, P2.volB, 1);
+        drawLiq(P2.pathLiqC, P2.pathGlC, P2.quadC, P2.volC, 2);
+        fluid2SyncWaterFx(P2.svg, now, s0, s2, P2.dragging);
+      }
+
+      function fluid2PhysicsStep() {
+        if (!P2.quadA || P2.totalVol < 1e-6) return;
+        var gx = Math.sin(P2.angleRad);
+        var gy = Math.cos(P2.angleRad);
+        var ox = P2.offX,
+          oy = P2.offY,
+          px = P2.pivotX,
+          py = P2.pivotY;
+        /* ความลึกจากมุมสี่เหลี่ยม — ไม่ดึงไปทาง centroid ห้องเดียวโดยไม่สมเหตุ */
+        var beta = 0.085;
+        var sA = fluid2QuadMaxDepth(P2.quadA, gx, gy, ox, oy, px, py);
+        var sB = fluid2QuadMaxDepth(P2.quadB, gx, gy, ox, oy, px, py);
+        var sC = fluid2QuadMaxDepth(P2.quadC, gx, gy, ox, oy, px, py);
+        var sMx = Math.max(sA, sB, sC);
+        var wA = P2.capA * Math.exp((sA - sMx) * beta);
+        var wB = P2.capB * Math.exp((sB - sMx) * beta);
+        var wC = P2.capC * Math.exp((sC - sMx) * beta);
+        var sumW = wA + wB + wC;
+        if (sumW < 1e-12) return;
+        var tA = (P2.totalVol * wA) / sumW;
+        var tB = (P2.totalVol * wB) / sumW;
+        var tC = (P2.totalVol * wC) / sumW;
+        var k = prefersReducedMotion() ? 0.14 : 0.1;
+        P2.volA += (tA - P2.volA) * k;
+        P2.volB += (tB - P2.volB) * k;
+        P2.volC += (tC - P2.volC) * k;
+        clampVol();
+        fluid2TopUpDeficit();
+      }
+
+      function fluid2IntegrateSlosh(dt) {
+        if (prefersReducedMotion()) {
+          P2.sloshAng = 0;
+          P2.sloshVel = 0;
+          P2.slosh2Ang = 0;
+          P2.slosh2Vel = 0;
+          P2.anglePrevFrame = P2.angleRad;
+          return;
+        }
+        var da = P2.angleRad - P2.anglePrevFrame;
+        P2.anglePrevFrame = P2.angleRad;
+        var d = Math.max(0.008, Math.min(0.05, dt || 0.016));
+        P2.sloshVel += da * 1.05;
+        var kS = 26,
+          dmp = 4.8;
+        P2.sloshVel += (-kS * P2.sloshAng - dmp * P2.sloshVel) * d;
+        P2.sloshAng += P2.sloshVel * d;
+        var lim = 0.52;
+        if (P2.sloshAng > lim) {
+          P2.sloshAng = lim;
+          P2.sloshVel *= -0.22;
+        } else if (P2.sloshAng < -lim) {
+          P2.sloshAng = -lim;
+          P2.sloshVel *= -0.22;
+        }
+        P2.slosh2Vel += Math.abs(da) * 1.55 + Math.abs(P2.sloshVel) * 0.08;
+        P2.slosh2Vel += (-210 * P2.slosh2Ang - 22 * P2.slosh2Vel) * d;
+        P2.slosh2Ang += P2.slosh2Vel * d;
+        var lim2 = 0.24;
+        if (P2.slosh2Ang > lim2) {
+          P2.slosh2Ang = lim2;
+          P2.slosh2Vel *= -0.35;
+        } else if (P2.slosh2Ang < -lim2) {
+          P2.slosh2Ang = -lim2;
+          P2.slosh2Vel *= -0.35;
+        }
+      }
+
+      function fluid2Frame() {
+        P2.raf = requestAnimationFrame(fluid2Frame);
+        var now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+        var dt = P2.lastFrameTs ? (now - P2.lastFrameTs) / 1000 : 1 / 60;
+        P2.lastFrameTs = now;
+        fluid2IntegrateSlosh(dt);
+        fluid2PhysicsStep();
+        fluid2RenderLiquids();
+      }
+
+      function stopFluid2Loop() {
+        if (P2.raf != null) {
+          cancelAnimationFrame(P2.raf);
+          P2.raf = null;
+        }
+      }
+
+      function fluid2ApplyRotation() {
+        if (!P2.pourRot) return;
+        var deg = (P2.angleRad * 180) / Math.PI;
+        P2.pourRot.setAttribute('transform', 'rotate(' + deg + ' ' + P2.pivotX + ' ' + P2.pivotY + ')');
+      }
+
+      function fluid2PointerToAngle(clientX, clientY) {
+        if (!P2.svg) return 0;
+        var rect = P2.svg.getBoundingClientRect();
+        var pt = P2.svg.createSVGPoint();
+        pt.x = clientX;
+        pt.y = clientY;
+        var ctm = P2.svg.getScreenCTM();
+        if (!ctm || !ctm.inverse) return 0;
+        pt = pt.matrixTransform(ctm.inverse());
+        return Math.atan2(pt.y - P2.pivotY, pt.x - P2.pivotX);
+      }
+
+      function rebuildFluid2D() {
+        var svg = document.getElementById('svgFluid2d');
+        if (!svg) return;
+        P2.svg = svg;
+        stopFluid2Loop();
+
+        var span0 = fluidFigureMaxSpan(tri.aLen, tri.bLen);
+        var FLUID_INNER_MAX = 432;
+        var unitFluid = span0 > 1e-9 ? FLUID_INNER_MAX / span0 : 14;
+        var m = triMeshFluidGeometry(tri.aLen, tri.bLen, unitFluid);
+        var ox = m.ox,
+          oy = m.oy,
+          ax = m.ax,
+          ay = m.ay,
+          bx = m.bx,
+          by = m.by;
+        var a = m.a,
+          b = m.b;
+        var O = m.O,
+          A = m.A,
+          Bp = m.Bp;
+        var sqA = m.sqA,
+          sqB = m.sqB,
+          sqC = m.sqC;
+
+        var allPts = [O, A, Bp].concat(sqA, sqB, sqC);
+        var bb = bboxPts(allPts);
+        var pad = 38;
+        var tx = pad - bb.x;
+        var ty = pad - bb.y;
+        function shiftQuad(q) {
+          return q.map(function (p) { return { x: p.x + tx, y: p.y + ty }; });
+        }
+        var qO = { x: O.x + tx, y: O.y + ty };
+        var qA = { x: A.x + tx, y: A.y + ty };
+        var qB = { x: Bp.x + tx, y: Bp.y + ty };
+        P2.quadA = shiftQuad(sqA);
+        P2.quadB = shiftQuad(sqB);
+        P2.quadC = shiftQuad(sqC);
+        P2.cenA = polyCentroid(P2.quadA);
+        P2.cenB = polyCentroid(P2.quadB);
+        P2.cenC = polyCentroid(P2.quadC);
+
+        P2.capA = polyArea(P2.quadA);
+        P2.capB = polyArea(P2.quadB);
+        P2.capC = polyArea(P2.quadC);
+        P2.totalVol = P2.capA + P2.capB;
+        P2.volA = P2.capA;
+        P2.volB = P2.capB;
+        P2.volC = 0;
+        P2.anglePrevFrame = P2.angleRad;
+        P2.lastFrameTs = 0;
+        P2.sloshAng = 0;
+        P2.sloshVel = 0;
+        P2.slosh2Ang = 0;
+        P2.slosh2Vel = 0;
+
+        var wb = bb.w + pad * 2;
+        var hb = bb.h + pad * 2;
+        var side = Math.max(wb, hb);
+        var offX = (520 - side) * 0.5;
+        var offY = (520 - side) * 0.5;
+        P2.offX = offX;
+        P2.offY = offY;
+        P2.pivotX = (bb.x + bb.w * 0.5) + tx + offX;
+        P2.pivotY = (bb.y + bb.h * 0.5) + ty + offY;
+
+        var triD = 'M ' + qO.x + ' ' + qO.y + ' L ' + qA.x + ' ' + qA.y + ' L ' + qB.x + ' ' + qB.y + ' Z';
+        var ra = 11;
+        var mark =
+          '<rect class="fluid2-rightmark" x="' +
+          qO.x +
+          '" y="' +
+          (qO.y - ra) +
+          '" width="' +
+          ra +
+          '" height="' +
+          ra +
+          '"/>';
+        function quadWireD(q) {
+          return 'M ' + q.map(function (p) { return p.x + ' ' + p.y; }).join(' L ') + ' Z';
+        }
+
+        var inner =
+          '<defs>' +
+          '<filter id="fluid2Water" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">' +
+          '<feTurbulence type="fractalNoise" baseFrequency="0.034 0.078" numOctaves="2" seed="11" result="noise" id="fluid2F_turb"/>' +
+          '<feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" result="rip" id="fluid2F_disp"/>' +
+          '<feGaussianBlur in="rip" stdDeviation="0.28" result="sof"/>' +
+          '<feColorMatrix in="sof" type="saturate" values="1.18" result="out"/>' +
+          '</filter>' +
+          '<linearGradient id="fluid2GradA" x1="0%" y1="100%" x2="100%" y2="0%" gradientUnits="objectBoundingBox">' +
+          '<stop offset="0%" stop-color="#0e7490"/>' +
+          '<stop offset="38%" stop-color="#22d3ee"/>' +
+          '<stop offset="72%" stop-color="#7dd3fc"/>' +
+          '<stop offset="100%" stop-color="#e0f2fe"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="fluid2GradB" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="objectBoundingBox">' +
+          '<stop offset="0%" stop-color="#1e3a5f"/>' +
+          '<stop offset="45%" stop-color="#3b82f6"/>' +
+          '<stop offset="100%" stop-color="#93c5fd"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="fluid2GradC" x1="0%" y1="55%" x2="100%" y2="45%" gradientUnits="objectBoundingBox">' +
+          '<stop offset="0%" stop-color="#0369a1"/>' +
+          '<stop offset="35%" stop-color="#0ea5e9"/>' +
+          '<stop offset="68%" stop-color="#38bdf8"/>' +
+          '<stop offset="100%" stop-color="#bae6fd"/>' +
+          '</linearGradient>' +
+          '<radialGradient id="fluid2Gloss" cx="38%" cy="22%" r="72%" gradientUnits="objectBoundingBox">' +
+          '<stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>' +
+          '<stop offset="35%" stop-color="#ffffff" stop-opacity="0.14"/>' +
+          '<stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>' +
+          '</radialGradient></defs>' +
+          '<g id="pourRotateRoot2d" transform="rotate(0 ' +
+          P2.pivotX +
+          ' ' +
+          P2.pivotY +
+          ')">' +
+          '<g transform="translate(' +
+          offX +
+          ' ' +
+          offY +
+          ')">' +
+          '<path class="fluid2-liq-a" d=""/>' +
+          '<path class="fluid2-gloss-a" d="" fill="url(#fluid2Gloss)"/>' +
+          '<path class="fluid2-liq-b" d=""/>' +
+          '<path class="fluid2-gloss-b" d="" fill="url(#fluid2Gloss)"/>' +
+          '<path class="fluid2-liq-c" d=""/>' +
+          '<path class="fluid2-gloss-c" d="" fill="url(#fluid2Gloss)"/>' +
+          '<path class="fluid2-sq-wire" d="' +
+          quadWireD(P2.quadA) +
+          '"/>' +
+          '<path class="fluid2-sq-wire" d="' +
+          quadWireD(P2.quadB) +
+          '"/>' +
+          '<path class="fluid2-sq-wire" d="' +
+          quadWireD(P2.quadC) +
+          '"/>' +
+          '<path class="fluid2-tri" d="' +
+          triD +
+          '"/>' +
+          mark +
+          '</g></g>';
+
+        svg.setAttribute('viewBox', '0 0 520 520');
+        svg.innerHTML = inner;
+        P2.pourRot = svg.querySelector('#pourRotateRoot2d');
+        P2.pathLiqA = svg.querySelectorAll('.fluid2-liq-a')[0];
+        P2.pathLiqB = svg.querySelectorAll('.fluid2-liq-b')[0];
+        P2.pathLiqC = svg.querySelectorAll('.fluid2-liq-c')[0];
+        P2.pathGlA = svg.querySelector('.fluid2-gloss-a');
+        P2.pathGlB = svg.querySelector('.fluid2-gloss-b');
+        P2.pathGlC = svg.querySelector('.fluid2-gloss-c');
+        if (prefersReducedMotion()) {
+          P2.pathLiqA.removeAttribute('filter');
+          P2.pathLiqB.removeAttribute('filter');
+          P2.pathLiqC.removeAttribute('filter');
+        } else {
+          P2.pathLiqA.setAttribute('filter', 'url(#fluid2Water)');
+          P2.pathLiqB.setAttribute('filter', 'url(#fluid2Water)');
+          P2.pathLiqC.setAttribute('filter', 'url(#fluid2Water)');
+        }
+
+        fluid2ApplyRotation();
+        fluid2RenderLiquids();
+        fluid2Frame();
+
+        svg.onpointerdown = function (e) {
+          if (!P2.pourRot) return;
+          e.preventDefault();
+          P2.dragging = true;
+          P2.ptrId = e.pointerId;
+          P2.lastPointerAng = fluid2PointerToAngle(e.clientX, e.clientY);
+          svg.setPointerCapture(e.pointerId);
+        };
+        svg.onpointermove = function (e) {
+          if (!P2.dragging || e.pointerId !== P2.ptrId) return;
+          var ang = fluid2PointerToAngle(e.clientX, e.clientY);
+          if (P2.lastPointerAng != null) {
+            var d = ang - P2.lastPointerAng;
+            while (d > Math.PI) d -= 2 * Math.PI;
+            while (d < -Math.PI) d += 2 * Math.PI;
+            P2.angleRad += d;
+          }
+          P2.lastPointerAng = ang;
+          fluid2ApplyRotation();
+        };
+        function endPtr(e) {
+          if (e.pointerId !== P2.ptrId) return;
+          P2.dragging = false;
+          P2.lastPointerAng = null;
+          try {
+            svg.releasePointerCapture(e.pointerId);
+          } catch (err) {}
+        }
+        svg.onpointerup = endPtr;
+        svg.onpointercancel = endPtr;
+      }
+
+      var tab1 = document.getElementById('tab1');
+      var tab2 = document.getElementById('tab2');
+      var panel1 = document.getElementById('panel1');
+      var panel2 = document.getElementById('panel2');
+
+      var modeTabsTrack = document.getElementById('modeTabsTrack');
+      var fluid2dMountEl = document.getElementById('fluid2dMount');
+
+      function setTab(which) {
+        var on1 = which === 1;
+        tab1.setAttribute('aria-selected', on1 ? 'true' : 'false');
+        tab2.setAttribute('aria-selected', on1 ? 'false' : 'true');
+        if (modeTabsTrack) modeTabsTrack.setAttribute('data-active', on1 ? '1' : '2');
+
+        panel1.classList.remove('is-showing');
+        panel2.classList.remove('is-showing');
+        panel1.hidden = !on1;
+        panel2.hidden = on1;
+
+        var activePanel = on1 ? panel1 : panel2;
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            activePanel.classList.add('is-showing');
+          });
+        });
+
+        if (!on1) {
+          rebuildFluid2D();
+          if (fluid2dMountEl) {
+            fluid2dMountEl.classList.remove('fluid-2d-wrap--enter');
+            void fluid2dMountEl.offsetWidth;
+            fluid2dMountEl.classList.add('fluid-2d-wrap--enter');
+          }
+        } else {
+          stopFluid2Loop();
+          if (fluid2dMountEl) fluid2dMountEl.classList.remove('fluid-2d-wrap--enter');
+        }
+        postHeight();
+      }
+
+      tab1.addEventListener('click', function () { setTab(1); });
+      tab2.addEventListener('click', function () { setTab(2); });
+
+      function postHeight() {
+        if (window.parent === window) return;
+        try {
+          window.parent.postMessage({ type: 'flashcard-resize', height: document.documentElement.scrollHeight }, '*');
+        } catch (e) {}
+      }
+
+      window.addEventListener('load', postHeight);
+      window.addEventListener('resize', postHeight);
+      var ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(postHeight) : null;
+      if (ro) ro.observe(document.body);
+    })();
+  </script>
+</body>
+</html>
