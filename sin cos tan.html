@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>แฟลชการ์ด sin cos tan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+  <style>
+    :root {
+      --paper: #eaf1f9;
+      --paper-2: #fbfcfe;
+      --ink: #0c1a2e;
+      --ink-muted: #4a5f78;
+      --rule: #c4d0e8;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-bright: #3b82f6;
+      --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--paper));
+      --success: #166534;
+      --success-soft: color-mix(in srgb, var(--success) 10%, var(--paper-2));
+      --danger: #b91c1c;
+      --danger-soft: color-mix(in srgb, var(--danger) 9%, var(--paper-2));
+      --warn: #ca8a04;
+      --warn-soft: color-mix(in srgb, var(--warn) 8%, var(--paper-2));
+      --row-tint: color-mix(in srgb, var(--accent) 5%, var(--paper-2));
+      --row-border: color-mix(in srgb, var(--accent) 35%, var(--rule));
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --dur-fast: 0.14s;
+      --dur-normal: 0.26s;
+      --radius-lg: 1rem;
+      --radius-pill: 999px;
+      --shadow-card: 0 1px 0 rgba(29, 78, 216, 0.05), 0 8px 28px -12px rgba(15, 40, 90, 0.14);
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --content-max: min(30rem, 100vw - 1.5rem);
+      --tap-clear: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    @media (min-width: 480px) {
+      :root {
+        --content-max: min(32rem, 100vw - 2rem);
+      }
+    }
+
+    @media (min-width: 768px) {
+      :root {
+        --content-max: min(40rem, 100vw - 2.5rem);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      :root {
+        --content-max: min(44rem, 100vw - 3rem);
+      }
+    }
+
+    @media (min-width: 1280px) {
+      :root {
+        --content-max: 48rem;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: 'Kanit', sans-serif;
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(180deg, color-mix(in srgb, var(--accent) 4%, var(--paper)) 0%, var(--paper) 50%),
+        linear-gradient(90deg, rgba(29, 78, 216, 0.035) 1px, transparent 1px),
+        linear-gradient(rgba(29, 78, 216, 0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 24px 24px, 24px 24px;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-top, 0px));
+      padding-right: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-right, 0px));
+      padding-bottom: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-bottom, 0px));
+      padding-left: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-left, 0px));
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: var(--tap-clear);
+    }
+
+    #main {
+      width: min(100%, calc(var(--content-max) + var(--space-6)));
+      max-width: 100%;
+      margin-inline: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 0;
+    }
+
+    .app-header {
+      width: min(100%, var(--content-max));
+      align-self: center;
+      text-align: left;
+      margin-bottom: var(--space-5);
+      padding-left: var(--space-2);
+      border-left: 3px solid color-mix(in srgb, var(--accent) 75%, var(--rule));
+      animation: headerIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes headerIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1.app-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 0.65rem;
+      font-size: clamp(1.5rem, 4.5vw, 1.85rem);
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      color: color-mix(in srgb, var(--accent) 12%, var(--ink));
+    }
+
+    .title-badge-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      margin: 2px 10px 10px 0;
+      isolation: isolate;
+    }
+
+    .title-badge-deck {
+      position: absolute;
+      z-index: 0;
+      left: 0.55rem;
+      top: 0.42rem;
+      right: -0.35rem;
+      bottom: -0.38rem;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--paper-2) 88%, var(--accent)),
+        color-mix(in srgb, var(--rule) 75%, var(--accent-soft))
+      );
+      border: 1px solid color-mix(in srgb, var(--rule) 70%, var(--accent));
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.65) inset,
+        0 4px 12px rgba(15, 40, 90, 0.08);
+      transform: rotate(-2.8deg);
+      pointer-events: none;
+    }
+
+    .title-badge {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      font-weight: 700;
+      font-size: clamp(1.05rem, 2.95vw, 1.2rem);
+      letter-spacing: 0.12em;
+      padding: 0.48em 1.12em 0.52em;
+      border-radius: var(--radius-pill);
+      color: #fafcff;
+      background:
+        radial-gradient(130% 95% at 18% -8%, rgba(255, 255, 255, 0.45) 0%, transparent 52%),
+        linear-gradient(
+          158deg,
+          #172554 0%,
+          #1d4ed8 22%,
+          #2563eb 48%,
+          #3b82f6 68%,
+          #1e40af 100%
+        );
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      box-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.28) inset,
+        0 -1px 0 rgba(15, 23, 42, 0.22) inset,
+        0 10px 28px -8px color-mix(in srgb, var(--accent) 52%, transparent),
+        0 4px 14px rgba(15, 40, 90, 0.22);
+      text-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.35),
+        0 0 24px rgba(255, 255, 255, 0.12);
+      vertical-align: middle;
+      line-height: 1.12;
+    }
+
+    .title-tail {
+      font-weight: 600;
+      font-size: clamp(1.12rem, 3.6vw, 1.42rem);
+      letter-spacing: -0.03em;
+      color: color-mix(in srgb, var(--accent) 22%, var(--ink));
+      font-variant-numeric: tabular-nums;
+    }
+
+    .title-tail .dot {
+      opacity: 0.45;
+      margin: 0 0.12em;
+      font-weight: 500;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .title-badge-deck {
+        transform: rotate(-1deg);
+      }
+
+      .title-badge {
+        background: var(--accent);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.2) inset,
+          0 4px 12px rgba(15, 40, 90, 0.15);
+      }
+    }
+
+    .subtitle {
+      color: var(--ink-muted);
+      font-size: 0.98rem;
+      margin: var(--space-2) 0 0;
+      font-weight: 400;
+      max-width: 28rem;
+      line-height: 1.5;
+    }
+
+    #startScreen:not([hidden]),
+    #gameArea:not([hidden]),
+    #endScreen:not([hidden]) {
+      animation: viewIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes viewIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #gameArea {
+      width: min(100%, var(--content-max));
+      max-width: 100%;
+      min-width: 0;
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    #streakWrap:not([hidden]) {
+      animation: streakIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes streakIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .hud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-3);
+      justify-content: flex-start;
+      align-items: center;
+      margin: 0;
+      width: 100%;
+    }
+
+    @media (min-width: 900px) {
+      .hud {
+        justify-content: center;
+        gap: var(--space-3) var(--space-4);
+      }
+    }
+
+    .stat {
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-pill);
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+    }
+
+    .stat strong { font-weight: 600; }
+
+    .stat--score {
+      border-color: color-mix(in srgb, var(--success) 22%, var(--rule));
+      background: color-mix(in srgb, var(--success) 4%, var(--paper-2));
+    }
+
+    .stat--score strong { color: var(--success); }
+
+    .stat--progress {
+      border-color: color-mix(in srgb, var(--accent) 28%, var(--rule));
+      background: color-mix(in srgb, var(--accent) 4%, var(--paper-2));
+    }
+
+    .stat--progress strong { color: var(--accent); }
+
+    .stat--time {
+      border-color: color-mix(in srgb, var(--warn) 28%, var(--rule));
+      background: color-mix(in srgb, var(--warn) 5%, var(--paper-2));
+    }
+
+    .stat--time strong { color: color-mix(in srgb, var(--warn) 70%, var(--ink)); }
+
+    .stat--streak {
+      border-color: color-mix(in srgb, var(--warn) 32%, var(--rule));
+      background: color-mix(in srgb, var(--warn) 6%, var(--paper-2));
+    }
+
+    .stat--streak strong { color: color-mix(in srgb, var(--warn) 55%, var(--ink)); }
+
+    .stat--score.is-bump {
+      animation: scoreBump var(--dur-normal) var(--ease-out);
+    }
+
+    @keyframes scoreBump {
+      from { transform: scale(1); }
+      40% { transform: scale(1.04); }
+      to { transform: scale(1); }
+    }
+
+    .stat {
+      transition: transform var(--dur-fast) var(--ease-out);
+    }
+
+    .timer-wrap {
+      width: 100%;
+      height: 8px;
+      background: color-mix(in srgb, var(--rule) 65%, transparent);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin: 0;
+    }
+
+    #timerBar {
+      height: 100%;
+      width: 100%;
+      background: color-mix(in srgb, var(--accent-bright) 70%, var(--accent));
+      border-radius: inherit;
+      transform-origin: left center;
+      transition: transform 0.05s linear;
+    }
+
+    .timer-wrap.danger #timerBar {
+      background: color-mix(in srgb, #f59e0b 55%, var(--danger));
+    }
+
+    .flashcard {
+      width: 100%;
+      min-width: 0;
+      background: var(--paper-2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5) var(--space-4) var(--space-4);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--rule);
+      position: relative;
+    }
+
+    .flashcard::before {
+      content: '';
+      position: absolute;
+      top: var(--space-3);
+      left: var(--space-4);
+      right: var(--space-4);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rule), transparent);
+      opacity: 0.7;
+    }
+
+    .flashcard--enter {
+      animation: cardEnter 0.28s var(--ease-out) both;
+    }
+
+    @keyframes cardEnter {
+      from {
+        opacity: 0.88;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes popOk {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.012); }
+      100% { transform: scale(1); }
+    }
+
+    .choice.choice--pop {
+      animation: popOk 0.28s var(--ease-out);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .app-header,
+      #startScreen:not([hidden]),
+      #gameArea:not([hidden]),
+      #endScreen:not([hidden]),
+      #streakWrap:not([hidden]) {
+        animation: none !important;
+      }
+      .flashcard--enter,
+      .choice.choice--pop,
+      #feedback.feedback--in {
+        animation: none !important;
+      }
+      .stat--score.is-bump {
+        animation: none !important;
+      }
+      .stat {
+        transition: none;
+      }
+      .choice,
+      .chip-row label,
+      button.ghost {
+        transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+      }
+      .choice:hover:not(:disabled),
+      .chip-row label:hover,
+      button.ghost:hover {
+        transform: none;
+      }
+      #timerBar { transition: none; }
+    }
+
+    .question-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: var(--space-2);
+    }
+
+    #questionMath {
+      font-size: clamp(1.15rem, 4vw, 1.4rem);
+      min-height: 3.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.45;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      #questionMath {
+        font-size: clamp(1.2rem, 2.8vw, 1.5rem);
+      }
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    @media (min-width: 520px) {
+      .choices {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-3);
+      }
+    }
+
+    .choice {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1rem;
+      min-height: max(48px, 2.75rem);
+      padding: var(--space-3) var(--space-4);
+      border-radius: 0.65rem;
+      border: 2px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition:
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        box-shadow 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+      text-align: center;
+    }
+
+    .choice:hover:not(:disabled) {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--rule));
+      background: var(--accent-soft);
+      transform: translateY(-1px);
+    }
+
+    .choice:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      outline-offset: 2px;
+    }
+
+    .choice:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .choice:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .choice.correct {
+      border-color: var(--success);
+      background: var(--success-soft);
+    }
+
+    .choice.wrong {
+      border-color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    #feedback {
+      margin-top: var(--space-3);
+      min-height: 1.45rem;
+      font-size: 0.95rem;
+      text-align: center;
+      font-weight: 500;
+      transition: color 0.2s var(--ease-out);
+    }
+
+    #feedback.feedback--in {
+      animation: feedbackIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes feedbackIn {
+      from {
+        opacity: 0;
+        transform: translateY(3px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #feedback.ok { color: var(--success); }
+    #feedback.bad { color: var(--danger); }
+
+    .controls {
+      margin-top: var(--space-4);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+    }
+
+    button.ghost {
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.55rem 1rem;
+      min-height: max(44px, 2.75rem);
+      touch-action: manipulation;
+      border-radius: 0.5rem;
+      border: 1px solid var(--rule);
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition:
+        color 0.2s var(--ease-out),
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+
+    button.ghost:hover {
+      color: var(--ink);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: translateY(-1px);
+    }
+
+    button.ghost:active {
+      transform: translateY(0);
+    }
+
+    button.ghost:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      outline-offset: 2px;
+    }
+
+    #startScreen,
+    #endScreen {
+      text-align: left;
+      width: min(100%, var(--content-max));
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      min-width: 0;
+    }
+
+    @media (min-width: 768px) {
+      #endScreen {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        column-gap: var(--space-5);
+        row-gap: var(--space-4);
+      }
+
+      #endScreen > #endTitle,
+      #endScreen > #endKicker,
+      #endScreen > .pie-summary,
+      #endScreen > .summary-box--totals,
+      #endScreen > #recommendations,
+      #endScreen > .btn-primary {
+        grid-column: 1 / -1;
+      }
+    }
+
+    #startScreen p,
+    #endScreen > p {
+      color: var(--ink-muted);
+      line-height: 1.65;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .setup-group {
+      margin: 0;
+      border: none;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .setup-group legend {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: var(--space-2);
+      padding: 0;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      touch-action: manipulation;
+    }
+
+    .chip-row input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .chip-row label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0.4rem 0.95rem;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--rule);
+      background: var(--paper-2);
+      color: var(--ink-muted);
+      cursor: pointer;
+      font-size: 0.92rem;
+      transition:
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        color 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+
+    .chip-row label:hover {
+      transform: translateY(-1px);
+    }
+
+    .chip-row input:focus-visible + label {
+      outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      outline-offset: 2px;
+    }
+
+    .chip-row input:checked + label {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .summary-box {
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin: 0;
+    }
+
+    .summary-box--totals .summary-row:nth-child(1) {
+      background: color-mix(in srgb, var(--success) 4%, transparent);
+      margin: 0 -0.25rem;
+      padding: 0.4rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+
+    .summary-box--totals .summary-row:nth-child(2) {
+      background: color-mix(in srgb, var(--danger) 4%, transparent);
+      margin: 0.12rem -0.25rem 0;
+      padding: 0.4rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+
+    .summary-box--totals .summary-row:nth-child(3) {
+      margin-top: 0.2rem;
+      padding-top: 0.4rem;
+      border-top: 1px solid color-mix(in srgb, var(--rule) 92%, var(--accent));
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.3rem 0;
+      font-size: 0.98rem;
+    }
+
+    .summary-row .ok { color: var(--success); font-weight: 600; }
+    .summary-row .bad { color: var(--danger); font-weight: 600; }
+
+    .summary-section-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 0 var(--space-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    #breakdownFunc,
+    #breakdownDeg {
+      background: var(--paper-2);
+      border-color: var(--rule);
+    }
+
+    #breakdownFunc .summary-section-title,
+    #breakdownDeg .summary-section-title {
+      color: var(--ink-muted);
+    }
+
+    .summary-row--sin,
+    .summary-row--cos,
+    .summary-row--tan,
+    .summary-row--a30,
+    .summary-row--a45,
+    .summary-row--a60 {
+      background: var(--row-tint);
+      margin: 0.15rem -0.2rem 0 !important;
+      padding: 0.38rem 0.5rem !important;
+      border-radius: 0.4rem;
+      border-left: 2px solid var(--row-border);
+    }
+
+    .summary-row--sin { margin-top: 0 !important; }
+
+    .summary-row--sin span:first-child,
+    .summary-row--cos span:first-child,
+    .summary-row--tan span:first-child,
+    .summary-row--a30 span:first-child,
+    .summary-row--a45 span:first-child,
+    .summary-row--a60 span:first-child {
+      color: var(--ink-muted);
+      font-weight: 500;
+    }
+
+    #recommendations.summary-box {
+      background: color-mix(in srgb, var(--accent) 3%, var(--paper-2));
+      border: 1px solid var(--rule);
+      border-left: 3px solid color-mix(in srgb, var(--accent) 55%, var(--rule));
+    }
+
+    #recommendations h3 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent-hover);
+      margin: 0 0 var(--space-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    #recommendations ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      font-size: 0.9rem;
+    }
+
+    #recommendations ul li::marker {
+      color: color-mix(in srgb, var(--accent) 65%, var(--ink-muted));
+    }
+
+    #recommendList li mjx-container,
+    #startScreen > p mjx-container,
+    .app-header .subtitle mjx-container,
+    .summary-breakdown mjx-container {
+      display: inline-block;
+      vertical-align: -0.2em;
+      margin: 0 0.06em;
+    }
+
+    .btn-primary {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.02rem;
+      font-weight: 600;
+      padding: var(--space-3) var(--space-5);
+      min-height: max(48px, 2.75rem);
+      border: none;
+      border-radius: 0.65rem;
+      background: var(--accent);
+      color: #f8fafc;
+      cursor: pointer;
+      margin-top: 0;
+      width: 100%;
+      touch-action: manipulation;
+      box-shadow: 0 1px 0 color-mix(in srgb, var(--accent-hover) 85%, #0f172a);
+      transition: background 0.2s var(--ease-out), transform 0.12s var(--ease-out), box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 0 var(--accent-hover);
+    }
+
+    .btn-primary:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+      outline-offset: 3px;
+    }
+
+    #endTitle {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    #endTitle.endTitle--perfect {
+      color: color-mix(in srgb, var(--success) 18%, var(--ink));
+    }
+
+    .end-kicker {
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      margin: 0 !important;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 1024px) {
+      .stat {
+        padding: var(--space-2) var(--space-4);
+        font-size: 0.92rem;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 32rem) {
+      body {
+        padding-top: max(var(--space-2), env(safe-area-inset-top, 0px));
+        padding-bottom: max(var(--space-2), env(safe-area-inset-bottom, 0px));
+      }
+
+      .app-header {
+        margin-bottom: var(--space-2);
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+      }
+
+      .flashcard {
+        padding: var(--space-3) var(--space-4) var(--space-3);
+      }
+
+      #questionMath {
+        min-height: 2.5rem;
+        font-size: clamp(1.05rem, 3.5vw, 1.3rem);
+      }
+
+      .choices {
+        margin-top: var(--space-3);
+      }
+
+      .controls {
+        margin-top: var(--space-3);
+      }
+    }
+
+    /* --- แผนภูมิวง สรุป ถูก · ตอบผิด · หมดเวลา --- */
+    .pie-summary {
+      border-left: 3px solid color-mix(in srgb, var(--accent) 48%, var(--rule));
+      background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 5%, var(--paper-2)), var(--paper-2));
+    }
+
+    .pie-topic-line {
+      margin: 0 0 var(--space-4);
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .pie-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-5);
+    }
+
+    .pie-donut-shell {
+      position: relative;
+      width: min(11.5rem, 78vw);
+      height: min(11.5rem, 78vw);
+      flex-shrink: 0;
+    }
+
+    .pie-donut {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #e2e8f0, #cbd5e1);
+      box-shadow:
+        0 8px 28px rgba(37, 99, 235, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+      transition: background 0.35s var(--ease-out);
+    }
+
+    .pie-hole {
+      position: absolute;
+      inset: 21%;
+      border-radius: 50%;
+      background: var(--paper-2);
+      box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.06);
+      z-index: 1;
+    }
+
+    .pie-center-text {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      text-align: center;
+      padding: 28%;
+    }
+
+    .pie-pct {
+      font-size: clamp(1.5rem, 5.5vw, 1.95rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .pie-pct-sub {
+      margin-top: 0.35rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .pie-legend {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      min-width: min(17rem, 100%);
+    }
+
+    .pie-legend li {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.94rem;
+      color: var(--ink-muted);
+    }
+
+    .pie-legend .swatch {
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+    }
+
+    .pie-legend__ok .swatch { background: #22c55e; }
+    .pie-legend__bad .swatch { background: #ef4444; }
+    .pie-legend__time .swatch { background: #f59e0b; }
+
+    .pie-legend strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    #gameArea[hidden], #endScreen[hidden], #startScreen[hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <h1 class="app-title">
+      <span class="title-badge-wrap">
+        <span class="title-badge-deck" aria-hidden="true"></span>
+        <span class="title-badge" lang="th">แฟลชการ์ด</span>
+      </span>
+      <span class="title-tail">sin<span class="dot" aria-hidden="true">·</span>cos<span class="dot" aria-hidden="true">·</span>tan</span>
+    </h1>
+    <p class="subtitle">ฝึกค่า \(\sin\), \(\cos\), \(\tan\) ที่มุม \(30^\circ\), \(45^\circ\), \(60^\circ\) — ข้อละ 2 วินาที</p>
+  </header>
+
+  <main id="main">
+  <div id="startScreen">
+    <p>เลือกจำนวนข้อ แล้วกดเริ่ม ระบบจะสุ่ม \(\sin\), \(\cos\), \(\tan\) ให้ตอบเร็วที่สุด ถ้าหมดเวลาจะไม่ได้คะแนนข้อนั้น</p>
+    <fieldset class="setup-group">
+      <legend>จำนวนข้อ</legend>
+      <div class="chip-row" role="radiogroup" aria-label="จำนวนข้อในชุด">
+        <input type="radio" name="qcount" id="qc5" value="5" checked>
+        <label for="qc5">5 ข้อ</label>
+        <input type="radio" name="qcount" id="qc10" value="10">
+        <label for="qc10">10 ข้อ</label>
+        <input type="radio" name="qcount" id="qc15" value="15">
+        <label for="qc15">15 ข้อ</label>
+        <input type="radio" name="qcount" id="qc20" value="20">
+        <label for="qc20">20 ข้อ</label>
+      </div>
+    </fieldset>
+    <button type="button" class="btn-primary" id="btnStart">เริ่มเล่น</button>
+  </div>
+
+  <div id="gameArea" hidden>
+    <div class="hud" aria-label="สถานะเกม">
+      <span class="stat stat--score">ถูก <strong id="score">0</strong> ข้อ</span>
+      <span class="stat stat--streak" id="streakWrap" hidden>ติดกัน <strong id="streakCount">0</strong> ข้อ</span>
+      <span class="stat stat--progress">ข้อ <strong id="qNum">1</strong> จาก <span id="qTotal">5</span></span>
+      <span class="stat stat--time">เหลือ <strong id="timeLabel">2.0</strong> วิ</span>
+    </div>
+    <div class="timer-wrap" id="timerWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="เวลาข้อนี้">
+      <div id="timerBar"></div>
+    </div>
+
+    <div class="flashcard" id="flashcard">
+      <div class="question-label">โจทย์</div>
+      <div id="questionMath">\( \)</div>
+      <div class="choices" id="choices" role="group" aria-label="เลือกคำตอบ"></div>
+      <div id="feedback" role="status" aria-live="polite"></div>
+      <div class="controls">
+        <button type="button" class="ghost" id="btnStop">หยุดและดูสรุป</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="endScreen" hidden>
+    <p id="endTitle">จบชุดแล้ว</p>
+    <p class="end-kicker" id="endKicker"></p>
+    <div class="summary-box pie-summary" id="pieSummaryBox">
+      <p class="pie-topic-line" id="pieTopicLine"></p>
+      <div class="pie-wrap">
+        <div class="pie-donut-shell">
+          <div class="pie-donut" id="pieDonut" role="img" aria-label=""></div>
+          <div class="pie-hole" aria-hidden="true"></div>
+          <div class="pie-center-text">
+            <span class="pie-pct" id="pieAccPct">—</span>
+            <span class="pie-pct-sub">ความแม่นยำ</span>
+          </div>
+        </div>
+        <ul class="pie-legend">
+          <li class="pie-legend__ok"><span class="swatch"></span>ถูก <strong id="pieNCorrect">0</strong> ข้อ</li>
+          <li class="pie-legend__bad"><span class="swatch"></span>ตอบผิด <strong id="pieNWrongAns">0</strong> ข้อ</li>
+          <li class="pie-legend__time"><span class="swatch"></span>หมดเวลา <strong id="pieNTimeout">0</strong> ข้อ</li>
+        </ul>
+      </div>
+    </div>
+    <div class="summary-box summary-box--totals">
+      <div class="summary-row"><span>ตอบถูก</span><strong class="ok" id="sumCorrect">0</strong></div>
+      <div class="summary-row"><span>ตอบผิดหรือหมดเวลา</span><strong class="bad" id="sumWrong">0</strong></div>
+      <div class="summary-row"><span>ทำไปทั้งหมด</span><strong id="sumTotal">0</strong></div>
+    </div>
+    <div class="summary-box summary-breakdown" id="breakdownFunc" aria-label="จำนวนข้อที่ผิดแยกตาม sin cos tan">
+      <h3 class="summary-section-title">ผิดแยกตามฟังก์ชัน</h3>
+      <div class="summary-row summary-row--sin"><span>\(\sin\)</span><strong class="bad" id="sumWrongSin">0</strong></div>
+      <div class="summary-row summary-row--cos"><span>\(\cos\)</span><strong class="bad" id="sumWrongCos">0</strong></div>
+      <div class="summary-row summary-row--tan"><span>\(\tan\)</span><strong class="bad" id="sumWrongTan">0</strong></div>
+    </div>
+    <div class="summary-box summary-breakdown" id="breakdownDeg" aria-label="จำนวนข้อที่ผิดแยกตามมุม">
+      <h3 class="summary-section-title">ผิดแยกตามมุม</h3>
+      <div class="summary-row summary-row--a30"><span>\(30^\circ\)</span><strong class="bad" id="sumWrong30">0</strong></div>
+      <div class="summary-row summary-row--a45"><span>\(45^\circ\)</span><strong class="bad" id="sumWrong45">0</strong></div>
+      <div class="summary-row summary-row--a60"><span>\(60^\circ\)</span><strong class="bad" id="sumWrong60">0</strong></div>
+    </div>
+    <div class="summary-box" id="recommendations">
+      <h3>แนวทางฝึกต่อ</h3>
+      <ul id="recommendList"></ul>
+    </div>
+    <button type="button" class="btn-primary" id="btnAgain">ตั้งค่าใหม่</button>
+  </div>
+  </main>
+
+  <script>
+    const QUESTION_SEC = 2;
+    const ALL_ANSWER_KEYS = [
+      { key: '0', tex: '0' },
+      { key: '1', tex: '1' },
+      { key: 'half', tex: '\\frac{1}{2}' },
+      { key: 'sqrt2_2', tex: '\\frac{\\sqrt{2}}{2}' },
+      { key: 'sqrt3_2', tex: '\\frac{\\sqrt{3}}{2}' },
+      { key: 'inv_sqrt3', tex: '\\frac{1}{\\sqrt{3}}' },
+      { key: 'sqrt3', tex: '\\sqrt{3}' }
+    ];
+
+    const TABLE = [
+      { deg: 30, sinKey: 'half', cosKey: 'sqrt3_2', tanKey: 'inv_sqrt3' },
+      { deg: 45, sinKey: 'sqrt2_2', cosKey: 'sqrt2_2', tanKey: '1' },
+      { deg: 60, sinKey: 'sqrt3_2', cosKey: 'half', tanKey: 'sqrt3' }
+    ];
+
+    const FUNCS = [
+      { name: 'sin', label: '\\sin' },
+      { name: 'cos', label: '\\cos' },
+      { name: 'tan', label: '\\tan' }
+    ];
+
+    let totalQuestions = 5;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let questionIndex = 0;
+    let timerId = null;
+    let nextDelayId = null;
+    let deadline = 0;
+    let rafId = null;
+    let answered = false;
+    let currentCorrectKey = '';
+    let wrongByFunc = { sin: 0, cos: 0, tan: 0 };
+    let wrongByDeg = { 30: 0, 45: 0, 60: 0 };
+    let streak = 0;
+    let timeoutCount = 0;
+    let wrongAnswerCount = 0;
+
+    const el = (id) => document.getElementById(id);
+
+    function updateStreakDisplay() {
+      const wrap = el('streakWrap');
+      const n = el('streakCount');
+      if (!wrap || !n) return;
+      if (streak >= 3) {
+        wrap.hidden = false;
+        n.textContent = String(streak);
+      } else {
+        wrap.hidden = true;
+      }
+    }
+
+    function resetStreak() {
+      streak = 0;
+      updateStreakDisplay();
+    }
+
+    function readSetup() {
+      const q = document.querySelector('input[name="qcount"]:checked');
+      totalQuestions = q ? parseInt(q.value, 10) : 5;
+    }
+
+    function resetStats() {
+      correctCount = 0;
+      wrongCount = 0;
+      wrongByFunc = { sin: 0, cos: 0, tan: 0 };
+      wrongByDeg = { 30: 0, 45: 0, 60: 0 };
+      timeoutCount = 0;
+      wrongAnswerCount = 0;
+      resetStreak();
+    }
+
+    function recordWrong(meta) {
+      wrongCount += 1;
+      if (meta && wrongByFunc[meta.funcName] !== undefined) {
+        wrongByFunc[meta.funcName] += 1;
+      }
+      if (meta && wrongByDeg[meta.deg] !== undefined) {
+        wrongByDeg[meta.deg] += 1;
+      }
+    }
+
+    function buildRecommendations() {
+      const tips = [];
+      const done = correctCount + wrongCount;
+
+      if (done === 0) {
+        tips.push('ยังไม่มีข้อที่ทำเสร็จ — ลองกดเริ่มเล่นแล้วทำให้ครบชุด');
+        return tips;
+      }
+
+      if (wrongCount === 0 && correctCount + wrongCount === totalQuestions) {
+        tips.push('ครบชุดโดยไม่พลาด ลองเพิ่มจำนวนข้อในรอบถัดไปถ้าต้องการฝึกความเร็ว');
+        return tips;
+      }
+
+      if (wrongCount === 0 && correctCount + wrongCount < totalQuestions) {
+        tips.push('หยุดก่อนครบชุดแต่ยังไม่พลาด — เล่นให้ครบ ' + totalQuestions + ' ข้อได้เมื่อพร้อม');
+        return tips;
+      }
+
+      const funcOrder = ['sin', 'cos', 'tan'].sort((a, b) => wrongByFunc[b] - wrongByFunc[a]);
+      const topF = funcOrder[0];
+      if (wrongByFunc[topF] > 0) {
+        if (topF === 'tan') {
+          tips.push(
+            'ทวนค่า \\(\\tan\\) ที่มุม \\(30^\\circ\\), \\(45^\\circ\\), \\(60^\\circ\\): ' +
+              '\\(\\tan 30^\\circ = \\frac{1}{\\sqrt{3}}\\), \\(\\tan 45^\\circ = 1\\), \\(\\tan 60^\\circ = \\sqrt{3}\\)'
+          );
+        } else if (topF === 'sin') {
+          tips.push(
+            'ทวน \\(\\sin\\) ที่มุม \\(30^\\circ\\), \\(45^\\circ\\), \\(60^\\circ\\): ' +
+              '\\(\\frac{1}{2}\\), \\(\\frac{\\sqrt{2}}{2}\\), \\(\\frac{\\sqrt{3}}{2}\\) ตามลำดับ'
+          );
+        } else {
+          tips.push(
+            'ทวน \\(\\cos\\): จับคู่กับ \\(\\sin\\) เช่น ' +
+              '\\(\\cos 60^\\circ = \\sin 30^\\circ = \\frac{1}{2}\\) และ ' +
+              '\\(\\cos 30^\\circ = \\sin 60^\\circ = \\frac{\\sqrt{3}}{2}\\)'
+          );
+        }
+      }
+
+      let worstDeg = null;
+      let worstN = 0;
+      [30, 45, 60].forEach((d) => {
+        if (wrongByDeg[d] > worstN) {
+          worstN = wrongByDeg[d];
+          worstDeg = d;
+        }
+      });
+      if (worstDeg !== null && worstN >= 1) {
+        tips.push(
+          `มุมที่ยังผิดบ่อย: \\(${worstDeg}^\\circ\\) — ลองเขียนตารางเล็ก ๆ แค่แถวมุมนี้แล้วท่อง \\(\\sin\\), \\(\\cos\\), \\(\\tan\\) คู่กัน`
+        );
+      }
+
+      tips.push(
+        'ทบทวนตารางสามมุม \\(30^\\circ\\), \\(45^\\circ\\), \\(60^\\circ\\) ให้แม่น แล้วเล่นซ้ำเพื่อตอบให้ทันใน 2 วินาที'
+      );
+
+      if (tips.length > 4) return tips.slice(0, 4);
+      if (tips.length === 0) {
+        tips.push('ทวนตารางมุมพิเศษ แล้วเล่นซ้ำเพื่อให้ตอบได้ภายใน 2 วินาที');
+      }
+      return tips;
+    }
+
+    function updatePieChart(topicLine, correct, wrongAns, timeout) {
+      const lineEl = el('pieTopicLine');
+      if (lineEl) lineEl.textContent = topicLine;
+      const total = correct + wrongAns + timeout;
+      const nc = el('pieNCorrect');
+      const nw = el('pieNWrongAns');
+      const nt = el('pieNTimeout');
+      const accEl = el('pieAccPct');
+      const donut = el('pieDonut');
+      if (nc) nc.textContent = String(correct);
+      if (nw) nw.textContent = String(wrongAns);
+      if (nt) nt.textContent = String(timeout);
+      if (!donut) return;
+      if (total === 0) {
+        donut.style.background = 'linear-gradient(145deg, #e2e8f0, #cbd5e1)';
+        if (accEl) accEl.textContent = '—';
+        donut.setAttribute('aria-label', 'ยังไม่มีข้อมูล');
+        return;
+      }
+      const acc = Math.round((correct / total) * 100);
+      if (accEl) accEl.textContent = `${acc}%`;
+      const p1 = (correct / total) * 100;
+      const p2 = ((correct + wrongAns) / total) * 100;
+      donut.style.background = `conic-gradient(from -90deg, #22c55e 0% ${p1}%, #ef4444 ${p1}% ${p2}%, #f59e0b ${p2}% 100%)`;
+      donut.setAttribute(
+        'aria-label',
+        `ถูก ${correct} ข้อ ตอบผิด ${wrongAns} ข้อ หมดเวลา ${timeout} ข้อ`
+      );
+    }
+
+    function showEndScreen(title) {
+      el('gameArea').hidden = true;
+      const endEl = el('endScreen');
+      if (window.MathJax && typeof MathJax.typesetClear === 'function') {
+        try {
+          MathJax.typesetClear([endEl]);
+        } catch (e) {}
+      }
+      endEl.hidden = false;
+      const perfect = wrongCount === 0 && (correctCount + wrongCount) === totalQuestions && correctCount > 0;
+      const partialGood = wrongCount === 0 && (correctCount + wrongCount) < totalQuestions && correctCount > 0;
+      const titleEl = el('endTitle');
+      if (perfect && title === 'จบชุดแล้ว') {
+        titleEl.textContent = 'จบชุดครบทุกข้อ';
+        titleEl.classList.add('endTitle--perfect');
+      } else {
+        titleEl.textContent = title;
+        titleEl.classList.remove('endTitle--perfect');
+      }
+      el('endKicker').textContent = perfect
+        ? 'ทำได้ครบทุกข้อโดยไม่พลาด'
+        : partialGood
+          ? 'ช่วงที่ทำมายังไม่พลาด ลองเล่นให้ครบชุดเมื่อพร้อม'
+          : 'ดูสรุปด้านล่าง แล้วลองฝึกจุดที่ยังสับสน';
+      endEl.classList.toggle('endScreen--perfect', perfect);
+      el('sumCorrect').textContent = String(correctCount);
+      el('sumWrong').textContent = String(wrongCount);
+      el('sumTotal').textContent = String(correctCount + wrongCount);
+      updatePieChart(
+        `สรุปโจทย์ sin · cos · tan (มุม 30°·45°·60°): ถูก ${correctCount} ข้อ · ตอบผิด ${wrongAnswerCount} ข้อ · หมดเวลา ${timeoutCount} ข้อ`,
+        correctCount,
+        wrongAnswerCount,
+        timeoutCount
+      );
+      function wrongLine(n) {
+        return n + ' ข้อ';
+      }
+      el('sumWrongSin').textContent = wrongLine(wrongByFunc.sin);
+      el('sumWrongCos').textContent = wrongLine(wrongByFunc.cos);
+      el('sumWrongTan').textContent = wrongLine(wrongByFunc.tan);
+      el('sumWrong30').textContent = wrongLine(wrongByDeg[30]);
+      el('sumWrong45').textContent = wrongLine(wrongByDeg[45]);
+      el('sumWrong60').textContent = wrongLine(wrongByDeg[60]);
+      const list = el('recommendList');
+      list.innerHTML = '';
+      buildRecommendations().forEach((t) => {
+        const li = document.createElement('li');
+        li.innerHTML = t;
+        list.appendChild(li);
+      });
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([endEl]).catch(() => {});
+      }
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getCorrectKey(row, funcName) {
+      if (funcName === 'sin') return row.sinKey;
+      if (funcName === 'cos') return row.cosKey;
+      return row.tanKey;
+    }
+
+    let currentMeta = { funcName: 'sin', deg: 30 };
+
+    function buildQuestion() {
+      const row = TABLE[Math.floor(Math.random() * TABLE.length)];
+      const fn = FUNCS[Math.floor(Math.random() * FUNCS.length)];
+      const anglePart = row.deg + '^\\circ';
+      const qTex = fn.label + '(' + anglePart + ') \\text{ เท่ากับเท่าใด?}';
+      currentCorrectKey = getCorrectKey(row, fn.name);
+      currentMeta = { funcName: fn.name, deg: row.deg };
+      return { qTex, correctKey: currentCorrectKey };
+    }
+
+    function pickDistractors(correctKey, n) {
+      const pool = ALL_ANSWER_KEYS.map((x) => x.key).filter((k) => k !== correctKey);
+      return shuffle(pool).slice(0, n);
+    }
+
+    function triggerCardEnter() {
+      const card = el('flashcard');
+      card.classList.remove('flashcard--enter');
+      void card.offsetWidth;
+      card.classList.add('flashcard--enter');
+    }
+
+    function renderChoices(correctKey) {
+      const distractors = pickDistractors(correctKey, 3);
+      const keys = shuffle([correctKey, ...distractors]);
+      const container = el('choices');
+      container.innerHTML = '';
+      keys.forEach((key) => {
+        const def = ALL_ANSWER_KEYS.find((a) => a.key === key);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'choice';
+        btn.dataset.key = key;
+        btn.innerHTML = '\\(' + def.tex + '\\)';
+        btn.addEventListener('click', () => onChoose(key, btn));
+        container.appendChild(btn);
+      });
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([container]).catch(() => {});
+      }
+    }
+
+    function setFeedback(text, cls) {
+      const f = el('feedback');
+      f.textContent = text;
+      f.className = cls || '';
+      if (!text) return;
+      f.classList.add('feedback--in');
+      f.addEventListener(
+        'animationend',
+        () => {
+          f.classList.remove('feedback--in');
+        },
+        { once: true }
+      );
+    }
+
+    function clearTimers() {
+      if (timerId) {
+        clearTimeout(timerId);
+        timerId = null;
+      }
+      if (nextDelayId) {
+        clearTimeout(nextDelayId);
+        nextDelayId = null;
+      }
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    }
+
+    function updateTimerBar(remainingMs) {
+      const total = QUESTION_SEC * 1000;
+      const t = Math.max(0, remainingMs / total);
+      el('timerBar').style.transform = 'scaleX(' + t + ')';
+      const pct = Math.round(t * 100);
+      const bar = el('timerWrap');
+      bar.setAttribute('aria-valuenow', String(pct));
+      el('timeLabel').textContent = (Math.max(0, remainingMs) / 1000).toFixed(1);
+      el('timerWrap').classList.toggle('danger', remainingMs < 600);
+    }
+
+    function tick() {
+      const left = deadline - performance.now();
+      updateTimerBar(left);
+      if (left <= 0) {
+        onTimeout();
+        return;
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startQuestionTimer() {
+      clearTimers();
+      answered = false;
+      deadline = performance.now() + QUESTION_SEC * 1000;
+      el('timerBar').style.transform = 'scaleX(1)';
+      el('timerWrap').classList.remove('danger');
+      el('timerWrap').setAttribute('aria-valuenow', '100');
+      rafId = requestAnimationFrame(tick);
+      timerId = setTimeout(onTimeout, QUESTION_SEC * 1000 + 50);
+    }
+
+    function onTimeout() {
+      if (answered) return;
+      answered = true;
+      clearTimers();
+      resetStreak();
+      recordWrong(currentMeta);
+      timeoutCount += 1;
+      setFeedback('หมดเวลา — ข้อนี้ไม่ได้คะแนน', 'bad');
+      disableChoices();
+      highlightCorrect();
+      nextDelayId = setTimeout(() => {
+        nextDelayId = null;
+        nextQuestion();
+      }, 900);
+    }
+
+    function disableChoices() {
+      el('choices').querySelectorAll('.choice').forEach((b) => {
+        b.disabled = true;
+      });
+    }
+
+    function highlightCorrect() {
+      el('choices').querySelectorAll('.choice').forEach((b) => {
+        if (b.dataset.key === currentCorrectKey) b.classList.add('correct');
+      });
+    }
+
+    function onChoose(key, btn) {
+      if (answered) return;
+      answered = true;
+      clearTimers();
+      disableChoices();
+      const ok = key === currentCorrectKey;
+      if (ok) {
+        correctCount += 1;
+        streak += 1;
+        el('score').textContent = String(correctCount);
+        const scoreStat = el('score').closest('.stat--score');
+        if (scoreStat) {
+          scoreStat.classList.remove('is-bump');
+          void scoreStat.offsetWidth;
+          scoreStat.classList.add('is-bump');
+          scoreStat.addEventListener(
+            'animationend',
+            () => {
+              scoreStat.classList.remove('is-bump');
+            },
+            { once: true }
+          );
+        }
+        updateStreakDisplay();
+        btn.classList.add('correct', 'choice--pop');
+        setFeedback('ถูกแล้ว — ได้ 1 คะแนน', 'ok');
+      } else {
+        resetStreak();
+        recordWrong(currentMeta);
+        wrongAnswerCount += 1;
+        btn.classList.add('wrong');
+        highlightCorrect();
+        setFeedback('ยังไม่ถูก — เฉลยอยู่ที่ตัวเลือกสีเขียว', 'bad');
+      }
+      nextDelayId = setTimeout(() => {
+        nextDelayId = null;
+        nextQuestion();
+      }, ok ? 650 : 1100);
+    }
+
+    function nextQuestion() {
+      questionIndex += 1;
+      if (questionIndex > totalQuestions) {
+        clearTimers();
+        answered = true;
+        showEndScreen('จบชุดแล้ว');
+        return;
+      }
+      el('qNum').textContent = String(questionIndex);
+      setFeedback('', '');
+      const { qTex } = buildQuestion();
+      const qEl = el('questionMath');
+      qEl.innerHTML = '\\(' + qTex + '\\)';
+      triggerCardEnter();
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([qEl]).then(() => {
+          renderChoices(currentCorrectKey);
+          startQuestionTimer();
+        }).catch(() => {
+          renderChoices(currentCorrectKey);
+          startQuestionTimer();
+        });
+      } else {
+        renderChoices(currentCorrectKey);
+        startQuestionTimer();
+      }
+    }
+
+    function showGame() {
+      clearTimers();
+      readSetup();
+      resetStats();
+      el('startScreen').hidden = true;
+      el('endScreen').hidden = true;
+      el('endScreen').classList.remove('endScreen--perfect');
+      el('endTitle').classList.remove('endTitle--perfect');
+      el('gameArea').hidden = false;
+      questionIndex = 0;
+      el('score').textContent = '0';
+      el('qTotal').textContent = String(totalQuestions);
+      el('qNum').textContent = '1';
+      nextQuestion();
+    }
+
+    function stopGame() {
+      clearTimers();
+      answered = true;
+      showEndScreen('หยุดเกม');
+    }
+
+    el('btnStart').addEventListener('click', showGame);
+    el('btnAgain').addEventListener('click', () => {
+      el('endScreen').hidden = true;
+      el('startScreen').hidden = false;
+      el('gameArea').hidden = true;
+    });
+    el('btnStop').addEventListener('click', stopGame);
+
+    window.addEventListener('load', () => {
+      const sub = document.querySelector('.app-header .subtitle');
+      const intro = document.querySelector('#startScreen > p');
+      const nodes = [sub, intro].filter(Boolean);
+      if (nodes.length && window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise(nodes).catch(() => {});
+      }
+    });
+  </script>
+</body>
+</html>
