@@ -39,6 +39,10 @@
       --space-6: 1.5rem;
       --content-max: min(30rem, 100vw - 1.5rem);
       --tap-clear: color-mix(in srgb, var(--accent) 12%, transparent);
+      /* พื้นหลัง: โทนน้ำเงินจาง + กริด (ใช้เฉพาะ background ของ body) */
+      --grid-cell: 24px;
+      --grid-line: color-mix(in srgb, var(--accent) 9%, transparent);
+      --grid-line-major: color-mix(in srgb, var(--accent) 22%, var(--rule));
     }
 
     @media (min-width: 480px) { :root { --content-max: min(32rem, 100vw - 2rem); } }
@@ -60,10 +64,30 @@
       font-family: 'Kanit', sans-serif;
       background-color: var(--paper);
       background-image:
-        linear-gradient(180deg, color-mix(in srgb, var(--accent) 4%, var(--paper)) 0%, var(--paper) 50%),
-        linear-gradient(90deg, rgba(29, 78, 216, 0.035) 1px, transparent 1px),
-        linear-gradient(rgba(29, 78, 216, 0.025) 1px, transparent 1px);
-      background-size: 100% 100%, 24px 24px, 24px 24px;
+        linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--paper)) 0%, var(--paper) 58%),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(180deg, var(--grid-line) 1px, transparent 1px),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0,
+          transparent calc(var(--grid-cell) * 5 - 1px),
+          var(--grid-line-major) calc(var(--grid-cell) * 5 - 1px),
+          var(--grid-line-major) calc(var(--grid-cell) * 5)
+        ),
+        repeating-linear-gradient(
+          180deg,
+          transparent 0,
+          transparent calc(var(--grid-cell) * 5 - 1px),
+          var(--grid-line-major) calc(var(--grid-cell) * 5 - 1px),
+          var(--grid-line-major) calc(var(--grid-cell) * 5)
+        );
+      background-size:
+        100% 100%,
+        var(--grid-cell) var(--grid-cell),
+        var(--grid-cell) var(--grid-cell),
+        calc(var(--grid-cell) * 5) 100%,
+        100% calc(var(--grid-cell) * 5);
+      background-position: 0 0;
       color: var(--ink);
       display: flex;
       flex-direction: column;
@@ -542,6 +566,56 @@
       padding: 0;
     }
 
+    .setup-hint {
+      margin: 0 0 var(--space-3);
+      font-size: 0.86rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-3) + 3px);
+      border-radius: 0.55rem;
+      background: color-mix(in srgb, var(--accent) 7%, var(--paper-2));
+      border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--rule));
+      border-left: 3px solid var(--accent);
+      box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    .setup-hint strong {
+      color: color-mix(in srgb, var(--accent) 18%, var(--ink));
+      font-weight: 600;
+    }
+
+    .chip-row label.chip--recommended {
+      position: relative;
+      padding-top: 0.55rem;
+      border-width: 2px;
+      border-color: color-mix(in srgb, var(--accent) 42%, var(--rule));
+      background: linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--accent) 10%, var(--paper-2)) 0%,
+        var(--paper-2) 100%
+      );
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent),
+        0 6px 14px -8px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .chip-row label.chip--recommended::after {
+      content: 'แนะนำ';
+      position: absolute;
+      top: -0.42rem;
+      right: 0.35rem;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #f8fafc;
+      background: linear-gradient(145deg, var(--accent-hover), var(--accent-bright));
+      padding: 0.12rem 0.45rem;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 1px 4px rgba(29, 78, 216, 0.4);
+      line-height: 1.2;
+      pointer-events: none;
+    }
+
     .chip-row {
       display: flex;
       flex-wrap: wrap;
@@ -592,6 +666,18 @@
       background: var(--accent-soft);
       color: var(--ink);
       font-weight: 500;
+    }
+
+    .chip-row input:checked + label.chip--recommended {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 16%, var(--paper-2));
+      box-shadow:
+        0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent),
+        0 8px 20px -10px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    .chip-row input:checked + label.chip--recommended::after {
+      background: linear-gradient(145deg, #1e40af, var(--accent));
     }
 
     .summary-box {
@@ -666,6 +752,50 @@
       margin-left: 0 !important;
       color: var(--success) !important;
       font-weight: 500;
+    }
+
+    #reviewMissesBox h3 {
+      margin: 0 0 var(--space-3);
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .review-misses-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .review-misses-list li {
+      padding: 0.55rem 0.7rem;
+      border-radius: 0.55rem;
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+    }
+
+    .review-miss__tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--danger);
+      text-transform: none;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.02em;
+    }
+
+    .review-miss__tag--time {
+      color: var(--warn);
+    }
+
+    .review-miss__math {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35em;
+      font-size: 0.95rem;
     }
 
     .weak-katex-row {
@@ -884,12 +1014,12 @@
   <header class="app-header">
     <span class="brand-pill">แฟลชการ์ด</span>
     <h1>คูณและหาร (× ÷)</h1>
-    <p class="subtitle">ฝึกคูณและหารจำนวนเต็ม (ตัวประกอบหลักเดียว) — เลือกคำตอบ 4 ตัวเลือก ข้อละ 5 วินาที</p>
+    <p class="subtitle">ฝึกคูณและหารจำนวนเต็ม (ตัวประกอบหลักเดียว) — เลือกคำตอบจาก 4 ตัวเลือก และตั้งเวลาต่อข้อได้ (แนะนำ 5 หรือ 7 วินาที)</p>
   </header>
 
   <main id="main">
     <div id="startScreen">
-      <p>เลือกจำนวนข้อแล้วกดเริ่ม ระบบสุ่มโจทย์คูณหรือหารจำนวนเต็ม ถ้าหมดเวลาจะไม่ได้คะแนนข้อนั้น</p>
+      <p>เลือกจำนวนข้อและเวลาต่อข้อ แล้วกดเริ่ม ระบบสุ่มโจทย์คูณหรือหารจำนวนเต็ม ถ้าหมดเวลาจะไม่ได้คะแนนข้อนั้น</p>
       <fieldset class="setup-group">
         <legend>จำนวนข้อ</legend>
         <div class="chip-row" role="radiogroup" aria-label="จำนวนข้อในชุด">
@@ -901,6 +1031,18 @@
           <label for="qc15">15 ข้อ</label>
           <input type="radio" name="qcount" id="qc20" value="20">
           <label for="qc20">20 ข้อ</label>
+        </div>
+      </fieldset>
+      <fieldset class="setup-group">
+        <legend>เวลาต่อข้อ</legend>
+        <p class="setup-hint">แนะนำ <strong>5</strong> หรือ <strong>7</strong> วินาที · เลือก <strong>3</strong> วิ ถ้าอยากท้าทายความเร็ว</p>
+        <div class="chip-row" role="radiogroup" aria-label="เวลาต่อข้อ">
+          <input type="radio" name="qtime" id="qt3mul" value="3">
+          <label for="qt3mul">3 วิ</label>
+          <input type="radio" name="qtime" id="qt5mul" value="5" checked>
+          <label for="qt5mul" class="chip--recommended">5 วิ</label>
+          <input type="radio" name="qtime" id="qt7mul" value="7">
+          <label for="qt7mul" class="chip--recommended">7 วิ</label>
         </div>
       </fieldset>
       <button type="button" class="btn-primary" id="btnStart">เริ่มเล่น</button>
@@ -959,6 +1101,10 @@
         <div class="summary-row"><span>หมดเวลารวม</span><strong class="bad" id="sumTimeouts">0</strong></div>
         <div class="summary-row"><span>ตอบผิดรวม</span><strong class="bad" id="sumWrongs">0</strong></div>
       </div>
+      <div class="summary-box" id="reviewMissesBox" hidden>
+        <h3>เฉลยข้อที่พลาดในรอบนี้</h3>
+        <ul id="reviewMissesList" class="review-misses-list"></ul>
+      </div>
       <div class="summary-box" id="recommendations">
         <h3>จุดที่ควรฝึกเพิ่ม</h3>
         <ul id="recommendList"></ul>
@@ -972,7 +1118,7 @@
 (function () {
   'use strict';
 
-  var QUESTION_SEC = 5;
+  var questionSec = 5;
   var DIGIT_MIN = 1;
   var DIGIT_MAX = 9;
 
@@ -987,7 +1133,7 @@
       key: 'mul_neg',
       title: 'คูณที่มีจำนวนลบ',
       examples: ['\\left(-2\\right)\\times7', '4\\times\\left(-3\\right)'],
-      hint: 'จำกฎเครื่องหมาย: ลบ × บวก = ลบ, ลบ × ลบ = บวก'
+      hint: 'โจทย์คนละเครื่องหมาย (ลบ×บวก ฯลฯ) → ผลเป็นลบ · โจทย์เครื่องหมายเหมือนกัน (ลบ×ลบ ฯลฯ) → ผลเป็นบวก — แล้วคิดเลขจากสูตรคูณ'
     },
     div_pos: {
       key: 'div_pos',
@@ -999,13 +1145,13 @@
       key: 'div_neg',
       title: 'หารที่มีจำนวนลบ',
       examples: ['\\left(-15\\right)\\div\\left(-3\\right)', '8\\div\\left(-2\\right)'],
-      hint: 'กฎเครื่องหมายเหมือนคูณ — คู่ได้บวก คี่ได้ลบ'
+      hint: 'โจทย์คนละเครื่องหมาย (ลบ÷บวก ฯลฯ) → ผลเป็นลบ · เครื่องหมายเหมือนกัน → ผลเป็นบวก — กฎเดียวกับคูณ แล้วคิดย้อนจากสูตรคูณ'
     },
     result_neg: {
       key: 'result_neg',
       title: 'ข้อที่คำตอบที่ถูกต้องเป็นจำนวนลบ',
       examples: ['-8', '\\left(-3\\right)\\times4'],
-      hint: 'ก่อนตอบ ให้เช็กเครื่องหมายของผลลัพธ์โดยรวม'
+      hint: 'ดูเครื่องหมายสองตัวในโจทย์: คนละเครื่องหมาย → ผลเป็นลบ · เหมือนกัน → ผลเป็นบวก'
     }
   };
 
@@ -1024,6 +1170,8 @@
   var answered = false;
   var streak = 0;
   var currentQ = null;
+  /** เก็บข้อที่ตอบผิดหรือหมดเวลา เพื่อโชว์เฉลยตอนสรุปท้าย */
+  var sessionMisses = [];
 
   function el(id) {
     return document.getElementById(id);
@@ -1177,6 +1325,9 @@
   function readSetup() {
     var q = document.querySelector('input[name="qcount"]:checked');
     totalQuestions = q ? parseInt(q.value, 10) : 10;
+    var t = document.querySelector('input[name="qtime"]:checked');
+    questionSec = t ? parseInt(t.value, 10) : 5;
+    if (questionSec !== 3 && questionSec !== 5 && questionSec !== 7) questionSec = 5;
   }
 
   function updateStreakDisplay() {
@@ -1237,6 +1388,57 @@
     );
   }
 
+  /** Key ตามเครื่องหมายของสองตัวในโจทย์ (คูณ/หาร) */
+  function signRuleKeyForOperands(a, b) {
+    var opposite = (a > 0 && b < 0) || (a < 0 && b > 0);
+    if (opposite) return 'Key: เครื่องหมายต่างกัน → เป็นลบ';
+    return 'Key: เครื่องหมายเหมือนกัน → เป็นบวก';
+  }
+
+  function wrongAnswerFeedback(chosen, correct, q) {
+    var key = signRuleKeyForOperands(q.a, q.b);
+    var tail = ' · เฉลยอยู่ที่ตัวเลือกสีเขียว';
+    if (chosen !== correct && Math.abs(chosen) === Math.abs(correct)) {
+      return 'เครื่องหมายผิด (ตัวเลขตรงกับเฉลยแต่ +/− ไม่ตรง) — ' + key + tail;
+    }
+    return 'ยังไม่ถูก — ' + key + tail;
+  }
+
+  function pushSessionMiss(reason, q) {
+    sessionMisses.push({
+      reason: reason,
+      latex: q.latex,
+      correct: q.correct
+    });
+  }
+
+  function renderReviewMisses() {
+    var box = el('reviewMissesBox');
+    var ul = el('reviewMissesList');
+    if (!box || !ul) return;
+    ul.innerHTML = '';
+    if (sessionMisses.length === 0) {
+      box.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    sessionMisses.forEach(function (m) {
+      var li = document.createElement('li');
+      var tag = document.createElement('div');
+      tag.className = 'review-miss__tag' + (m.reason === 'timeout' ? ' review-miss__tag--time' : '');
+      tag.textContent = m.reason === 'timeout' ? 'หมดเวลา' : 'ตอบผิด';
+      li.appendChild(tag);
+      var row = document.createElement('div');
+      row.className = 'review-miss__math';
+      row.appendChild(document.createTextNode('เฉลย: '));
+      var eq = document.createElement('span');
+      renderKatexInto(eq, m.latex + '=' + operandLatex(m.correct), false);
+      row.appendChild(eq);
+      li.appendChild(row);
+      ul.appendChild(li);
+    });
+  }
+
   function clearTimers() {
     if (timerId) {
       clearTimeout(timerId);
@@ -1253,13 +1455,13 @@
   }
 
   function updateTimerBar(remainingMs) {
-    var total = QUESTION_SEC * 1000;
+    var total = questionSec * 1000;
     var t = Math.max(0, remainingMs / total);
     el('timerBar').style.transform = 'scaleX(' + t + ')';
     var pct = Math.round(t * 100);
     el('timerWrap').setAttribute('aria-valuenow', String(pct));
     el('timeLabel').textContent = (Math.max(0, remainingMs) / 1000).toFixed(1);
-    el('timerWrap').classList.toggle('danger', remainingMs < 1500);
+    el('timerWrap').classList.toggle('danger', remainingMs < Math.max(700, questionSec * 260));
   }
 
   function tick() {
@@ -1275,12 +1477,12 @@
   function startQuestionTimer() {
     clearTimers();
     answered = false;
-    deadline = performance.now() + QUESTION_SEC * 1000;
+    deadline = performance.now() + questionSec * 1000;
     el('timerBar').style.transform = 'scaleX(1)';
     el('timerWrap').classList.remove('danger');
     el('timerWrap').setAttribute('aria-valuenow', '100');
     rafId = requestAnimationFrame(tick);
-    timerId = setTimeout(onTimeout, QUESTION_SEC * 1000 + 50);
+    timerId = setTimeout(onTimeout, questionSec * 1000 + 50);
   }
 
   function disableChoices() {
@@ -1305,6 +1507,7 @@
     sessionTimeouts += 1;
     wrongCount += 1;
     if (currentQ) recordResult(currentQ, false, true);
+    if (currentQ) pushSessionMiss('timeout', currentQ);
     setFeedback('หมดเวลา — ข้อนี้ไม่ได้คะแนน', 'bad');
     disableChoices();
     highlightCorrect();
@@ -1345,9 +1548,10 @@
       sessionWrongs += 1;
       wrongCount += 1;
       recordResult(currentQ, false, false);
+      pushSessionMiss('wrong', currentQ);
       btn.classList.add('wrong');
       highlightCorrect();
-      setFeedback('ยังไม่ถูก — เฉลยอยู่ที่ตัวเลือกสีเขียว', 'bad');
+      setFeedback(wrongAnswerFeedback(value, currentQ.correct, currentQ), 'bad');
     }
     nextDelayId = setTimeout(function () {
       nextDelayId = null;
@@ -1521,6 +1725,7 @@
       });
     }
 
+    renderReviewMisses();
     postHeight();
   }
 
@@ -1536,6 +1741,7 @@
     wrongCount = 0;
     sessionTimeouts = 0;
     sessionWrongs = 0;
+    sessionMisses = [];
     questionIndex = 0;
     streak = 0;
     updateStreakDisplay();
@@ -1547,6 +1753,7 @@
 
     el('score').textContent = '0';
     el('qTotal').textContent = String(totalQuestions);
+    el('timeLabel').textContent = questionSec.toFixed(1);
     nextQuestion();
   }
 
