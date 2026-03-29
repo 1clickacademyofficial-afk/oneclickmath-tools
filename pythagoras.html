@@ -68,6 +68,7 @@
         max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-bottom, 0px))
         max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-left, 0px));
       overflow-x: hidden;
+      overscroll-behavior-y: contain;
     }
 
     #main {
@@ -127,6 +128,7 @@
       box-shadow: var(--shadow-card);
       border: 1px solid var(--rule);
       animation: viewIn 0.52s var(--ease-out-quart) both;
+      overscroll-behavior: contain;
     }
 
     @keyframes viewIn {
@@ -223,8 +225,9 @@
     .tri-wrap {
       width: 100%;
       max-width: 100%;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
+      touch-action: none;
+      overscroll-behavior: none;
       border-radius: 0.5rem;
       background: color-mix(in srgb, var(--accent) 3%, var(--paper-2));
       border: 1px solid var(--rule);
@@ -242,12 +245,35 @@
       display: block;
       width: 100%;
       height: auto;
-      min-height: clamp(220px, 52vw, 320px);
+      max-height: min(72vh, 520px);
+      min-height: min(clamp(200px, 48vw, 300px), min(72vh, 520px));
       touch-action: none;
       user-select: none;
     }
 
+    #triPath,
+    #rightAngleMark,
+    .side-label {
+      pointer-events: none;
+    }
+
+    .handle-hit {
+      cursor: grab;
+      fill: rgba(15, 23, 42, 0.04);
+      stroke: none;
+      pointer-events: auto;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 0.2s var(--ease-out-quart);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .handle-hit:active {
+      cursor: grabbing;
+    }
+
     .handle {
+      pointer-events: none;
       cursor: grab;
       fill: var(--accent-bright);
       stroke: #fff;
@@ -258,21 +284,13 @@
       transition: transform 0.2s var(--ease-out-quart), filter 0.2s var(--ease-out-quart);
     }
 
-    .handle:active { cursor: grabbing; }
-
-    @media (pointer: coarse) {
-      .handle {
-        transform: scale(1.22);
-      }
-    }
-
     @media (hover: hover) and (pointer: fine) {
-      .handle:hover {
-        transform: scale(1.08);
+      .handle-hit:hover + .handle {
+        transform: scale(1.05);
         filter: drop-shadow(0 3px 8px rgba(29, 78, 216, 0.4));
       }
-      .handle:active {
-        transform: scale(0.97);
+      .handle-hit:active + .handle {
+        transform: scale(0.96);
       }
     }
 
@@ -399,6 +417,7 @@
       background: radial-gradient(circle at 42% 38%, #f8fafc 0%, #e2e8f0 55%, #cbd5e1 100%);
       box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.65), 0 12px 32px rgba(30, 58, 138, 0.18);
       touch-action: none;
+      overscroll-behavior: none;
       margin-inline: auto;
       aspect-ratio: 1;
       max-width: min(100%, 440px);
@@ -519,7 +538,8 @@
       }
       @media (hover: hover) and (pointer: fine) {
         .brand-pill:hover { transform: none; }
-        .handle:hover { transform: none; }
+        .handle-hit:hover + .handle,
+        .handle-hit:active + .handle { transform: none; filter: none; }
       }
       @media (pointer: coarse) {
         .handle { transform: none; }
@@ -555,7 +575,7 @@
           </ol>
         </div>
         <div class="tri-wrap">
-          <svg id="svgInteractive" viewBox="-50 -35 560 450" xmlns="http://www.w3.org/2000/svg">
+          <svg id="svgInteractive" viewBox="-50 -35 560 450" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
                 <circle cx="4" cy="4" r="2" fill="var(--ink-muted)" />
@@ -566,7 +586,9 @@
             <text id="labelA" class="side-label" text-anchor="middle" />
             <text id="labelB" class="side-label" text-anchor="middle" />
             <text id="labelC" class="side-label" text-anchor="middle" />
+            <circle id="handleAHit" class="handle-hit" r="16" />
             <circle id="handleA" class="handle" r="11" />
+            <circle id="handleBHit" class="handle-hit" r="16" />
             <circle id="handleB" class="handle" r="11" />
           </svg>
         </div>
@@ -588,15 +610,23 @@
 
       /** ความยาวขาเป็นจำนวนเต็ม 1–10; บนจอขยายด้วย UNIT พิกเซล */
       var UNIT = 28;
-      /** viewBox คงที่ — กลางกรอบ = จุดศูนย์กลางสามเหลี่ยม (centroid) ตลอด */
-      var TRI_VIEW_BOX = '-50 -35 560 450';
       var CX = 230;
       var CY = 190;
-      var LERP_TRI = 0.2;
-      /** ขั้นตอนเดียวตอนลาก — ตอบสนองทันที ไม่รอ rAF เฟรมแรก */
-      var LERP_DRAG = 0.42;
+      /** หลังปล่อยลาก — ค่อยๆ เลื่อนเข้าหาค่าจำนวนเต็มที่เลือก (เล็ก = ช้าลง มองตามได้) */
+      var LERP_TRI = 0.072;
+      /** ระหว่างลาก — ตามนิ้ว/เมาส์แบบไม่กระโดดจบในครั้งเดียว */
+      var LERP_DRAG = 0.12;
 
       var tri = {
+        aLen: 3,
+        bLen: 4
+      };
+
+      /**
+       * ความยาวขาเฉพาะแท็บ «หมุนเทน้ำ» — ไม่ sync กับแท็บลาก a,b
+       * (สัดส่วนสุดขั้วจากแท็บลากทำรูปเทน้ำกว้าง/แคบเกินและ UI พัง)
+       */
+      var triFluid = {
         aLen: 3,
         bLen: 4
       };
@@ -608,6 +638,11 @@
 
       /** ขยายขาสั้นให้ไม่เละ — คงอัตราส่วน a:b */
       var MIN_LEG_PX = 56;
+      /**
+       * จำกัดขนาดรูปสามเหลี่ยมบนจอ (พิกัดเดียวกับ SVG) — กันขายาวเกินทำ viewBox สูงมาก
+       * แล้วถูก clip/เลื่อนจนลากไม่ได้; อัตราส่วน a:b ยังถูกต้อง
+       */
+      var TRI_VIS_MAX_SPAN = 218;
 
       function triMeshVisual(ua, ub) {
         var baseA = ua * UNIT;
@@ -616,6 +651,12 @@
         var boost = m0 > 0 && m0 < MIN_LEG_PX ? MIN_LEG_PX / m0 : 1;
         var a = baseA * boost;
         var b = baseB * boost;
+        var span = Math.max(a, b, Math.hypot(a, b));
+        if (span > TRI_VIS_MAX_SPAN && span > 1e-6) {
+          var sc = TRI_VIS_MAX_SPAN / span;
+          a *= sc;
+          b *= sc;
+        }
         var ox = CX - a / 3;
         var oy = CY + b / 3;
         return {
@@ -720,6 +761,8 @@
       var labelC = document.getElementById('labelC');
       var handleA = document.getElementById('handleA');
       var handleB = document.getElementById('handleB');
+      var handleAHit = document.getElementById('handleAHit');
+      var handleBHit = document.getElementById('handleBHit');
 
       function renderInteractive() {
         var m = triMeshVisual(aVis, bVis);
@@ -730,7 +773,10 @@
         path.setAttribute('d', 'M ' + ox + ' ' + oy + ' L ' + ax + ' ' + ay + ' L ' + bx + ' ' + by + ' Z');
         path.setAttribute('stroke-width', String(Math.max(2, Math.min(3.2, 1.4 + ml / 120))));
 
-        var mk = Math.max(6, Math.min(16, ml * 0.13 + 5));
+        var shortEdge = Math.min(a, b);
+        var legRatio = Math.max(a, b) / (shortEdge + 1e-6);
+        var mk = Math.max(5, Math.min(13, ml * 0.09 + 4.2, shortEdge * 0.24));
+        if (legRatio > 3) mk = Math.min(mk, shortEdge * 0.2, 11);
         mark.setAttribute('x', ox);
         mark.setAttribute('y', oy - mk);
         mark.setAttribute('width', mk);
@@ -761,16 +807,93 @@
         labelC.setAttribute('y', mcy + ny + 4);
         labelC.textContent = labelCSideText(aVis, bVis);
 
-        var hR = Math.max(5.5, Math.min(11.5, ml * 0.165));
+        var hR = Math.min(shortEdge * 0.095, ml * 0.1, hp * 0.028);
+        hR = Math.min(7.8, hR);
+        if (legRatio > 2.2) hR = Math.min(hR, shortEdge * 0.088, 6.8);
+        if (legRatio > 4) hR = Math.min(hR, 6, shortEdge * 0.078);
+        hR = Math.max(3.6, hR);
         handleA.setAttribute('r', hR);
         handleB.setAttribute('r', hR);
-        var hStroke = Math.max(1.2, Math.min(2.2, hR / 5.5));
+        var hStroke = Math.max(1, Math.min(1.85, hR / 5.8));
         handleA.setAttribute('stroke-width', hStroke);
         handleB.setAttribute('stroke-width', hStroke);
         handleA.setAttribute('cx', ax);
         handleA.setAttribute('cy', ay);
         handleB.setAttribute('cx', bx);
         handleB.setAttribute('cy', by);
+
+        var coarsePtr = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        var hitR = Math.max(hR * 2.85, 15, shortEdge * 0.16, ml * 0.048, 5.2);
+        if (legRatio > 2.2) hitR = Math.max(hitR, hR * 3.15, shortEdge * 0.2, 17);
+        if (legRatio > 4) hitR = Math.max(hitR, 18, shortEdge * 0.22);
+        if (coarsePtr) hitR *= 1.14;
+        handleAHit.setAttribute('cx', ax);
+        handleAHit.setAttribute('cy', ay);
+        handleAHit.setAttribute('r', hitR);
+        handleBHit.setAttribute('cx', bx);
+        handleBHit.setAttribute('cy', by);
+        handleBHit.setAttribute('r', hitR);
+
+        var swTri = parseFloat(path.getAttribute('stroke-width')) || 2.5;
+        var vbPad = 40 + swTri * 0.5;
+        var mxR = +mark.getAttribute('x'),
+          myR = +mark.getAttribute('y'),
+          mwR = +mark.getAttribute('width'),
+          mhR = +mark.getAttribute('height');
+        var vbPts = [
+          { x: ox, y: oy },
+          { x: ax, y: ay },
+          { x: bx, y: by },
+          { x: ax - hitR, y: ay - hitR },
+          { x: ax + hitR, y: ay + hitR },
+          { x: bx - hitR, y: by - hitR },
+          { x: bx + hitR, y: by + hitR },
+          { x: mxR, y: myR },
+          { x: mxR + mwR, y: myR + mhR }
+        ];
+        var vMinX = Math.min.apply(
+          null,
+          vbPts.map(function (p) {
+            return p.x;
+          })
+        );
+        var vMinY = Math.min.apply(
+          null,
+          vbPts.map(function (p) {
+            return p.y;
+          })
+        );
+        var vMaxX = Math.max.apply(
+          null,
+          vbPts.map(function (p) {
+            return p.x;
+          })
+        );
+        var vMaxY = Math.max.apply(
+          null,
+          vbPts.map(function (p) {
+            return p.y;
+          })
+        );
+        try {
+          [path, mark, handleAHit, handleBHit, handleA, handleB, labelA, labelB, labelC].forEach(function (el) {
+            var b = el.getBBox();
+            vMinX = Math.min(vMinX, b.x);
+            vMinY = Math.min(vMinY, b.y);
+            vMaxX = Math.max(vMaxX, b.x + b.width);
+            vMaxY = Math.max(vMaxY, b.y + b.height);
+          });
+        } catch (bboxErr) {}
+        if (tri.aLen > tri.bLen * 1.75) vMaxX += Math.max(12, hitR * 0.55);
+        if (tri.bLen > tri.aLen * 1.75) vMinY -= Math.max(12, hitR * 0.55);
+        vMinX -= vbPad;
+        vMinY -= vbPad;
+        vMaxX += vbPad;
+        vMaxY += vbPad;
+        var vW = Math.max(160, vMaxX - vMinX);
+        var vH = Math.max(160, vMaxY - vMinY);
+        svg.setAttribute('viewBox', vMinX + ' ' + vMinY + ' ' + vW + ' ' + vH);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
 
       function svgPoint(evt) {
@@ -784,13 +907,37 @@
       }
 
       var drag = null;
+      var docTouchLockDepth = 0;
+      function preventDocTouchScroll(e) {
+        e.preventDefault();
+      }
+      function enterDocTouchLock() {
+        if (docTouchLockDepth++ === 0) {
+          document.addEventListener('touchmove', preventDocTouchScroll, { passive: false });
+        }
+      }
+      function exitDocTouchLock() {
+        if (docTouchLockDepth <= 0) return;
+        docTouchLockDepth--;
+        if (docTouchLockDepth === 0) {
+          document.removeEventListener('touchmove', preventDocTouchScroll, { passive: false });
+        }
+      }
+      function resetDocTouchLock() {
+        docTouchLockDepth = 0;
+        document.removeEventListener('touchmove', preventDocTouchScroll, { passive: false });
+        drag = null;
+        P2.dragging = false;
+      }
       function startDrag(which, evt) {
         evt.preventDefault();
         drag = which;
+        enterDocTouchLock();
         svg.setPointerCapture(evt.pointerId);
       }
       function moveDrag(evt) {
         if (!drag) return;
+        evt.preventDefault();
         var p = svgPoint(evt);
         var prevA = tri.aLen;
         var prevB = tri.bLen;
@@ -816,18 +963,19 @@
         scheduleTriFrame();
       }
       function endDrag(evt) {
+        var had = !!drag;
         if (drag && svg.hasPointerCapture(evt.pointerId)) svg.releasePointerCapture(evt.pointerId);
         drag = null;
+        if (had) exitDocTouchLock();
         scheduleTriFrame();
       }
 
-      handleA.addEventListener('pointerdown', function (e) { startDrag('a', e); });
-      handleB.addEventListener('pointerdown', function (e) { startDrag('b', e); });
-      svg.addEventListener('pointermove', moveDrag);
+      handleAHit.addEventListener('pointerdown', function (e) { startDrag('a', e); });
+      handleBHit.addEventListener('pointerdown', function (e) { startDrag('b', e); });
+      svg.addEventListener('pointermove', moveDrag, { passive: false });
       svg.addEventListener('pointerup', endDrag);
       svg.addEventListener('pointercancel', endDrag);
 
-      svg.setAttribute('viewBox', TRI_VIEW_BOX);
       renderFormulaPanels();
       renderInteractive();
 
@@ -1340,10 +1488,10 @@
         P2.svg = svg;
         stopFluid2Loop();
 
-        var span0 = fluidFigureMaxSpan(tri.aLen, tri.bLen);
+        var span0 = fluidFigureMaxSpan(triFluid.aLen, triFluid.bLen);
         var FLUID_INNER_MAX = 432;
         var unitFluid = span0 > 1e-9 ? FLUID_INNER_MAX / span0 : 14;
-        var m = triMeshFluidGeometry(tri.aLen, tri.bLen, unitFluid);
+        var m = triMeshFluidGeometry(triFluid.aLen, triFluid.bLen, unitFluid);
         var ox = m.ox,
           oy = m.oy,
           ax = m.ax,
@@ -1507,10 +1655,12 @@
           P2.dragging = true;
           P2.ptrId = e.pointerId;
           P2.lastPointerAng = fluid2PointerToAngle(e.clientX, e.clientY);
+          enterDocTouchLock();
           svg.setPointerCapture(e.pointerId);
         };
         svg.onpointermove = function (e) {
           if (!P2.dragging || e.pointerId !== P2.ptrId) return;
+          e.preventDefault();
           var ang = fluid2PointerToAngle(e.clientX, e.clientY);
           if (P2.lastPointerAng != null) {
             var d = ang - P2.lastPointerAng;
@@ -1523,8 +1673,10 @@
         };
         function endPtr(e) {
           if (e.pointerId !== P2.ptrId) return;
+          var wasDrag = P2.dragging;
           P2.dragging = false;
           P2.lastPointerAng = null;
+          if (wasDrag) exitDocTouchLock();
           try {
             svg.releasePointerCapture(e.pointerId);
           } catch (err) {}
@@ -1542,6 +1694,7 @@
       var fluid2dMountEl = document.getElementById('fluid2dMount');
 
       function setTab(which) {
+        resetDocTouchLock();
         var on1 = which === 1;
         tab1.setAttribute('aria-selected', on1 ? 'true' : 'false');
         tab2.setAttribute('aria-selected', on1 ? 'false' : 'true');
