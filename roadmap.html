@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roadmap การเรียน (ขั้นบันได)</title>
-  <link rel="icon" type="image/png" href="file:///C:/Users/User/.cursor/projects/d-4-Course-html/assets/c__Users_User_AppData_Roaming_Cursor_User_workspaceStorage_bb101db66d95dfac60af3b468941b91e_images_1clicklogo_transs-1c8c9fc8-f8d0-46ce-9055-375aab34f734.png" />
-  <link rel="apple-touch-icon" href="file:///C:/Users/User/.cursor/projects/d-4-Course-html/assets/c__Users_User_AppData_Roaming_Cursor_User_workspaceStorage_bb101db66d95dfac60af3b468941b91e_images_1clicklogo_transs-1c8c9fc8-f8d0-46ce-9055-375aab34f734.png" />
   <script>
     window.MathJax = {
       tex: { inlineMath: [['\\(', '\\)']] },
@@ -95,13 +93,6 @@
       gap: clamp(.65rem, 1.6vw, 1rem);
       flex-wrap: wrap;
       width: 100%;
-    }
-    .hero__logo{
-      width: clamp(52px, 7vw, 74px);
-      height: auto;
-      flex: 0 0 auto;
-      border-radius: 16px;
-      filter: drop-shadow(0 10px 16px rgba(22,73,128,.18));
     }
 
     .hero__title{
@@ -236,9 +227,6 @@
       .hero__brand{
         align-items: flex-start;
       }
-      .hero__logo{
-        width: 54px;
-      }
       .hero__title{
         font-size: clamp(1.8rem, 9vw, 2.45rem);
         line-height: 1.1;
@@ -286,10 +274,6 @@
       }
       .hero{
         border-radius: 14px;
-      }
-      .hero__logo{
-        width: 48px;
-        border-radius: 12px;
       }
       .mobile-hud{
         right: 8px;
@@ -520,8 +504,8 @@
       box-shadow: 0 0 0 6px hsl(calc(24 + (var(--i) - 1) * 9deg) 88% 58% / .22);
     }
     .side.is-smart-focus .side-item:not(.is-current){
-      opacity: .54;
-      filter: saturate(.62);
+      opacity: 1;
+      filter: none;
     }
 
     main{
@@ -831,8 +815,8 @@
       box-shadow: 0 0 0 1px rgba(24,167,143,.28), 0 0 18px rgba(24,167,143,.32);
     }
     main.is-smart-focus .topic:not(.is-current){
-      opacity: .9;
-      filter: saturate(.96);
+      opacity: 1;
+      filter: none;
     }
     @media (max-width: 900px){
       main.is-smart-focus .topic:not(.is-current){
@@ -1160,56 +1144,25 @@
       font-weight: 700;
       letter-spacing: .1px;
     }
-    .offer-line-contact{
+    .line-add-btn{
+      display:flex !important;
+      width: min(100%, 320px);
+      margin: .55rem auto 0 !important;
+      min-height: 44px;
+      background: linear-gradient(120deg, #0ecb5a, #0ca64a) !important;
+      box-shadow: 0 10px 18px rgba(15,144,66,.22) !important;
+    }
+    .offer-line-contact-text{
       margin-top: .55rem;
-      display:flex;
-      align-items:center;
-      gap: .5rem;
+      text-align:center;
       color:#1f3f35;
       font-size: .95rem;
       line-height: 1.4;
       font-weight: 600;
     }
-    .offer-line-contact img{
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      flex: 0 0 auto;
-    }
-    .offer-line-contact b{
+    .offer-line-contact-text b{
       color:#0f8f42;
       font-weight: 700;
-    }
-    .offer-line-qr{
-      margin-top: .6rem;
-      padding: .55rem;
-      border-radius: 12px;
-      border: 1px solid rgba(18,150,77,.24);
-      background: linear-gradient(180deg, rgba(238,255,245,.9), rgba(255,255,255,.92));
-      display: grid;
-      gap: .45rem;
-      justify-items: center;
-      text-align: center;
-    }
-    .offer-line-qr img{
-      width: min(190px, 62vw);
-      height: auto;
-      border-radius: 10px;
-      border: 1px solid rgba(30,43,57,.12);
-      background: #fff;
-    }
-    .offer-line-qr p{
-      margin: 0;
-      font-size: .9rem;
-      color:#1f4b38;
-      line-height: 1.35;
-      font-weight: 600;
-    }
-    .line-add-btn{
-      margin-top: .05rem;
-      min-height: 44px;
-      background: linear-gradient(120deg, #0ecb5a, #0ca64a) !important;
-      box-shadow: 0 10px 18px rgba(15,144,66,.22) !important;
     }
     .offer-course-btn{
       display:flex !important;
@@ -1221,12 +1174,6 @@
     }
     @media (max-width: 740px){
       .offer-grid{ grid-template-columns: 1fr; }
-      .offer-line-contact{
-        font-size: .92rem;
-      }
-      .offer-line-qr img{
-        width: min(220px, 76vw);
-      }
     }
     .enroll-step h3{
       margin:0 0 .25rem;
@@ -1263,13 +1210,6 @@
   <div class="app">
     <header class="hero">
       <div class="hero__brand">
-        <img
-          class="hero__logo"
-          src="file:///C:/Users/User/.cursor/projects/d-4-Course-html/assets/c__Users_User_AppData_Roaming_Cursor_User_workspaceStorage_bb101db66d95dfac60af3b468941b91e_images_1clicklogo_transs-1c8c9fc8-f8d0-46ce-9055-375aab34f734.png"
-          alt="1clickmath logo"
-          loading="eager"
-          decoding="async"
-        />
         <h1 class="hero__title"><span class="hero-em-roadmap">Roadmap</span> ปรับพื้นฐาน สไตล์<span class="hero-em-mathclick">คณิตคลิกเดียว</span></h1>
       </div>
     </header>
@@ -1595,15 +1535,8 @@
               </ul>
               <p class="offer-note">ถ้าหากน้องทำแบบฝึกได้ไม่ถึง 50% จะช่วยตรวจและชี้จุดที่พลาดให้ทีละข้อ</p>
               <div class="offer-deadline">เปิดรับไม่เกินเดือนพฤษภาคม</div>
-              <div class="offer-line-contact">
-                <img src="file:///C:/Users/User/.cursor/projects/d-4-Course-html/assets/c__Users_User_AppData_Roaming_Cursor_User_workspaceStorage_bb101db66d95dfac60af3b468941b91e_images_image-7d4289de-26e3-4c29-b2d8-7eb9e69a34ee.png" alt="LINE logo" loading="lazy" decoding="async" />
-                <span>สอบถามรายละเอียดเพิ่มเติมได้ที่ Line <b>@1clickmath</b></span>
-              </div>
-              <div class="offer-line-qr">
-                <img src="file:///C:/Users/User/.cursor/projects/d-4-Course-html/assets/c__Users_User_AppData_Roaming_Cursor_User_workspaceStorage_bb101db66d95dfac60af3b468941b91e_images_L_gainfriends_2dbarcodes_GW-5cc5713f-8ee6-41e4-b194-82541c8812d5.png" alt="QR code สำหรับเพิ่มเพื่อน Line @1clickmath" loading="lazy" decoding="async" />
-                <p>สแกน QR เพื่อเพิ่มเพื่อน Line ได้ทันที</p>
-                <a class="line-add-btn" href="https://lin.ee/sTdUjYG" target="_blank" rel="noopener noreferrer">กดเพิ่มเพื่อน Line @1clickmath</a>
-              </div>
+              <p class="offer-line-contact-text">สอบถามรายละเอียดเพิ่มเติมได้ที่ Line <b>@1clickmath</b></p>
+              <a class="line-add-btn" href="https://lin.ee/sTdUjYG" target="_blank" rel="noopener noreferrer">กดเพิ่มเพื่อน Line @1clickmath</a>
               <a class="offer-course-btn" href="https://1clickacademy.openmirai.app/th/courses/69c2a3397616a0488e904310" target="_blank" rel="noopener noreferrer">สนใจคอร์สของเรา คลิกที่นี่</a>
             </article>
           </div>
