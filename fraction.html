@@ -25,12 +25,18 @@
       --radius-lg: 1rem;
       --radius-pill: 999px;
       --shadow-card: 0 1px 0 rgba(29, 78, 216, 0.05), 0 10px 30px -14px rgba(15, 40, 90, 0.2);
+      --space-1: 0.25rem;
       --space-2: 0.5rem;
       --space-3: 0.75rem;
       --space-4: 1rem;
       --space-5: 1.25rem;
       --space-6: 1.5rem;
+      --space-7: 2rem;
+      --section-gap: clamp(1.25rem, 4vw, 2rem);
       --content-max: min(48rem, 100vw - 1.25rem);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --dur-fast: 0.14s;
+      --dur-normal: 0.26s;
     }
     * { box-sizing: border-box; }
     body {
@@ -42,13 +48,18 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: var(--space-5) var(--space-3);
+      padding: clamp(var(--space-4), 5vw, var(--space-7)) clamp(var(--space-3), 4vw, var(--space-5));
     }
     #main, .app-header { width: min(100%, var(--content-max)); }
     .app-header {
-      margin-bottom: var(--space-5);
+      margin-bottom: var(--section-gap);
       border-left: 3px solid color-mix(in srgb, var(--accent) 72%, var(--rule));
       padding-left: var(--space-2);
+      animation: headerIn var(--dur-normal) var(--ease-out) both;
+    }
+    @keyframes headerIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .brand {
       display: inline-flex;
@@ -62,13 +73,14 @@
       box-shadow: 0 8px 22px -10px rgba(37, 99, 235, 0.6);
     }
     h1 {
-      margin: 0.5rem 0 0;
+      margin: var(--space-2) 0 0;
       font-size: clamp(1.35rem, 4.6vw, 1.85rem);
       letter-spacing: -0.02em;
       color: color-mix(in srgb, var(--accent) 18%, var(--ink));
     }
     .subtitle {
-      margin: 0.35rem 0 0;
+      margin: var(--space-2) 0 0;
+      max-width: 36rem;
       color: var(--ink-muted);
       line-height: 1.55;
       font-size: 0.95rem;
@@ -76,25 +88,42 @@
     #startScreen, #gameArea, #endScreen {
       width: min(100%, var(--content-max));
     }
+    #startScreen:not([hidden]),
+    #endScreen:not([hidden]) {
+      animation: viewIn var(--dur-normal) var(--ease-out) both;
+    }
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     #startScreen, #endScreen {
       background: var(--paper-2);
       border: 1px solid var(--rule);
       border-radius: var(--radius-lg);
-      padding: var(--space-5) var(--space-4);
+      padding: clamp(var(--space-5), 4vw, var(--space-7)) clamp(var(--space-4), 3vw, var(--space-6));
       box-shadow: var(--shadow-card);
       display: flex;
       flex-direction: column;
-      gap: var(--space-4);
+      gap: var(--section-gap);
+    }
+    #startScreen > p:first-of-type {
+      margin: 0;
+      line-height: 1.65;
     }
     .setup-group {
       margin: 0;
       border: none;
       padding: 0;
     }
+    .setup-group + .setup-group {
+      margin-top: var(--space-1);
+      padding-top: var(--space-4);
+      border-top: 1px solid color-mix(in srgb, var(--rule) 85%, var(--accent));
+    }
     .setup-group legend {
       font-size: 0.9rem;
       font-weight: 600;
-      margin-bottom: var(--space-2);
+      margin-bottom: var(--space-3);
     }
     .chip-row {
       display: flex;
@@ -117,6 +146,14 @@
       align-items: center;
       font-size: 0.92rem;
       cursor: pointer;
+      transition:
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        color 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+    .chip-row label:hover {
+      transform: translateY(-1px);
     }
     .chip-row input:checked + label {
       border-color: var(--accent);
@@ -132,13 +169,20 @@
       min-height: 46px;
       padding: 0.65rem 1rem;
       cursor: pointer;
+      transition:
+        transform var(--dur-fast) var(--ease-out),
+        background 0.2s var(--ease-out),
+        border-color 0.2s var(--ease-out),
+        color 0.2s var(--ease-out),
+        box-shadow 0.2s var(--ease-out);
     }
     .btn-primary {
       border: none;
       color: #f8fafc;
       background: var(--accent);
     }
-    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
     .btn-ghost {
       border: 1px solid var(--rule);
       color: var(--ink-muted);
@@ -148,16 +192,25 @@
       border-color: var(--accent);
       color: var(--ink);
       background: var(--accent-soft);
+      transform: translateY(-1px);
     }
+    .btn-ghost:active { transform: translateY(0); }
     #gameArea {
       display: flex;
       flex-direction: column;
+      gap: 0;
+    }
+    .game-toolbar {
+      display: flex;
+      flex-direction: column;
       gap: var(--space-3);
+      margin-bottom: var(--space-5);
     }
     .hud {
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-2);
+      align-items: center;
     }
     .stat {
       border: 1px solid var(--rule);
@@ -166,6 +219,15 @@
       font-size: 0.9rem;
       background: #fff;
       color: var(--ink-muted);
+      transition: transform var(--dur-fast) var(--ease-out);
+    }
+    .stat--score.is-bump {
+      animation: scoreBump var(--dur-normal) var(--ease-out);
+    }
+    @keyframes scoreBump {
+      from { transform: scale(1); }
+      40% { transform: scale(1.04); }
+      to { transform: scale(1); }
     }
     .timer-wrap {
       width: 100%;
@@ -189,24 +251,35 @@
       border: 1px solid var(--rule);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-card);
-      padding: var(--space-5) var(--space-4) var(--space-4);
+      padding: clamp(var(--space-5), 3vw, var(--space-7)) clamp(var(--space-4), 3vw, var(--space-6));
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .flashcard--enter {
+      animation: cardEnter 0.28s var(--ease-out) both;
+    }
+    @keyframes cardEnter {
+      from { opacity: 0.88; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .question-label {
       font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 0.14em;
       color: var(--ink-muted);
-      margin-bottom: var(--space-2);
+      margin-bottom: var(--space-1);
       font-weight: 600;
     }
     #questionPrompt {
-      margin-bottom: var(--space-3);
-      font-size: 1.06rem;
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1rem, 2.8vw, 1.12rem);
       font-weight: 600;
       text-align: center;
       color: color-mix(in srgb, var(--accent) 25%, var(--ink));
     }
     .sheet-wrap {
+      margin-bottom: var(--space-6);
       border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--rule));
       border-radius: 0.85rem;
       overflow: hidden;
@@ -218,13 +291,13 @@
       display: block;
     }
     .choices {
-      margin-top: var(--space-4);
+      margin-top: 0;
       display: grid;
       grid-template-columns: 1fr;
-      gap: var(--space-2);
+      gap: var(--space-3);
     }
     @media (min-width: 560px) {
-      .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+      .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
     }
     .choice {
       font-family: 'Kanit', sans-serif;
@@ -236,11 +309,18 @@
       color: var(--ink);
       cursor: pointer;
       padding: 0.55rem 0.9rem;
+      transition:
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out),
+        box-shadow 0.2s var(--ease-out);
     }
     .choice:hover:not(:disabled) {
       border-color: color-mix(in srgb, var(--accent) 45%, var(--rule));
       background: var(--accent-soft);
+      transform: translateY(-1px);
     }
+    .choice:active:not(:disabled) { transform: translateY(0); }
     .choice:focus-visible {
       outline: 3px solid color-mix(in srgb, var(--accent) 48%, transparent);
       outline-offset: 2px;
@@ -248,56 +328,94 @@
     .choice:disabled { opacity: 0.7; cursor: not-allowed; }
     .choice.correct { border-color: var(--success); background: color-mix(in srgb, var(--success) 10%, #fff); }
     .choice.wrong { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, #fff); }
+    .choice.choice--pop {
+      animation: choicePop 0.28s var(--ease-out);
+    }
+    @keyframes choicePop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
     .choice .katex { font-size: clamp(1.35em, 5vw, 2.25em); }
     #feedback .katex { font-size: clamp(1.2em, 4vw, 1.9em); }
     #feedback {
       min-height: 1.4rem;
-      margin-top: var(--space-3);
+      margin-top: var(--space-4);
+      padding: 0 var(--space-2);
       text-align: center;
       font-size: 0.94rem;
       font-weight: 500;
+      transition: color 0.2s var(--ease-out);
+    }
+    #feedback.feedback--in {
+      animation: feedbackIn var(--dur-normal) var(--ease-out) both;
+    }
+    @keyframes feedbackIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     #feedback.ok { color: var(--success); }
     #feedback.bad { color: var(--danger); }
     .controls {
-      margin-top: var(--space-3);
+      margin-top: var(--space-5);
+      padding-top: var(--space-2);
+      border-top: 1px solid color-mix(in srgb, var(--rule) 92%, var(--accent));
       display: flex;
       justify-content: center;
       gap: var(--space-2);
       flex-wrap: wrap;
     }
+    #endTitle {
+      margin: 0;
+      font-size: clamp(1.2rem, 3.5vw, 1.45rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: color-mix(in srgb, var(--accent) 15%, var(--ink));
+    }
     .summary-box {
       background: #fff;
       border: 1px solid var(--rule);
       border-radius: 0.85rem;
-      padding: var(--space-4);
+      padding: var(--space-5) var(--space-4);
     }
     .summary-row {
       display: flex;
       justify-content: space-between;
-      gap: 0.8rem;
-      padding: 0.28rem 0;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--rule) 70%, transparent);
+    }
+    .summary-box > .summary-row:first-child {
+      padding-top: 0;
+    }
+    .summary-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
     .wrong-list {
-      margin: 0;
-      padding-left: 1.1rem;
+      margin: var(--space-4) 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
       color: var(--ink-muted);
       line-height: 1.55;
       font-size: 0.93rem;
     }
-    .wrong-list li { margin: 0.34rem 0; }
     .wrong-list .katex { font-size: 1.15em; color: var(--ink); }
     .wrong-item {
       list-style: none;
-      margin: 0.65rem 0;
-      padding: 0.6rem;
+      margin: 0;
+      padding: var(--space-4);
       border: 1px solid color-mix(in srgb, var(--danger) 20%, var(--rule));
       border-radius: 0.65rem;
       background: color-mix(in srgb, var(--danger) 3%, #fff);
       display: grid;
       grid-template-columns: 104px 1fr;
-      gap: 0.7rem;
-      align-items: center;
+      gap: var(--space-4);
+      align-items: start;
     }
     .wrong-thumb {
       border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--rule));
@@ -311,12 +429,135 @@
       display: block;
     }
     @media (max-width: 560px) {
-      .wrong-item { grid-template-columns: 1fr; }
+      .wrong-item { grid-template-columns: 1fr; gap: var(--space-3); }
       .wrong-thumb { max-width: 140px; }
     }
     .ok { color: var(--success); font-weight: 700; }
     .bad { color: var(--danger); font-weight: 700; }
+
+    /* --- แผนภูมิวง (donut) สรุป ถูก · ตอบผิด · หมดเวลา --- */
+    .pie-summary {
+      border-left: 3px solid color-mix(in srgb, var(--accent) 48%, var(--rule));
+      background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 5%, var(--paper-2)), var(--paper-2));
+    }
+    .pie-topic-line {
+      margin: 0 0 var(--space-4);
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .pie-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-5);
+    }
+    .pie-donut-shell {
+      position: relative;
+      width: min(11.5rem, 78vw);
+      height: min(11.5rem, 78vw);
+      flex-shrink: 0;
+    }
+    .pie-donut {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #e2e8f0, #cbd5e1);
+      box-shadow:
+        0 8px 28px rgba(37, 99, 235, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+      transition: background 0.35s var(--ease-out);
+    }
+    .pie-hole {
+      position: absolute;
+      inset: 21%;
+      border-radius: 50%;
+      background: var(--paper-2);
+      box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.06);
+      z-index: 1;
+    }
+    .pie-center-text {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      text-align: center;
+      padding: 28%;
+    }
+    .pie-pct {
+      font-size: clamp(1.5rem, 5.5vw, 1.95rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .pie-pct-sub {
+      margin-top: 0.35rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .pie-legend {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      min-width: min(17rem, 100%);
+    }
+    .pie-legend li {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.94rem;
+      color: var(--ink-muted);
+    }
+    .pie-legend .swatch {
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+    }
+    .pie-legend__ok .swatch { background: #22c55e; }
+    .pie-legend__bad .swatch { background: #ef4444; }
+    .pie-legend__time .swatch { background: #f59e0b; }
+    .pie-legend strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
     #gameArea[hidden], #startScreen[hidden], #endScreen[hidden] { display: none !important; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .app-header,
+      #startScreen:not([hidden]),
+      #endScreen:not([hidden]) {
+        animation: none !important;
+      }
+      .flashcard--enter,
+      #feedback.feedback--in,
+      .choice.choice--pop,
+      .stat--score.is-bump {
+        animation: none !important;
+      }
+      .chip-row label:hover,
+      .btn-primary:hover,
+      .btn-ghost:hover,
+      .choice:hover:not(:disabled) {
+        transform: none;
+      }
+      .stat { transition: none; }
+    }
   </style>
 </head>
 <body>
@@ -328,7 +569,7 @@
 
   <main id="main">
     <div id="startScreen">
-      <p>คลังข้อสอบมี 30 ข้อ (มีทั้งเศษส่วนปกติและเศษส่วนเกิน) เลือกจำนวนข้อและเวลา/ข้อก่อนเริ่มเล่น</p>
+      <p>คลังข้อสอบมี 30 ข้อ (มีทั้งเศษส่วนปกติและเศษส่วนเกิน) เลือกจำนวนข้อและเวลา/ข้อ (7 หรือ 10 วินาที) ก่อนเริ่มเล่น</p>
       <fieldset class="setup-group">
         <legend>จำนวนข้อ</legend>
         <div class="chip-row" role="radiogroup" aria-label="จำนวนข้อ">
@@ -342,24 +583,25 @@
       <fieldset class="setup-group">
         <legend>เวลา / ข้อ</legend>
         <div class="chip-row" role="radiogroup" aria-label="เวลาแต่ละข้อ">
-          <input type="radio" name="qtime" id="qt3" value="3"><label for="qt3">3 วินาที</label>
-          <input type="radio" name="qtime" id="qt5" value="5" checked><label for="qt5">5 วินาที</label>
-          <input type="radio" name="qtime" id="qt7" value="7"><label for="qt7">7 วินาที</label>
+          <input type="radio" name="qtime" id="qt7" value="7" checked><label for="qt7">7 วินาที</label>
+          <input type="radio" name="qtime" id="qt10" value="10"><label for="qt10">10 วินาที</label>
         </div>
       </fieldset>
       <button type="button" class="btn-primary" id="btnStart">เริ่มเล่น</button>
     </div>
 
     <div id="gameArea" hidden>
-      <div class="hud">
-        <span class="stat">ถูก <strong id="score">0</strong> ข้อ</span>
-        <span class="stat">ข้อ <strong id="qNum">1</strong> / <span id="qTotal">10</span></span>
-        <span class="stat">เหลือ <strong id="timeLabel">5.0</strong> วิ</span>
+      <div class="game-toolbar">
+        <div class="hud">
+          <span class="stat stat--score">ถูก <strong id="score">0</strong> ข้อ</span>
+          <span class="stat">ข้อ <strong id="qNum">1</strong> / <span id="qTotal">10</span></span>
+          <span class="stat">เหลือ <strong id="timeLabel">7.0</strong> วิ</span>
+        </div>
+        <div class="timer-wrap" id="timerWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+          <div id="timerBar"></div>
+        </div>
       </div>
-      <div class="timer-wrap" id="timerWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
-        <div id="timerBar"></div>
-      </div>
-      <div class="flashcard">
+      <div class="flashcard" id="flashcard">
         <div class="question-label">โจทย์</div>
         <div id="questionPrompt">รูปนี้คือเศษส่วนเท่าไร ?</div>
         <div class="sheet-wrap">
@@ -375,6 +617,24 @@
 
     <div id="endScreen" hidden>
       <p id="endTitle">จบชุดแล้ว</p>
+      <div class="summary-box pie-summary" id="pieSummaryBox">
+        <p class="pie-topic-line" id="pieTopicLine"></p>
+        <div class="pie-wrap">
+          <div class="pie-donut-shell">
+            <div class="pie-donut" id="pieDonut" role="img" aria-label=""></div>
+            <div class="pie-hole" aria-hidden="true"></div>
+            <div class="pie-center-text">
+              <span class="pie-pct" id="pieAccPct">—</span>
+              <span class="pie-pct-sub">ความแม่นยำ</span>
+            </div>
+          </div>
+          <ul class="pie-legend">
+            <li class="pie-legend__ok"><span class="swatch"></span>ถูก <strong id="pieNCorrect">0</strong> ข้อ</li>
+            <li class="pie-legend__bad"><span class="swatch"></span>ตอบผิด <strong id="pieNWrongAns">0</strong> ข้อ</li>
+            <li class="pie-legend__time"><span class="swatch"></span>หมดเวลา <strong id="pieNTimeout">0</strong> ข้อ</li>
+          </ul>
+        </div>
+      </div>
       <div class="summary-box">
         <div class="summary-row"><span>ตอบถูก</span><strong class="ok" id="sumCorrect">0</strong></div>
         <div class="summary-row"><span>ตอบผิด</span><strong class="bad" id="sumWrong">0</strong></div>
@@ -409,7 +669,7 @@
       ];
 
       var totalQuestions = 10;
-      var questionSec = 5;
+      var questionSec = 7;
       var order = [];
       var questionIndex = 0;
       var current = null;
@@ -567,27 +827,42 @@
         var qc = document.querySelector('input[name="qcount"]:checked');
         var qt = document.querySelector('input[name="qtime"]:checked');
         totalQuestions = qc ? parseInt(qc.value, 10) : 10;
-        questionSec = qt ? parseInt(qt.value, 10) : 5;
+        questionSec = qt ? parseInt(qt.value, 10) : 7;
+      }
+
+      function triggerCardEnter() {
+        var card = el('flashcard');
+        if (!card) return;
+        card.classList.remove('flashcard--enter');
+        void card.offsetWidth;
+        card.classList.add('flashcard--enter');
       }
 
       function setFeedback(text, cls) {
         var f = el('feedback');
+        f.classList.remove('feedback--in');
         f.textContent = text;
         f.className = cls || '';
+        if (text) {
+          f.classList.add('feedback--in');
+        }
       }
 
       function setFeedbackAnswer(prefix, q, cls) {
         var f = el('feedback');
+        f.classList.remove('feedback--in');
+        f.innerHTML = '';
         f.className = cls || '';
-        f.textContent = prefix + ' ';
         var nrm = normalize(q.n, q.d);
         var tex = fracTex(nrm.n, nrm.d);
         if (nrm.n > nrm.d) {
           tex += '\\;=\\;' + mixedTex(nrm.n, nrm.d);
         }
+        f.appendChild(document.createTextNode(prefix + ' '));
         var wrap = document.createElement('span');
         renderLatexInto(wrap, tex, false);
         f.appendChild(wrap);
+        f.classList.add('feedback--in');
       }
 
       function questionLabelTex(q) {
@@ -706,7 +981,21 @@
         if (value === answer) {
           score += 1;
           el('score').textContent = String(score);
-          btn.classList.add('correct');
+          btn.classList.add('correct', 'choice--pop');
+          var scoreStat = el('score').closest('.stat--score');
+          if (scoreStat) {
+            scoreStat.classList.remove('is-bump');
+            void scoreStat.offsetWidth;
+            scoreStat.classList.add('is-bump');
+            scoreStat.addEventListener(
+              'animationend',
+              function onBumpEnd() {
+                scoreStat.classList.remove('is-bump');
+                scoreStat.removeEventListener('animationend', onBumpEnd);
+              },
+              { once: true }
+            );
+          }
           setFeedback('ถูกต้อง +1 คะแนน', 'ok');
           nextId = setTimeout(nextQuestion, 650);
         } else {
@@ -748,7 +1037,47 @@
         el('questionPrompt').textContent = 'รูปนี้คือเศษส่วนเท่าไร ?';
         renderQuestionSvg(current);
         renderChoices(current);
+        triggerCardEnter();
         startTimer();
+      }
+
+      function updatePieChart(topicLine, correct, wrongAns, timeoutC) {
+        var lineEl = el('pieTopicLine');
+        if (lineEl) lineEl.textContent = topicLine;
+        var total = correct + wrongAns + timeoutC;
+        var nc = el('pieNCorrect');
+        var nw = el('pieNWrongAns');
+        var nt = el('pieNTimeout');
+        var accEl = el('pieAccPct');
+        var donut = el('pieDonut');
+        if (nc) nc.textContent = String(correct);
+        if (nw) nw.textContent = String(wrongAns);
+        if (nt) nt.textContent = String(timeoutC);
+        if (!donut) return;
+        if (total === 0) {
+          donut.style.background = 'linear-gradient(145deg, #e2e8f0, #cbd5e1)';
+          if (accEl) accEl.textContent = '—';
+          donut.setAttribute('aria-label', 'ยังไม่มีข้อมูล');
+          return;
+        }
+        var acc = Math.round((correct / total) * 100);
+        if (accEl) accEl.textContent = acc + '%';
+        var p1 = (correct / total) * 100;
+        var p2 = ((correct + wrongAns) / total) * 100;
+        donut.style.background =
+          'conic-gradient(from -90deg, #22c55e 0% ' +
+          p1 +
+          '%, #ef4444 ' +
+          p1 +
+          '% ' +
+          p2 +
+          '%, #f59e0b ' +
+          p2 +
+          '% 100%)';
+        donut.setAttribute(
+          'aria-label',
+          'ถูก ' + correct + ' ข้อ ตอบผิด ' + wrongAns + ' ข้อ หมดเวลา ' + timeoutC + ' ข้อ'
+        );
       }
 
       function showEnd(title) {
@@ -756,15 +1085,28 @@
         el('gameArea').hidden = true;
         el('endScreen').hidden = false;
         el('endTitle').textContent = title || 'จบชุดแล้ว';
+        var wrongAnsOnly = Math.max(0, wrong - timeout);
         var done = score + wrong;
         var acc = done ? Math.round((score / done) * 100) : 0;
         el('sumCorrect').textContent = String(score);
-        el('sumWrong').textContent = String(wrong);
+        el('sumWrong').textContent = String(wrongAnsOnly);
         el('sumTimeout').textContent = String(timeout);
         el('sumTotal').textContent = String(done);
         el('sumAcc').textContent = acc + '%';
         el('sumProperMiss').textContent = String(missedProper);
         el('sumImproperMiss').textContent = String(missedImproper);
+        updatePieChart(
+          'สรุปเศษส่วนจากรูป: ถูก ' +
+            score +
+            ' ข้อ · ตอบผิด ' +
+            wrongAnsOnly +
+            ' ข้อ · หมดเวลา ' +
+            timeout +
+            ' ข้อ',
+          score,
+          wrongAnsOnly,
+          timeout
+        );
         renderWrongList();
       }
 
