@@ -118,7 +118,7 @@
       border-radius: var(--radius-md);
     }
     .app-header {
-      margin-bottom: clamp(1.5rem, 5vw, 2.5rem);
+      margin-bottom: clamp(1rem, 3.5vw, 2rem);
       border-left: 5px solid color-mix(in srgb, var(--accent) 78%, #1e3a8a);
       padding-left: var(--space-4);
     }
@@ -193,14 +193,29 @@
         clamp(var(--space-4), 3.5vw, var(--space-7));
       display: flex;
       flex-direction: column;
-      gap: var(--stack-major);
+      gap: clamp(1rem, 3vw, var(--stack-major));
       transform: translateZ(0);
     }
     .panel__visual {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-5);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      align-items: stretch;
       contain: layout;
+    }
+    @container frac-panel (min-width: 28rem) {
+      .panel__visual {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: var(--space-4);
+        align-items: stretch;
+      }
+    }
+    @media (min-width: 28rem) {
+      .panel__visual {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: var(--space-4);
+        align-items: stretch;
+      }
     }
     .viz-stage {
       position: relative;
@@ -275,18 +290,11 @@
       outline-offset: 2px;
     }
     .panel__controls {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-5);
-    }
-    @media (min-width: 42rem) {
-      .panel__controls {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        column-gap: var(--space-7);
-        row-gap: var(--space-5);
-        align-items: stretch;
-      }
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: clamp(0.5rem, 2.5vw, var(--space-5));
+      row-gap: var(--space-3);
+      align-items: end;
     }
     fieldset.panel__controls {
       border: none;
@@ -337,10 +345,14 @@
       border: 1px solid color-mix(in srgb, var(--rule) 72%, var(--accent));
       border-left: 4px solid color-mix(in srgb, var(--accent) 75%, #1e3a8a);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-      min-height: 11rem;
+      min-height: 9.5rem;
+      height: 100%;
       box-sizing: border-box;
       width: 100%;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     @keyframes readoutTick {
       from {
@@ -359,7 +371,7 @@
       margin-bottom: var(--space-2);
     }
     .readout .readout__main .katex {
-      font-size: clamp(1.55em, 5.5vw, 2.45em);
+      font-size: clamp(1.45em, 4.5vw, 2.35em);
     }
     .readout-meta {
       display: flex;
@@ -554,6 +566,26 @@
       font-weight: 600;
       color: color-mix(in srgb, var(--ink) 35%, var(--ink-muted));
     }
+    @container frac-panel (max-width: 27.99rem) {
+      .panel__visual {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 27.99rem) {
+      .panel__visual {
+        grid-template-columns: 1fr;
+      }
+    }
+    @container frac-panel (max-width: 20rem) {
+      .panel__controls {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 20rem) {
+      .panel__controls {
+        grid-template-columns: 1fr;
+      }
+    }
     @container frac-panel (max-width: 22rem) {
       .viz-stage {
         padding: var(--space-3);
@@ -571,7 +603,7 @@
         white-space: normal;
       }
       .readout--framed {
-        min-height: 10.5rem;
+        min-height: 10rem;
       }
     }
     @media (max-width: 22rem) {
@@ -591,7 +623,7 @@
         white-space: normal;
       }
       .readout--framed {
-        min-height: 10.5rem;
+        min-height: 10rem;
       }
     }
     @media (pointer: coarse) {
@@ -661,24 +693,6 @@
 
   <main id="main" tabindex="-1">
     <section class="panel" aria-label="เศษส่วนจากภาพ เลื่อนตัวส่วนและตัวเศษ">
-      <div class="panel__visual">
-        <div class="viz-stage">
-          <div class="viz-toolbar">
-            <div class="viz-mode" role="group" aria-label="รูปแบบการแบ่งภาพ">
-              <span class="viz-mode__label" id="vizModeLabel">แสดงเป็น</span>
-              <div class="viz-mode__toggle" role="radiogroup" aria-labelledby="vizModeLabel">
-                <button type="button" class="viz-mode__btn is-active" id="modeCircle" data-mode="circle" aria-pressed="true" aria-label="แสดงเป็นวงกลม">วงกลม</button>
-                <button type="button" class="viz-mode__btn" id="modeRect" data-mode="rect" aria-pressed="false" aria-label="แสดงเป็นสี่เหลี่ยม">สี่เหลี่ยม</button>
-              </div>
-            </div>
-          </div>
-          <div class="viz-wrap">
-            <svg id="fracSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" role="img" focusable="false" aria-label="ภาพแบ่งส่วน เปลี่ยนตามตัวส่วนและตัวเศษที่เลือก"></svg>
-          </div>
-        </div>
-        <div class="readout readout--framed" id="readout" aria-live="polite" aria-atomic="true"></div>
-      </div>
-
       <fieldset class="panel__controls">
         <legend class="visually-hidden">เลือกค่าตัวเศษและตัวส่วน</legend>
         <div class="slider-block">
@@ -717,6 +731,24 @@
           </div>
         </div>
       </fieldset>
+
+      <div class="panel__visual">
+        <div class="viz-stage">
+          <div class="viz-toolbar">
+            <div class="viz-mode" role="group" aria-label="รูปแบบการแบ่งภาพ">
+              <span class="viz-mode__label" id="vizModeLabel">แสดงเป็น</span>
+              <div class="viz-mode__toggle" role="radiogroup" aria-labelledby="vizModeLabel">
+                <button type="button" class="viz-mode__btn is-active" id="modeCircle" data-mode="circle" aria-pressed="true" aria-label="แสดงเป็นวงกลม">วงกลม</button>
+                <button type="button" class="viz-mode__btn" id="modeRect" data-mode="rect" aria-pressed="false" aria-label="แสดงเป็นสี่เหลี่ยม">สี่เหลี่ยม</button>
+              </div>
+            </div>
+          </div>
+          <div class="viz-wrap">
+            <svg id="fracSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" role="img" focusable="false" aria-label="ภาพแบ่งส่วน เปลี่ยนตามตัวส่วนและตัวเศษที่เลือก"></svg>
+          </div>
+        </div>
+        <div class="readout readout--framed" id="readout" aria-live="polite" aria-atomic="true"></div>
+      </div>
 
       <p class="hint"><strong>ตัวส่วน</strong> คือแบ่งหนึ่งหน่วยเป็นชิ้นเท่าๆ กันกี่ชิ้น · <strong>ตัวเศษ</strong> คือทาสีไปกี่ชิ้น · ถ้าเศษมากกว่าส่วน จะเห็นหน่วยเต็มหลายก้อนตามจำนวนที่เลือก · สลับ <strong>วงกลม</strong> หรือ <strong>สี่เหลี่ยม</strong> ได้ (ตรรกะเดียวกัน)</p>
     </section>
