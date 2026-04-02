@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e2ecfc">
+  <meta name="description" content="เลื่อนตัวส่วนและตัวเศษ ดูวงกลมกับเศษส่วนเปลี่ยนตาม">
+  <title>เศษส่วนกับภาพ — ลองปรับค่า</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <style>
+    :root {
+      --paper: #eef5ff;
+      --paper-2: #fbfdff;
+      --ink: #10213f;
+      --ink-muted: #4f6482;
+      --rule: #c4d4ec;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--paper-2));
+      --frac-sector-fill: #6b93d6;
+      --frac-stroke: #1e3a5f;
+      --frac-canvas: #ffffff;
+      --focus-ring: color-mix(in srgb, var(--accent) 55%, #1e3a8a);
+      --radius-lg: 1rem;
+      --radius-md: 0.85rem;
+      --radius-pill: 999px;
+      --shadow-card: 0 1px 0 rgba(29, 78, 216, 0.06), 0 14px 36px -16px rgba(15, 40, 90, 0.26);
+      --shadow-hero: 0 18px 48px -22px rgba(15, 40, 90, 0.32), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-7: 2rem;
+      --space-8: 2.5rem;
+      --section-gap: clamp(1.25rem, 4vw, 2rem);
+      --stack-tight: var(--space-3);
+      --stack-relaxed: var(--space-6);
+      --stack-major: clamp(1.75rem, 5vw, 2.75rem);
+      --content-max: min(48rem, 100vw - 1.25rem);
+      --touch-min: 2.75rem;
+      --readout-pad: clamp(var(--space-4), 3vw, var(--space-6));
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      --dur-enter: 0.48s;
+      --dur-feedback: 0.22s;
+    }
+    * { box-sizing: border-box; }
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    .skip-link {
+      position: absolute;
+      left: max(var(--space-3), env(safe-area-inset-left, 0px));
+      top: max(var(--space-3), env(safe-area-inset-top, 0px));
+      z-index: 50;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      background: var(--ink);
+      color: var(--paper-2);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transform: translateY(-120%);
+      transition: transform 0.2s var(--ease-out);
+    }
+    .skip-link:focus {
+      outline: none;
+    }
+    .skip-link:focus-visible {
+      transform: translateY(0);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: 'Kanit', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background: linear-gradient(165deg, #e2ecfc 0%, #f0f6ff 36%, #ffffff 72%);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: max(clamp(var(--space-4), 5vw, var(--space-7)), env(safe-area-inset-top, 0px));
+      padding-right: max(clamp(var(--space-3), 4vw, var(--space-5)), env(safe-area-inset-right, 0px));
+      padding-bottom: max(clamp(var(--space-4), 5vw, var(--space-7)), env(safe-area-inset-bottom, 0px));
+      padding-left: max(clamp(var(--space-3), 4vw, var(--space-5)), env(safe-area-inset-left, 0px));
+    }
+    #main, .app-header {
+      width: min(100%, var(--content-max));
+      max-width: 100%;
+    }
+    #main:focus {
+      outline: none;
+    }
+    #main:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 4px;
+      border-radius: var(--radius-md);
+    }
+    .app-header {
+      margin-bottom: clamp(1.5rem, 5vw, 2.5rem);
+      border-left: 5px solid color-mix(in srgb, var(--accent) 78%, #1e3a8a);
+      padding-left: var(--space-4);
+    }
+    @keyframes enterFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes enterMain {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .app-header .brand {
+      animation: enterFadeUp var(--dur-enter) var(--ease-out-quart) both;
+    }
+    .app-header h1 {
+      animation: enterFadeUp var(--dur-enter) var(--ease-out-quart) 0.06s both;
+    }
+    .app-header .subtitle {
+      animation: enterFadeUp var(--dur-enter) var(--ease-out-quart) 0.12s both;
+    }
+    #main {
+      animation: enterMain calc(var(--dur-enter) + 0.06s) var(--ease-out-quart) 0.08s both;
+    }
+    .brand {
+      display: inline-flex;
+      border-radius: var(--radius-pill);
+      padding: 0.5rem 1.15rem;
+      color: #f8fbff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: none;
+      background: linear-gradient(145deg, #172554 0%, #1d4ed8 48%, #2563eb 100%);
+      box-shadow: 0 10px 28px -12px rgba(23, 37, 84, 0.55), 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+    }
+    h1 {
+      margin: var(--space-2) 0 0;
+      font-size: clamp(1.5rem, 5vw, 2.1rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      color: color-mix(in srgb, var(--ink) 94%, var(--accent) 6%);
+    }
+    .subtitle {
+      margin: var(--space-3) 0 0;
+      max-width: min(38rem, 100%);
+      color: var(--ink-muted);
+      line-height: 1.55;
+      font-size: max(0.95rem, 16px);
+      text-wrap: pretty;
+    }
+    .panel {
+      container-type: inline-size;
+      container-name: frac-panel;
+      background: var(--paper-2);
+      border: 1px solid color-mix(in srgb, var(--rule) 88%, var(--accent));
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: clamp(var(--space-6), 4.5vw, var(--space-8))
+        clamp(var(--space-4), 3.5vw, var(--space-7));
+      display: flex;
+      flex-direction: column;
+      gap: var(--stack-major);
+      transform: translateZ(0);
+    }
+    .panel__visual {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+      contain: layout;
+    }
+    .viz-stage {
+      position: relative;
+      padding: var(--space-4) var(--space-4);
+      border-radius: calc(var(--radius-lg) + 2px);
+      background: linear-gradient(
+        168deg,
+        color-mix(in srgb, var(--accent) 9%, #ffffff) 0%,
+        color-mix(in srgb, var(--accent) 3.5%, #fbfdff) 52%,
+        color-mix(in srgb, var(--paper-2) 96%, var(--accent)) 100%
+      );
+      border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--rule));
+      box-shadow: var(--shadow-hero);
+    }
+    .viz-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+    .viz-mode {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .viz-mode__label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--ink) 45%, var(--ink-muted));
+    }
+    .viz-mode__toggle {
+      display: inline-flex;
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      background: color-mix(in srgb, var(--rule) 48%, var(--paper-2));
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--rule));
+      gap: 3px;
+    }
+    .viz-mode__btn {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      min-height: var(--touch-min);
+      min-width: var(--touch-min);
+      padding: 0.5rem 1.15rem;
+      border: none;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      color: var(--ink-muted);
+      background: transparent;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: color-mix(in srgb, var(--accent) 22%, transparent);
+      transition: background 0.18s var(--ease-out), color 0.18s var(--ease-out);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .viz-mode__btn:hover {
+        color: var(--ink);
+      }
+    }
+    .viz-mode__btn.is-active {
+      background: #fff;
+      color: color-mix(in srgb, var(--accent) 92%, #0f172a);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(15, 40, 90, 0.14);
+    }
+    .viz-mode__btn:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+    .panel__controls {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    @media (min-width: 42rem) {
+      .panel__controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: var(--space-7);
+        row-gap: var(--space-5);
+        align-items: stretch;
+      }
+    }
+    fieldset.panel__controls {
+      border: none;
+      margin: 0;
+      padding: 0;
+      min-width: 0;
+    }
+    .viz-wrap {
+      border: 2px solid color-mix(in srgb, var(--accent) 42%, var(--rule));
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--frac-canvas);
+      transition: box-shadow var(--dur-feedback) var(--ease-out);
+    }
+    @keyframes vizGlow {
+      from {
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+      }
+      to {
+        box-shadow: 0 0 0 0 transparent;
+      }
+    }
+    .viz-wrap.viz-wrap--tick {
+      animation: vizGlow var(--dur-feedback) var(--ease-out) both;
+    }
+    .viz-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      aspect-ratio: 1000 / 500;
+    }
+    .readout {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: var(--space-2);
+      transform-origin: center top;
+      width: 100%;
+      min-width: 0;
+    }
+    .readout--framed {
+      padding: var(--readout-pad);
+      margin: 0;
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--accent-soft) 88%, var(--paper-2));
+      border: 1px solid color-mix(in srgb, var(--rule) 72%, var(--accent));
+      border-left: 4px solid color-mix(in srgb, var(--accent) 75%, #1e3a8a);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      min-height: 11rem;
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+    }
+    @keyframes readoutTick {
+      from {
+        opacity: 0.72;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    .readout.readout--tick {
+      animation: readoutTick 0.26s var(--ease-out-quart) both;
+    }
+    .readout__main {
+      width: 100%;
+      min-width: 0;
+      margin-bottom: var(--space-2);
+    }
+    .readout .readout__main .katex {
+      font-size: clamp(1.55em, 5.5vw, 2.45em);
+    }
+    .readout-meta {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.35rem;
+      width: 100%;
+      min-height: 6rem;
+      font-size: 0.94rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
+    }
+    .readout-meta__row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.85rem;
+      text-align: center;
+      color: color-mix(in srgb, var(--ink) 32%, var(--ink-muted));
+      font-style: normal;
+    }
+    .readout-meta__row--empty {
+      visibility: hidden;
+      user-select: none;
+    }
+    .readout-meta__inner {
+      display: inline-flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      row-gap: 0.25rem;
+      width: 100%;
+      max-width: 22rem;
+      margin: 0 auto;
+      min-height: 2.75rem;
+    }
+    .readout-meta__lbl {
+      flex: 0 0 auto;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .readout-meta__eq {
+      flex: 0 0 auto;
+      opacity: 0.88;
+      font-weight: 500;
+    }
+    .readout-meta__val {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 6rem;
+      min-height: 2.5rem;
+    }
+    .frac-stack {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      min-width: 2.5em;
+      line-height: 1.05;
+      font-weight: 700;
+      color: inherit;
+    }
+    .frac-stack__n,
+    .frac-stack__d {
+      font-variant-numeric: tabular-nums;
+      padding: 0 0.2em;
+    }
+    .frac-stack__bar {
+      display: block;
+      width: 100%;
+      min-width: 2.75ch;
+      border: 0;
+      border-top: 1.5px solid currentColor;
+      margin: 0.1em 0;
+    }
+    .frac-stack--integer {
+      font-weight: 700;
+      font-size: 1.12em;
+    }
+    .mixed-stack {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+      vertical-align: middle;
+    }
+    .mixed-stack__w {
+      font-weight: 700;
+      font-size: 1.12em;
+      font-variant-numeric: tabular-nums;
+    }
+    .mixed-stack__frac {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slider-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--stack-tight);
+      min-width: 0;
+    }
+    .slider-block__label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: color-mix(in srgb, var(--accent) 22%, var(--ink));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      line-height: 1.2;
+    }
+    .slider-block__name {
+      letter-spacing: 0.02em;
+    }
+    .slider-block__badge {
+      font-variant-numeric: tabular-nums;
+      font-size: 1.2rem;
+      font-weight: 800;
+      min-width: 2.6rem;
+      padding: 0.28rem 0.7rem;
+      text-align: center;
+      border-radius: var(--radius-md);
+      color: color-mix(in srgb, var(--accent) 95%, #0f172a);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, #fff) 0%, color-mix(in srgb, var(--accent) 8%, var(--paper-2)) 100%);
+      border: 2px solid color-mix(in srgb, var(--accent) 38%, var(--rule));
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 2px 6px rgba(37, 99, 235, 0.12);
+      transform-origin: center center;
+    }
+    .slider-block__track {
+      display: flex;
+      align-items: center;
+      min-height: 2.75rem;
+      padding-block: var(--space-1);
+    }
+    @keyframes valPop {
+      from {
+        opacity: 1;
+      }
+      40% {
+        opacity: 0.55;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    .slider-block__badge.val--pop {
+      animation: valPop 0.24s var(--ease-out) both;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 10px;
+      border-radius: var(--radius-pill);
+      background: color-mix(in srgb, var(--rule) 70%, transparent);
+      accent-color: var(--accent);
+      cursor: pointer;
+      vertical-align: middle;
+      touch-action: manipulation;
+      transition: filter 0.2s var(--ease-out), opacity 0.18s var(--ease-out);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      input[type="range"]:hover {
+        filter: brightness(1.03);
+      }
+    }
+    input[type="range"]:active {
+      opacity: 0.92;
+    }
+    input[type="range"]:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
+    input[type="range"]:focus:not(:focus-visible) {
+      outline: none;
+    }
+    .hint {
+      margin: 0;
+      font-size: max(0.875rem, 14px);
+      color: var(--ink-muted);
+      line-height: 1.6;
+      padding-top: var(--space-5);
+      border-top: 1px solid color-mix(in srgb, var(--rule) 88%, var(--accent));
+    }
+    .hint strong {
+      font-weight: 600;
+      color: color-mix(in srgb, var(--ink) 35%, var(--ink-muted));
+    }
+    @container frac-panel (max-width: 22rem) {
+      .viz-stage {
+        padding: var(--space-3);
+        border-radius: var(--radius-lg);
+      }
+      .viz-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .viz-mode {
+        justify-content: space-between;
+        width: 100%;
+      }
+      .readout-meta__lbl {
+        white-space: normal;
+      }
+      .readout--framed {
+        min-height: 10.5rem;
+      }
+    }
+    @media (max-width: 22rem) {
+      .viz-stage {
+        padding: var(--space-3);
+        border-radius: var(--radius-lg);
+      }
+      .viz-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .viz-mode {
+        justify-content: space-between;
+        width: 100%;
+      }
+      .readout-meta__lbl {
+        white-space: normal;
+      }
+      .readout--framed {
+        min-height: 10.5rem;
+      }
+    }
+    @media (pointer: coarse) {
+      .slider-block__track {
+        min-height: var(--touch-min);
+        padding-block: 0.65rem;
+      }
+      input[type="range"] {
+        height: 14px;
+      }
+    }
+    @media (max-height: 30rem) and (orientation: landscape) {
+      .app-header {
+        margin-bottom: 1rem;
+      }
+      .subtitle {
+        font-size: max(0.9rem, 16px);
+      }
+      .viz-stage {
+        padding: var(--space-3);
+      }
+      .readout--framed {
+        min-height: 9.5rem;
+      }
+      .panel {
+        gap: clamp(1rem, 3vh, var(--stack-major));
+        padding-top: clamp(var(--space-4), 3vh, var(--space-6));
+        padding-bottom: clamp(var(--space-4), 3vh, var(--space-6));
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .app-header .brand,
+      .app-header h1,
+      .app-header .subtitle,
+      #main {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .viz-wrap.viz-wrap--tick,
+      .readout.readout--tick,
+      .slider-block__badge.val--pop {
+        animation: none !important;
+      }
+      .viz-wrap {
+        transition: none;
+      }
+      input[type="range"] {
+        transition: none;
+      }
+      input[type="range"]:active {
+        opacity: 1;
+      }
+      .skip-link {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">ข้ามไปยังเนื้อหาหลัก</a>
+  <header class="app-header">
+    <span class="brand">สำรวจคณิต</span>
+    <h1>เศษส่วนกับภาพ</h1>
+    <p class="subtitle">เลื่อนตัวส่วนและตัวเศษ จะเห็นการเปลี่ยนแปลงทันที</p>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="panel" aria-label="เศษส่วนจากภาพ เลื่อนตัวส่วนและตัวเศษ">
+      <div class="panel__visual">
+        <div class="viz-stage">
+          <div class="viz-toolbar">
+            <div class="viz-mode" role="group" aria-label="รูปแบบการแบ่งภาพ">
+              <span class="viz-mode__label" id="vizModeLabel">แสดงเป็น</span>
+              <div class="viz-mode__toggle" role="radiogroup" aria-labelledby="vizModeLabel">
+                <button type="button" class="viz-mode__btn is-active" id="modeCircle" data-mode="circle" aria-pressed="true" aria-label="แสดงเป็นวงกลม">วงกลม</button>
+                <button type="button" class="viz-mode__btn" id="modeRect" data-mode="rect" aria-pressed="false" aria-label="แสดงเป็นสี่เหลี่ยม">สี่เหลี่ยม</button>
+              </div>
+            </div>
+          </div>
+          <div class="viz-wrap">
+            <svg id="fracSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" role="img" focusable="false" aria-label="ภาพแบ่งส่วน เปลี่ยนตามตัวส่วนและตัวเศษที่เลือก"></svg>
+          </div>
+        </div>
+        <div class="readout readout--framed" id="readout" aria-live="polite" aria-atomic="true"></div>
+      </div>
+
+      <fieldset class="panel__controls">
+        <legend class="visually-hidden">เลือกค่าตัวเศษและตัวส่วน</legend>
+        <div class="slider-block">
+          <label class="slider-block__label" for="denSlider">
+            <span class="slider-block__name">ตัวส่วน</span>
+            <span class="slider-block__badge" id="denVal" aria-hidden="true">4</span>
+          </label>
+          <div class="slider-block__track">
+            <input
+              type="range"
+              id="denSlider"
+              min="2"
+              max="12"
+              step="1"
+              value="4"
+              aria-label="ตัวส่วน: แบ่งหนึ่งหน่วยเป็นชิ้นเท่าๆ กันกี่ชิ้น"
+            />
+          </div>
+        </div>
+
+        <div class="slider-block">
+          <label class="slider-block__label" for="numSlider">
+            <span class="slider-block__name">ตัวเศษ</span>
+            <span class="slider-block__badge" id="numVal" aria-hidden="true">3</span>
+          </label>
+          <div class="slider-block__track">
+            <input
+              type="range"
+              id="numSlider"
+              min="0"
+              max="12"
+              step="1"
+              value="3"
+              aria-label="ตัวเศษ: จำนวนชิ้นที่ทาสี (นับจากเศษส่วนทั้งหมดที่แสดง)"
+            />
+          </div>
+        </div>
+      </fieldset>
+
+      <p class="hint"><strong>ตัวส่วน</strong> คือแบ่งหนึ่งหน่วยเป็นชิ้นเท่าๆ กันกี่ชิ้น · <strong>ตัวเศษ</strong> คือทาสีไปกี่ชิ้น · ถ้าเศษมากกว่าส่วน จะเห็นหน่วยเต็มหลายก้อนตามจำนวนที่เลือก · สลับ <strong>วงกลม</strong> หรือ <strong>สี่เหลี่ยม</strong> ได้ (ตรรกะเดียวกัน)</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var NS = 'http://www.w3.org/2000/svg';
+      var svg = document.getElementById('fracSvg');
+      var denSlider = document.getElementById('denSlider');
+      var numSlider = document.getElementById('numSlider');
+      var readout = document.getElementById('readout');
+      var vizWrap = document.querySelector('.viz-wrap');
+      var numValEl = document.getElementById('numVal');
+      var denValEl = document.getElementById('denVal');
+      var modeCircleBtn = document.getElementById('modeCircle');
+      var modeRectBtn = document.getElementById('modeRect');
+      var MODE_STORAGE = 'fraction0-viz-mode';
+      var vizMode = 'circle';
+      var prevN = null;
+      var prevD = null;
+
+      function loadVizMode() {
+        try {
+          var s = localStorage.getItem(MODE_STORAGE);
+          if (s === 'rect' || s === 'circle') {
+            return s;
+          }
+        } catch (e) {}
+        return 'circle';
+      }
+
+      function saveVizMode(m) {
+        try {
+          localStorage.setItem(MODE_STORAGE, m);
+        } catch (e) {}
+      }
+
+      function setVizMode(m) {
+        vizMode = m === 'rect' ? 'rect' : 'circle';
+        saveVizMode(vizMode);
+        var isCircle = vizMode === 'circle';
+        if (modeCircleBtn && modeRectBtn) {
+          modeCircleBtn.classList.toggle('is-active', isCircle);
+          modeRectBtn.classList.toggle('is-active', !isCircle);
+          modeCircleBtn.setAttribute('aria-pressed', isCircle ? 'true' : 'false');
+          modeRectBtn.setAttribute('aria-pressed', !isCircle ? 'true' : 'false');
+        }
+      }
+
+      function motionOk() {
+        return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      }
+
+      function playClassOnce(el, className) {
+        if (!el || !motionOk()) return;
+        el.classList.remove(className);
+        void el.offsetWidth;
+        el.classList.add(className);
+        function onEnd(e) {
+          if (e.target !== el) return;
+          el.removeEventListener('animationend', onEnd);
+          el.classList.remove(className);
+        }
+        el.addEventListener('animationend', onEnd);
+      }
+
+      function gcd(a, b) {
+        var x = Math.abs(a);
+        var y = Math.abs(b);
+        while (y) {
+          var t = y;
+          y = x % y;
+          x = t;
+        }
+        return x || 1;
+      }
+
+      function normalize(n, d) {
+        var g = gcd(n, d);
+        return { n: n / g, d: d / g };
+      }
+
+      function fracTex(n, d) {
+        return '\\frac{' + n + '}{' + d + '}';
+      }
+
+      function mixedTex(n, d) {
+        var w = Math.floor(n / d);
+        var r = n % d;
+        if (r === 0) return String(w);
+        if (w === 0) return fracTex(r, d);
+        return w + '\\frac{' + r + '}{' + d + '}';
+      }
+
+      function mixedPlainShort(n, d) {
+        var w = Math.floor(n / d);
+        var r = n % d;
+        if (r === 0) {
+          return String(w);
+        }
+        if (w === 0) {
+          var z = normalize(r, d);
+          return z.n + '/' + z.d;
+        }
+        var np = normalize(r, d);
+        return w + ' ' + np.n + '/' + np.d;
+      }
+
+      function appendFracStack(container, num, den) {
+        if (den === 1) {
+          var only = document.createElement('span');
+          only.className = 'frac-stack frac-stack--integer';
+          only.textContent = String(num);
+          container.appendChild(only);
+          return;
+        }
+        var w = document.createElement('span');
+        w.className = 'frac-stack';
+        w.setAttribute('role', 'img');
+        w.setAttribute('aria-label', num + ' ส่วน ' + den);
+        var ns = document.createElement('span');
+        ns.className = 'frac-stack__n';
+        ns.textContent = String(num);
+        var bar = document.createElement('span');
+        bar.className = 'frac-stack__bar';
+        bar.setAttribute('aria-hidden', 'true');
+        var ds = document.createElement('span');
+        ds.className = 'frac-stack__d';
+        ds.textContent = String(den);
+        w.appendChild(ns);
+        w.appendChild(bar);
+        w.appendChild(ds);
+        container.appendChild(w);
+      }
+
+      function appendMixedStack(container, n, d) {
+        var whole = Math.floor(n / d);
+        var r = n % d;
+        if (r === 0) {
+          var only = document.createElement('span');
+          only.className = 'frac-stack frac-stack--integer';
+          only.textContent = String(whole);
+          container.appendChild(only);
+          return;
+        }
+        var np = normalize(r, d);
+        var wrap = document.createElement('span');
+        wrap.className = 'mixed-stack';
+        wrap.setAttribute('role', 'img');
+        wrap.setAttribute('aria-label', mixedPlainShort(n, d));
+        if (whole > 0) {
+          var wh = document.createElement('span');
+          wh.className = 'mixed-stack__w';
+          wh.textContent = String(whole);
+          wrap.appendChild(wh);
+        }
+        var fracSlot = document.createElement('span');
+        fracSlot.className = 'mixed-stack__frac';
+        appendFracStack(fracSlot, np.n, np.d);
+        wrap.appendChild(fracSlot);
+        container.appendChild(wrap);
+      }
+
+      function buildMetaRow(label, isVisible, fillVal) {
+        var row = document.createElement('div');
+        if (!isVisible) {
+          row.className = 'readout-meta__row readout-meta__row--empty';
+          row.innerHTML = '&#160;';
+          row.setAttribute('aria-hidden', 'true');
+          return row;
+        }
+        row.className = 'readout-meta__row';
+        var inner = document.createElement('span');
+        inner.className = 'readout-meta__inner';
+        var lbl = document.createElement('span');
+        lbl.className = 'readout-meta__lbl';
+        lbl.textContent = label;
+        var eq = document.createElement('span');
+        eq.className = 'readout-meta__eq';
+        eq.textContent = '=';
+        var val = document.createElement('span');
+        val.className = 'readout-meta__val';
+        fillVal(val);
+        inner.appendChild(lbl);
+        inner.appendChild(eq);
+        inner.appendChild(val);
+        row.appendChild(inner);
+        return row;
+      }
+
+      function renderLatexInto(node, tex, displayMode) {
+        node.innerHTML = '';
+        if (typeof katex === 'undefined') {
+          node.textContent = tex;
+          return;
+        }
+        try {
+          katex.render(tex, node, { displayMode: !!displayMode, throwOnError: false });
+        } catch (e) {
+          node.textContent = tex;
+        }
+      }
+
+      function addSvg(tag, attrs, parent) {
+        var node = document.createElementNS(NS, tag);
+        Object.keys(attrs).forEach(function (k) {
+          node.setAttribute(k, String(attrs[k]));
+        });
+        parent.appendChild(node);
+        return node;
+      }
+
+      function polar(cx, cy, r, deg) {
+        var rad = (deg - 90) * (Math.PI / 180);
+        return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+      }
+
+      function sectorPath(cx, cy, r, startDeg, endDeg) {
+        var a = polar(cx, cy, r, startDeg);
+        var b = polar(cx, cy, r, endDeg);
+        var large = endDeg - startDeg > 180 ? 1 : 0;
+        return (
+          'M ' +
+          cx +
+          ' ' +
+          cy +
+          ' L ' +
+          a.x +
+          ' ' +
+          a.y +
+          ' A ' +
+          r +
+          ' ' +
+          r +
+          ' 0 ' +
+          large +
+          ' 1 ' +
+          b.x +
+          ' ' +
+          b.y +
+          ' Z'
+        );
+      }
+
+      function fracPalette() {
+        var r = getComputedStyle(document.documentElement);
+        return {
+          fill: (r.getPropertyValue('--frac-sector-fill') || '').trim() || '#7ea2df',
+          stroke: (r.getPropertyValue('--frac-stroke') || '').trim() || '#2f4f86',
+          canvas: (r.getPropertyValue('--frac-canvas') || '').trim() || '#ffffff'
+        };
+      }
+
+      function drawFractionIntoSvg(svgEl, q, width, height, radius, lineWidth) {
+        var pal = fracPalette();
+        svgEl.innerHTML = '';
+        addSvg('rect', { x: 0, y: 0, width: width, height: height, fill: pal.canvas }, svgEl);
+        var d = Math.max(1, q.d);
+        var n = Math.max(0, q.n);
+        var full = Math.floor(n / d);
+        var rem = n % d;
+        var circles = full + (rem > 0 ? 1 : 0);
+        if (circles === 0 && d >= 2) {
+          circles = 1;
+          rem = 0;
+        }
+        var gap = circles > 1 ? Math.round(width * 0.3) : 0;
+        var startX = circles > 1 ? Math.round(width / 2 - ((circles - 1) * gap / 2)) : Math.round(width / 2);
+        var cy = Math.round(height / 2);
+        for (var i = 0; i < circles; i++) {
+          var shade = i < full ? d : rem;
+          for (var s = 0; s < d; s++) {
+            if (s < shade) {
+              addSvg(
+                'path',
+                {
+                  d: sectorPath(startX + i * gap, cy, radius, (s * 360) / d, ((s + 1) * 360) / d),
+                  fill: pal.fill
+                },
+                svgEl
+              );
+            }
+          }
+          for (var j = 0; j < d; j++) {
+            var p = polar(startX + i * gap, cy, radius, (j * 360) / d);
+            addSvg(
+              'line',
+              {
+                x1: startX + i * gap,
+                y1: cy,
+                x2: p.x,
+                y2: p.y,
+                stroke: pal.stroke,
+                'stroke-width': lineWidth
+              },
+              svgEl
+            );
+          }
+          addSvg(
+            'circle',
+            {
+              cx: startX + i * gap,
+              cy: cy,
+              r: radius,
+              fill: 'none',
+              stroke: pal.stroke,
+              'stroke-width': lineWidth + 0.7
+            },
+            svgEl
+          );
+        }
+      }
+
+      function drawFractionRectIntoSvg(svgEl, q, width, height, radius, lineWidth) {
+        var pal = fracPalette();
+        svgEl.innerHTML = '';
+        addSvg('rect', { x: 0, y: 0, width: width, height: height, fill: pal.canvas }, svgEl);
+        var d = Math.max(1, q.d);
+        var n = Math.max(0, q.n);
+        var full = Math.floor(n / d);
+        var rem = n % d;
+        var units = full + (rem > 0 ? 1 : 0);
+        if (units === 0 && d >= 2) {
+          units = 1;
+          rem = 0;
+        }
+        var gap = units > 1 ? Math.round(width * 0.3) : 0;
+        var startX = units > 1 ? Math.round(width / 2 - ((units - 1) * gap / 2)) : Math.round(width / 2);
+        var cy = Math.round(height / 2);
+        var rw = 2 * radius;
+        var rh = radius;
+        for (var i = 0; i < units; i++) {
+          var cx = startX + i * gap;
+          var shade = i < full ? d : rem;
+          var left = cx - rw / 2;
+          var top = cy - rh / 2;
+          var colW = rw / d;
+          for (var s = 0; s < d; s++) {
+            if (s < shade) {
+              addSvg(
+                'rect',
+                {
+                  x: left + s * colW,
+                  y: top,
+                  width: colW,
+                  height: rh,
+                  fill: pal.fill
+                },
+                svgEl
+              );
+            }
+          }
+          for (var j = 1; j < d; j++) {
+            var xj = left + j * colW;
+            addSvg(
+              'line',
+              {
+                x1: xj,
+                y1: top,
+                x2: xj,
+                y2: top + rh,
+                stroke: pal.stroke,
+                'stroke-width': lineWidth
+              },
+              svgEl
+            );
+          }
+          addSvg(
+            'rect',
+            {
+              x: left,
+              y: top,
+              width: rw,
+              height: rh,
+              fill: 'none',
+              stroke: pal.stroke,
+              'stroke-width': lineWidth + 0.7
+            },
+            svgEl
+          );
+        }
+      }
+
+      function drawVizForMode(svgEl, q, width, height, radius, lineWidth) {
+        if (vizMode === 'rect') {
+          drawFractionRectIntoSvg(svgEl, q, width, height, radius, lineWidth);
+        } else {
+          drawFractionIntoSvg(svgEl, q, width, height, radius, lineWidth);
+        }
+        var label =
+          vizMode === 'rect'
+            ? 'แบ่งสี่เหลี่ยมเป็นชิ้นเท่าๆ กัน เปลี่ยนตามตัวส่วนและตัวเศษที่เลือก'
+            : 'แบ่งวงกลมเป็นชิ้นเท่าๆ กัน เปลี่ยนตามตัวส่วนและตัวเศษที่เลือก';
+        svgEl.setAttribute('aria-label', label);
+      }
+
+      function syncNumMax() {
+        var d = parseInt(denSlider.value, 10);
+        var maxN = Math.min(4 * d, 48);
+        numSlider.max = String(maxN);
+        var n = parseInt(numSlider.value, 10);
+        if (n > maxN) {
+          numSlider.value = String(maxN);
+        }
+      }
+
+      function updateReadout(n, d) {
+        var nrm = normalize(n, d);
+        readout.innerHTML = '';
+        var main = document.createElement('div');
+        main.className = 'readout__main';
+        renderLatexInto(main, fracTex(n, d), true);
+        readout.appendChild(main);
+
+        var meta = document.createElement('div');
+        meta.className = 'readout-meta';
+
+        var showSimp = n > 0 && (nrm.n !== n || nrm.d !== d);
+        var row1 = buildMetaRow('ตัดทอน', showSimp, function (val) {
+          appendFracStack(val, nrm.n, nrm.d);
+        });
+        var row2 = buildMetaRow('จำนวนคละ', n > d, function (val) {
+          appendMixedStack(val, n, d);
+        });
+
+        meta.appendChild(row1);
+        meta.appendChild(row2);
+        readout.appendChild(meta);
+      }
+
+      function refresh() {
+        syncNumMax();
+        var d = parseInt(denSlider.value, 10);
+        var n = parseInt(numSlider.value, 10);
+        denValEl.textContent = String(d);
+        numValEl.textContent = String(n);
+        drawVizForMode(svg, { n: n, d: d }, 1000, 500, 95, 2.5);
+        updateReadout(n, d);
+
+        var settled = prevN !== null;
+        if (settled) {
+          playClassOnce(vizWrap, 'viz-wrap--tick');
+          playClassOnce(readout, 'readout--tick');
+          if (prevN !== n) {
+            playClassOnce(numValEl, 'val--pop');
+          }
+          if (prevD !== d) {
+            playClassOnce(denValEl, 'val--pop');
+          }
+        }
+        prevN = n;
+        prevD = d;
+      }
+
+      denSlider.addEventListener('input', refresh);
+      numSlider.addEventListener('input', refresh);
+
+      function onModeClick(mode) {
+        setVizMode(mode);
+        refresh();
+      }
+      if (modeCircleBtn) {
+        modeCircleBtn.addEventListener('click', function () {
+          onModeClick('circle');
+        });
+      }
+      if (modeRectBtn) {
+        modeRectBtn.addEventListener('click', function () {
+          onModeClick('rect');
+        });
+      }
+
+      var skipLink = document.querySelector('.skip-link');
+      var mainEl = document.getElementById('main');
+      if (skipLink && mainEl) {
+        skipLink.addEventListener('click', function () {
+          window.requestAnimationFrame(function () {
+            mainEl.focus({ preventScroll: false });
+          });
+        });
+      }
+
+      function init() {
+        setVizMode(loadVizMode());
+        refresh();
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
