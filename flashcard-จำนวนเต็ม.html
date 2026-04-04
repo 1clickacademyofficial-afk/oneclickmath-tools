@@ -1156,6 +1156,7 @@
   var totalQuestions = 10;
   var questions = [];
   var questionIndex = 0;
+  var sessionGeneration = 0;
   var correctCount = 0;
   var wrongCount = 0;
   var sessionTimeouts = 0;
@@ -1290,7 +1291,12 @@
     add(correct + 3);
     add(correct - 3);
     var k = 0;
-    while (pool.length < need + 8 && k < 60) {
+    while (pool.length < need && k < 500) {
+      k += 1;
+      add(correct + randInt(-40, 40));
+    }
+    k = 0;
+    while (pool.length < need + 8 && k < 120) {
       k += 1;
       add(correct + randInt(-12, 12));
     }
@@ -1299,7 +1305,8 @@
 
   function readSetup() {
     var q = document.querySelector('input[name="qcount"]:checked');
-    totalQuestions = q ? parseInt(q.value, 10) : 10;
+    var n = q ? parseInt(q.value, 10) : 10;
+    totalQuestions = Number.isFinite(n) && n > 0 ? Math.min(100, Math.max(1, n)) : 10;
     var t = document.querySelector('input[name="qtime"]:checked');
     questionSec = t ? parseInt(t.value, 10) : 5;
     if (questionSec !== 3 && questionSec !== 5 && questionSec !== 7) questionSec = 5;
@@ -1470,8 +1477,10 @@
     setFeedback('หมดเวลา — ข้อนี้ไม่ได้คะแนน', 'bad');
     disableChoices();
     highlightCorrect();
+    var genTO = sessionGeneration;
     nextDelayId = setTimeout(function () {
       nextDelayId = null;
+      if (genTO !== sessionGeneration) return;
       nextQuestion();
     }, 1100);
   }
@@ -1512,8 +1521,10 @@
       highlightCorrect();
       setFeedback('ยังไม่ถูก — เฉลยอยู่ที่ตัวเลือกสีเขียว', 'bad');
     }
+    var genAns = sessionGeneration;
     nextDelayId = setTimeout(function () {
       nextDelayId = null;
+      if (genAns !== sessionGeneration) return;
       nextQuestion();
     }, ok ? 650 : 1100);
   }
@@ -1690,6 +1701,7 @@
 
   function showGame() {
     clearTimers();
+    sessionGeneration += 1;
     readSetup();
     resetStats();
     questions = [];
@@ -1718,12 +1730,14 @@
 
   function stopGame() {
     clearTimers();
+    sessionGeneration += 1;
     answered = true;
     showEndScreen('หยุดเกม');
   }
 
   el('btnStart').addEventListener('click', showGame);
   el('btnAgain').addEventListener('click', function () {
+    sessionGeneration += 1;
     el('endScreen').hidden = true;
     el('startScreen').hidden = false;
     el('gameArea').hidden = true;
@@ -1746,4 +1760,3 @@
   </script>
 </body>
 </html>
-
