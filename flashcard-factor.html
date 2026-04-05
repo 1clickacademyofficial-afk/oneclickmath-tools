@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#e2ecfc" />
+  <meta name="description" content="ทบทวนสูตรแยกตัวประกอบพหุนาม แล้วทำแบบทดสอบ 15 ข้อ จับเวลาทีละข้อ" />
+  <title>แฟลชการ์ด — แยกตัวประกอบพหุนาม</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --card:#ffffff; --ink:#10213f; --muted:#4f6482; --line:#c4d4ec;
+      --accent:#2563eb; --accent-2:#1d4ed8; --ok:#166534; --bad:#b91c1c; --r:14px;
+      --space-2:8px; --space-3:12px; --space-4:16px; --space-5:22px;
+      --ease-out:cubic-bezier(0.22,1,0.36,1);
+      --ease-out-quart:cubic-bezier(0.25,1,0.5,1);
+      --touch-min:2.75rem;
+      --focus-ring:color-mix(in srgb,var(--accent) 55%,#1e3a8a);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{
+      margin:0; font-family:"Kanit",sans-serif; color:var(--ink);
+      background:linear-gradient(165deg,#e2ecfc 0%,#f0f6ff 36%,#fff 72%);
+      padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      min-height:100vh;
+      min-height:100dvh;
+    }
+    .app{
+      width:min(52rem,100%);
+      max-width:100%;
+      min-width:0;
+      display:grid;
+      align-content:start;
+      gap:10px;
+      border-left:5px solid color-mix(in srgb,var(--accent) 78%,#1e3a8a);
+      padding-left:clamp(12px,3vw,18px);
+      margin:0;
+    }
+    .app-header{
+      margin:0;
+      padding:0;
+      border:none;
+    }
+    .brand{
+      display:inline-flex;border-radius:999px;padding:.5rem 1.1rem;
+      color:#f8fbff;font-size:.95rem;font-weight:700;letter-spacing:.06em;
+      background:linear-gradient(145deg,#172554 0%,#1d4ed8 48%,#2563eb 100%);
+      box-shadow:0 10px 28px -12px rgba(23,37,84,.55),inset 0 1px 0 rgba(255,255,255,.12);
+    }
+    h1{margin:8px 0 0;font-size:clamp(1.45rem,4.5vw,2.05rem);font-weight:700;letter-spacing:-.03em;line-height:1.2;
+      color:color-mix(in srgb,var(--ink) 94%,var(--accent) 6%);}
+    .sub{margin:.4rem 0 0;max-width:none;color:var(--muted);font-size:max(.95rem,16px);line-height:1.55}
+    .tip{
+      margin:.4rem 0 0;
+      display:inline-flex;
+      padding:.28rem .62rem;
+      border-radius:999px;
+      font-size:.86rem;
+      color:#32506f;
+      background:#f3f8ff;
+      border:1px solid #d6e4fb;
+    }
+    .card{
+      background:var(--card); border:1px solid color-mix(in srgb,var(--line) 90%,var(--accent));
+      border-radius:var(--r);
+      box-shadow:0 8px 24px -16px rgba(16,35,63,.35); padding:clamp(14px,3vw,18px);
+      min-width:0;
+    }
+    .card-tight{padding:10px}
+    .section-lead{margin:0;color:var(--muted)}
+    .card--review{
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(
+        165deg,
+        color-mix(in srgb,var(--accent) 5%,#fff) 0%,
+        #fff 42%,
+        color-mix(in srgb,var(--accent) 3%,#fbfdff) 100%
+      );
+      border:1px solid color-mix(in srgb,var(--line) 82%,var(--accent));
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.9) inset,
+        0 14px 44px -22px rgba(15,40,90,.22);
+    }
+    .card--review::before{
+      content:"";
+      position:absolute;left:0;right:0;top:0;height:3px;pointer-events:none;
+      background:linear-gradient(90deg,#1e3a8a,var(--accent),#60a5fa);
+      opacity:.88;
+    }
+    .review-headline{
+      margin:0 0 4px;
+      font-size:.78rem;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:color-mix(in srgb,var(--muted) 55%,var(--accent));
+    }
+    #startScreen:not([hidden]),
+    #gameArea:not([hidden]),
+    #endScreen:not([hidden]){
+      animation:viewIn .34s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes viewIn{
+      from{opacity:0;transform:translateY(8px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    .review-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      margin-top:10px;
+      min-width:0;
+    }
+    @media (min-width:760px){ .review-grid{grid-template-columns:1fr 1fr;} }
+    @keyframes reviewCardIn{
+      from{
+        opacity:0;
+        transform:translateY(14px) scale(.985);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+      }
+    }
+    .review-item{
+      --review-accent:var(--accent);
+      position:relative;
+      border-radius:12px;
+      padding:14px 14px 16px 18px;
+      min-width:0;
+      border:1px solid color-mix(in srgb,var(--line) 72%,var(--review-accent));
+      background:linear-gradient(180deg,#fff 0%,color-mix(in srgb,var(--review-accent) 4%,#fbfdff) 100%);
+      box-shadow:0 2px 10px rgba(15,40,90,.07);
+      transition:transform .22s var(--ease-out),box-shadow .22s var(--ease-out),border-color .2s var(--ease-out);
+      animation:reviewCardIn .48s var(--ease-out-quart) both;
+    }
+    .review-item::before{
+      content:"";
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:4px;
+      border-radius:12px 0 0 12px;
+      background:linear-gradient(180deg,color-mix(in srgb,var(--review-accent) 85%,#fff),var(--review-accent));
+      opacity:.95;
+      pointer-events:none;
+    }
+    .review-item:nth-child(1){--review-accent:#2563eb;animation-delay:.06s}
+    .review-item:nth-child(2){--review-accent:#1d4ed8;animation-delay:.12s}
+    .review-item:nth-child(3){--review-accent:#355f9e;animation-delay:.18s}
+    .review-item:nth-child(4){--review-accent:#1e3a8a;animation-delay:.24s}
+    @media (hover:hover) and (pointer:fine){
+      .review-item:hover{
+        transform:translateY(-3px);
+        border-color:color-mix(in srgb,var(--review-accent) 38%,var(--line));
+        box-shadow:0 12px 32px -14px color-mix(in srgb,var(--review-accent) 35%,transparent);
+      }
+    }
+    .review-item h3{
+      margin:0 0 10px;
+      font-size:.95rem;
+      font-weight:700;
+      letter-spacing:.02em;
+      color:#1a3366;
+    }
+    .review-item .eq{line-height:1.9}
+    .review-item .eq mjx-container{display:inline-block;margin:.15em 0}
+    .btn{
+      border:none;
+      min-height:max(46px,var(--touch-min));
+      border-radius:10px;
+      padding:.65rem 1.05rem;
+      font:600 1rem "Kanit",sans-serif;
+      cursor:pointer;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:color-mix(in srgb,var(--accent) 18%,transparent);
+    }
+    .btn-primary{background:var(--accent);color:#fff}
+    @media (hover:hover) and (pointer:fine){
+      .btn-primary:hover{background:var(--accent-2)}
+    }
+    .btn-ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
+    .btn:focus-visible{
+      outline:3px solid var(--focus-ring);
+      outline-offset:3px;
+    }
+    .btn:focus:not(:focus-visible){outline:none}
+    .controls{display:flex;justify-content:center;margin-top:var(--space-3);gap:var(--space-2);flex-wrap:wrap}
+    .controls-start{justify-content:flex-start}
+    .controls-game{justify-content:space-between;align-items:stretch;gap:10px}
+    .controls-game .btn{flex:1 1 auto;min-width:0}
+    @media (max-width:22rem){
+      .controls-game{flex-direction:column}
+      .controls-game .btn{width:100%}
+    }
+    #formulaScreen:not([hidden]){animation:viewIn .34s cubic-bezier(0.22,1,0.36,1) both}
+    .hud{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-bottom:var(--space-2);align-items:center}
+    .stat{
+      border:1px solid var(--line); background:#fff; border-radius:999px;
+      padding:.4rem .75rem; font-size:max(.9rem,14px); color:var(--muted);
+      min-height:2.5rem;display:inline-flex;align-items:center;
+    }
+    .timer{
+      height:8px;
+      min-height:8px;
+      background:#dbe7fb;
+      border-radius:999px;
+      overflow:hidden;
+      touch-action:none;
+    }
+    .timer > div{
+      height:100%; width:100%; transform-origin:left center;
+      background:linear-gradient(90deg,#3b82f6,#2563eb);
+    }
+    .q{
+      text-align:center; font-size:clamp(1.05rem,3.5vw,1.35rem);
+      min-height:2.8rem; margin:var(--space-3) 0 var(--space-2);
+    }
+    .choices{display:grid;grid-template-columns:1fr;gap:8px}
+    @media (min-width:580px){ .choices{grid-template-columns:1fr 1fr} }
+    .choice{
+      min-height:max(48px,var(--touch-min));
+      border:2px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      font:500 1rem "Kanit",sans-serif;
+      cursor:pointer;
+      padding:.6rem .75rem;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:color-mix(in srgb,var(--accent) 15%,transparent);
+      transition:transform .14s cubic-bezier(0.22,1,0.36,1), border-color .18s, background .18s;
+    }
+    @media (hover:hover) and (pointer:fine){
+      .choice:hover:not(:disabled){border-color:#86a9ee;background:#f4f8ff}
+    }
+    .choice:focus-visible{
+      outline:3px solid var(--focus-ring);
+      outline-offset:2px;
+    }
+    .choice:focus:not(:focus-visible){outline:none}
+    .choice.correct{border-color:var(--ok);background:#edf9f0}
+    .choice.wrong{border-color:var(--bad);background:#fff0f0}
+    .choice:active:not(:disabled){transform:scale(.98)}
+    .feedback{min-height:1.5rem;text-align:center;margin-top:8px}
+    .feedback.ok{color:var(--ok)} .feedback.bad{color:var(--bad)}
+    .feedback.in{animation:feedbackIn .24s cubic-bezier(0.22,1,0.36,1)}
+    @keyframes feedbackIn{
+      from{opacity:0;transform:translateY(4px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    .question-card.enter{
+      animation:cardIn .28s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes cardIn{
+      from{opacity:.88;transform:translateY(5px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    .stat.bump{
+      animation:bump .24s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes bump{
+      0%{transform:scale(1)}
+      40%{transform:scale(1.05)}
+      100%{transform:scale(1)}
+    }
+    .pie{
+      transition:background .42s cubic-bezier(0.22,1,0.36,1);
+    }
+    .mistakes li{
+      animation:listIn .26s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes listIn{
+      from{opacity:0;transform:translateY(4px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    @media (prefers-reduced-motion: reduce){
+      *,
+      .review-item{
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:.01ms !important;
+      }
+      .review-item{transform:none !important}
+    }
+    .end-grid{display:grid;gap:var(--space-3);margin-top:var(--space-3)}
+    @media (min-width:760px){.end-grid{grid-template-columns:1.1fr .9fr}}
+    .pie-wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+    .pie{
+      width:150px;height:150px;border-radius:50%;
+      background:conic-gradient(#22c55e 0 0,#ef4444 0 0,#f59e0b 0 0);
+      position:relative;border:1px solid var(--line);
+    }
+    .pie::after{
+      content:"";position:absolute;inset:26%;background:#fff;border-radius:50%;
+      box-shadow:inset 0 1px 6px rgba(16,35,63,.08);
+    }
+    .pie-center{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      font-weight:700;color:#1d4ed8;z-index:2;font-size:1.1rem;
+    }
+    .legend{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+    .legend li{font-size:.92rem;color:var(--muted)}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+    .d-ok{background:#22c55e}.d-bad{background:#ef4444}.d-time{background:#f59e0b}
+    .breakdown .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:.5rem;
+      padding:.35rem 0;
+      border-bottom:1px dashed #e2ebf9;
+      flex-wrap:wrap;
+    }
+    .breakdown .row strong{flex:1 1 12rem;min-width:0}
+    .breakdown .row span{flex:0 0 auto;font-variant-numeric:tabular-nums}
+    .breakdown .row:last-child{border-bottom:none}
+    .mistakes{margin-top:var(--space-3)}
+    .mistakes ul{margin:0;padding-left:1.1rem;color:var(--muted)}
+    .mistakes li{margin:.45rem 0}
+    .toast{
+      position:fixed;
+      right:max(12px,env(safe-area-inset-right,0px));
+      top:max(12px,env(safe-area-inset-top,0px));
+      z-index:30;
+      max-width:min(78vw, 300px);
+      border:1px solid #cfe0fb; background:#ffffff;
+      color:#274462; border-radius:10px; padding:.5rem .65rem;
+      box-shadow:0 8px 22px rgba(16,35,63,.14);
+      opacity:0; transform:translateY(-8px); pointer-events:none;
+      transition:opacity .2s cubic-bezier(0.22,1,0.36,1), transform .2s cubic-bezier(0.22,1,0.36,1);
+      font-size:.9rem;
+    }
+    .toast.show{opacity:1; transform:translateY(0)}
+    #endScreen .controls{margin-top:var(--space-4)}
+    #endScreen .section-lead{margin-top:2px}
+    #endScreen .controls .btn{min-height:var(--touch-min)}
+    @media (pointer:coarse){
+      .timer{height:12px;min-height:12px}
+      .choices{gap:10px}
+      .stat{padding:.45rem .85rem}
+    }
+    @media (max-height:30rem) and (orientation:landscape){
+      .app{gap:8px}
+      .hud{margin-bottom:6px}
+      .card.question-card{margin-top:6px!important}
+    }
+    @media (max-width:20rem){
+      .app{
+        border-left-width:4px;
+        padding-left:10px;
+      }
+    }
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <span class="brand">แฟลชการ์ด</span>
+      <h1>การแยกตัวประกอบพหุนาม</h1>
+      <p class="sub">อ่านสูตรด้านล่าง แล้วกดเริ่ม — มี 15 ข้อ ครบ 5 แบบสูตร โจทย์ใช้ตัวแปรตามข้อ (ไม่ใส่เลขแทนตัวแปร)</p>
+      <span class="tip" id="dailyTip">วันนี้โฟกัสทีละสูตร แล้วความแม่นจะมาเอง</span>
+    </header>
+
+    <section id="startScreen" class="card card--review">
+      <p class="section-lead review-headline">สูตรที่ใช้ในแบบทดสอบ</p>
+      <div id="mountStart">
+        <div class="review-grid mj-review" id="reviewMath">
+          <article class="review-item">
+            <h3>กำลังสองสมบูรณ์</h3>
+            <div class="eq">\( (a+b)^2 = a^2 + 2ab + b^2 \)</div>
+            <div class="eq">\( (a-b)^2 = a^2 - 2ab + b^2 \)</div>
+          </article>
+          <article class="review-item">
+            <h3>ผลต่างกำลังสอง</h3>
+            <div class="eq">\( a^2 - b^2 = (a-b)(a+b) \)</div>
+          </article>
+          <article class="review-item">
+            <h3>กำลังสามสมบูรณ์</h3>
+            <div class="eq">\( (a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3 \)</div>
+            <div class="eq">\( (a-b)^3 = a^3 - 3a^2b + 3ab^2 - b^3 \)</div>
+          </article>
+          <article class="review-item">
+            <h3>ผลต่าง/ผลบวกกำลังสาม</h3>
+            <div class="eq">\( a^3 - b^3 = (a-b)(a^2 + ab + b^2) \)</div>
+            <div class="eq">\( a^3 + b^3 = (a+b)(a^2 - ab + b^2) \)</div>
+          </article>
+        </div>
+      </div>
+      <div class="controls controls-start"><button id="btnStart" class="btn btn-primary" type="button">เริ่มทำ 15 ข้อ</button></div>
+    </section>
+
+    <section id="formulaScreen" class="card card--review" hidden aria-label="ทบทวนสูตร">
+      <p class="section-lead review-headline" style="margin:0 0 10px;">ทบทวนสูตรอีกครั้ง</p>
+      <div id="mountFormula"></div>
+      <div class="controls" style="margin-top:14px;">
+        <button type="button" id="btnBackToGame" class="btn btn-primary" hidden>กลับไปทำข้อต่อ</button>
+        <button type="button" id="btnBackToEnd" class="btn btn-primary" hidden>กลับไปหน้าสรุปคะแนน</button>
+      </div>
+    </section>
+
+    <section id="gameArea" hidden>
+      <div class="hud">
+        <span class="stat">ตอบถูก <strong id="score">0</strong> ข้อ</span>
+        <span class="stat">ข้อที่ <strong id="qNum">1</strong>/<span id="qTotal">15</span></span>
+        <span class="stat">เวลาข้อนี้ <strong id="timeLabel">8.0</strong> วิ</span>
+      </div>
+      <div class="timer"><div id="timerBar"></div></div>
+      <div class="card question-card" id="questionCard" style="margin-top:10px;">
+        <div class="q" id="question"></div>
+        <div class="choices" id="choices"></div>
+        <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+        <div class="controls controls-game">
+          <button id="btnFormulas" class="btn btn-ghost" type="button">เปิดดูสูตร</button>
+          <button id="btnStop" class="btn btn-ghost" type="button">จบเกมและดูคะแนน</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="endScreen" class="card" hidden>
+      <h2 id="endTitle" style="margin:0 0 8px;">สรุปผลแบบทดสอบ</h2>
+      <p class="section-lead">ตอบถูก <strong id="sumCorrect">0</strong> จาก <span id="sumTotal">15</span> ข้อ</p>
+      <div class="end-grid">
+        <div class="card card-tight">
+          <div class="pie-wrap">
+            <div class="pie" id="resultPie"><div class="pie-center" id="accPct">0%</div></div>
+            <ul class="legend">
+              <li><span class="dot d-ok"></span>ตอบถูก <strong id="nCorrect">0</strong> ข้อ</li>
+              <li><span class="dot d-bad"></span>ตอบผิด <strong id="nWrong">0</strong> ข้อ</li>
+              <li><span class="dot d-time"></span>หมดเวลา <strong id="nTimeout">0</strong> ข้อ</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card card-tight breakdown">
+          <div class="row"><strong>ข้อผิด · กำลังสองสมบูรณ์</strong><span id="wSq">0</span></div>
+          <div class="row"><strong>ข้อผิด · ผลต่างกำลังสอง</strong><span id="wDiff2">0</span></div>
+          <div class="row"><strong>ข้อผิด · กำลังสามสมบูรณ์</strong><span id="wCube">0</span></div>
+          <div class="row"><strong>ข้อผิด · ผลต่างกำลังสาม</strong><span id="wDiff3">0</span></div>
+          <div class="row"><strong>ข้อผิด · ผลบวกกำลังสาม</strong><span id="wSum3">0</span></div>
+        </div>
+      </div>
+      <div class="card card-tight mistakes" id="mistakeBox" hidden>
+        <strong>ข้อที่ตอบผิด พร้อมเฉลย</strong>
+        <ul id="mistakeList"></ul>
+      </div>
+      <div class="controls" style="flex-wrap:wrap">
+        <button id="btnReviewFormulas" class="btn btn-ghost" type="button">เปิดดูสูตรอีกครั้ง</button>
+        <button id="btnAgain" class="btn btn-primary" type="button">เริ่มชุดใหม่</button>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      var QUESTION_TOTAL = 15;
+      var SEC = 8;
+      var timer = null, raf = null, deadline = 0;
+      var score = 0, idx = 0, order = [], answered = false, current = null;
+      var wrongAnswer = 0, timeoutCount = 0;
+      var wrongByCat = { sq:0, diff2:0, cube:0, diff3:0, sum3:0 };
+      var mistakes = [];
+      var streak = 0, toastTimer = null;
+      var formulaReturn = null;
+      var goodMsg = ['ถูกต้อง', 'ใช่เลย ข้อต่อไป', 'สูตรตรงกับโจทย์แล้ว', 'ดีมาก'];
+      var badMsg = ['ยังไม่ตรง', 'ข้อนี้เก็บไว้ทวน — ข้อหน้าลองใหม่', 'ยังไม่เป็นไร มีข้อถัดไป', 'ลองดูรูปแบบสูตรอีกครั้งก่อนตอบ'];
+      var timeoutMsg = ['หมดเวลาข้อนี้ — ข้อหน้ามีเวลาใหม่', 'ยังไม่ทัน — ข้อหน้าตั้งใจเลือกให้ทัน', 'หมดเวลาแล้ว ข้อหน้าลองใหม่'];
+      var tipPool = [
+        'ทวนสูตรห้าแบบด้านบนสั้น ๆ ก่อนเริ่ม จะเลือกคำตอบได้เร็วขึ้น',
+        'ดูว่าโจทย์เป็นกำลังสอง กำลังสาม หรือผลต่าง/ผลบวกก่อน แล้วค่อยเทียบกับตัวเลือก',
+        'ถ้าเห็นการบวกหรือลบหลายพจน์ ให้ตรวจพจน์กลางและเลขชี้กำลังให้ตรงสูตร'
+      ];
+
+      var BANK = [
+        { c:'sq', q:'เติมสูตรให้ถูกต้อง:\\; (a+b)^2 = ?', a:'a^2+2ab+b^2', d:['a^2-2ab+b^2','a^2+b^2','(a+b)(a-b)'] },
+        { c:'sq', q:'เติมสูตรให้ถูกต้อง:\\; (a-b)^2 = ?', a:'a^2-2ab+b^2', d:['a^2+2ab+b^2','a^2-b^2','(a-b)(a+b)'] },
+        { c:'sq', q:'แยกตัวประกอบ:\\; a^2+2ab+b^2 = ?', a:'(a+b)^2', d:['(a-b)^2','(a+b)(a-b)','a(a+2b)+b^2'] },
+        { c:'sq', q:'แยกตัวประกอบ:\\; a^2-2ab+b^2 = ?', a:'(a-b)^2', d:['(a+b)^2','(a-b)(a+b)','a(a-2b)+b^2'] },
+
+        { c:'diff2', q:'แยกตัวประกอบ:\\; a^2-b^2 = ?', a:'(a-b)(a+b)', d:['(a-b)^2','(a+b)^2','(a^2+b^2)(a-b)'] },
+        { c:'diff2', q:'ข้อใดตรงกับรูปแบบผลต่างกำลังสอง \\; (x^2-y^2)', a:'(x-y)(x+y)', d:['(x-y)^2','(x+y)^2','x^2+2xy+y^2'] },
+
+        { c:'cube', q:'เติมสูตร:\\; (a+b)^3 = ?', a:'a^3+3a^2b+3ab^2+b^3', d:['a^3-3a^2b+3ab^2-b^3','a^3+b^3','a^3+3ab+b^3'] },
+        { c:'cube', q:'เติมสูตร:\\; (a-b)^3 = ?', a:'a^3-3a^2b+3ab^2-b^3', d:['a^3+3a^2b+3ab^2+b^3','a^3-b^3','a^3-3ab^2-b^3'] },
+        { c:'cube', q:'แยกตัวประกอบ:\\; a^3+3a^2b+3ab^2+b^3 = ?', a:'(a+b)^3', d:['(a-b)^3','(a+b)(a^2+b^2)','a^3+b^3'] },
+        { c:'cube', q:'แยกตัวประกอบ:\\; a^3-3a^2b+3ab^2-b^3 = ?', a:'(a-b)^3', d:['(a+b)^3','(a-b)(a^2+b^2)','a^3-b^3'] },
+
+        { c:'diff3', q:'แยกตัวประกอบ:\\; a^3-b^3 = ?', a:'(a-b)(a^2+ab+b^2)', d:['(a-b)(a^2-ab+b^2)','(a+b)(a^2+ab+b^2)','(a-b)^3'] },
+        { c:'sum3', q:'แยกตัวประกอบ:\\; a^3+b^3 = ?', a:'(a+b)(a^2-ab+b^2)', d:['(a+b)(a^2+ab+b^2)','(a-b)(a^2-ab+b^2)','(a+b)^3'] },
+        { c:'diff3', q:'ข้อใดเขียนสมการเทียบเท่าถูกต้อง', a:'a^3-b^3=(a-b)(a^2+ab+b^2)', d:['a^3-b^3=(a-b)(a^2-ab+b^2)','a^3-b^3=(a+b)(a^2+ab+b^2)','a^3-b^3=(a-b)^3'] },
+        { c:'sum3', q:'ข้อใดเขียนสมการเทียบเท่าถูกต้อง', a:'a^3+b^3=(a+b)(a^2-ab+b^2)', d:['a^3+b^3=(a+b)(a^2+ab+b^2)','a^3+b^3=(a-b)(a^2-ab+b^2)','a^3+b^3=(a+b)^3'] }
+      ];
+
+      function el(id){ return document.getElementById(id); }
+      function shuffle(arr){
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = a[i]; a[i] = a[j]; a[j] = t;
+        }
+        return a;
+      }
+      function whenMathJax(fn) {
+        if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+          MathJax.startup.promise.then(fn);
+          return;
+        }
+        if (window.MathJax && MathJax.typesetPromise) {
+          fn();
+          return;
+        }
+        setTimeout(function () { whenMathJax(fn); }, 40);
+      }
+      function typeset(nodes) {
+        whenMathJax(function () {
+          if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise(nodes).catch(function () {});
+          }
+        });
+      }
+      function ensureReviewHome() {
+        var mount = el('mountStart');
+        var rev = el('reviewMath');
+        if (mount && rev && rev.parentElement !== mount) {
+          mount.appendChild(rev);
+        }
+      }
+      function openFormula(from) {
+        formulaReturn = from;
+        clearAll();
+        var rev = el('reviewMath');
+        var mf = el('mountFormula');
+        if (rev && mf) {
+          mf.appendChild(rev);
+        }
+        el('formulaScreen').hidden = false;
+        el('btnBackToGame').hidden = from !== 'game';
+        el('btnBackToEnd').hidden = from !== 'end';
+        if (from === 'game') {
+          el('gameArea').hidden = true;
+        } else if (from === 'end') {
+          el('endScreen').hidden = true;
+        }
+        el('startScreen').hidden = true;
+        typeset([el('reviewMath')]);
+      }
+      function closeFormula() {
+        var back = formulaReturn;
+        formulaReturn = null;
+        ensureReviewHome();
+        el('formulaScreen').hidden = true;
+        if (back === 'game') {
+          el('gameArea').hidden = false;
+          if (!answered && current) {
+            startTimer();
+          }
+        } else if (back === 'end') {
+          el('endScreen').hidden = false;
+        }
+      }
+      function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+      function showToast(text){
+        var t = el('toast');
+        if (!t) return;
+        t.textContent = text;
+        t.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 1100);
+      }
+      function clearAll(){
+        if (timer) { clearTimeout(timer); timer = null; }
+        if (raf) { cancelAnimationFrame(raf); raf = null; }
+      }
+      function updateTimer(leftMs){
+        var ratio = Math.max(0, leftMs / (SEC * 1000));
+        el('timerBar').style.transform = 'scaleX(' + ratio + ')';
+        el('timeLabel').textContent = (Math.max(0, leftMs) / 1000).toFixed(1);
+      }
+      function tick(){
+        var left = deadline - performance.now();
+        updateTimer(left);
+        if (left <= 0) { onTimeout(); return; }
+        raf = requestAnimationFrame(tick);
+      }
+      function startTimer(){
+        clearAll();
+        deadline = performance.now() + SEC * 1000;
+        el('timerBar').style.transform = 'scaleX(1)';
+        raf = requestAnimationFrame(tick);
+        timer = setTimeout(onTimeout, SEC * 1000 + 50);
+      }
+      function setMath(node, tex){ node.innerHTML = '\\(' + tex + '\\)'; }
+      function disableChoices(){
+        el('choices').querySelectorAll('.choice').forEach(function (b) { b.disabled = true; });
+      }
+      function markCorrect(){
+        el('choices').querySelectorAll('.choice').forEach(function (b) {
+          if (b.dataset.val === current.a) b.classList.add('correct');
+        });
+      }
+      function pulseFeedback(){
+        var fb = el('feedback');
+        fb.classList.remove('in');
+        void fb.offsetWidth;
+        fb.classList.add('in');
+      }
+      function bumpScore(){
+        var s = el('score').closest('.stat');
+        if (!s) return;
+        s.classList.remove('bump');
+        void s.offsetWidth;
+        s.classList.add('bump');
+      }
+      function animateQuestionCard(){
+        var c = el('questionCard');
+        c.classList.remove('enter');
+        void c.offsetWidth;
+        c.classList.add('enter');
+      }
+      function onTimeout(){
+        if (answered) return;
+        answered = true;
+        clearAll();
+        disableChoices();
+        markCorrect();
+        timeoutCount += 1;
+        streak = 0;
+        wrongByCat[current.c] += 1;
+        mistakes.push({ q: current.q, picked: 'หมดเวลา', ans: current.a });
+        el('feedback').textContent = pick(timeoutMsg);
+        el('feedback').className = 'feedback bad';
+        pulseFeedback();
+        setTimeout(nextQuestion, 850);
+      }
+      function onChoose(val, btn){
+        if (answered) return;
+        answered = true;
+        clearAll();
+        disableChoices();
+        if (val === current.a) {
+          score += 1;
+          streak += 1;
+          el('score').textContent = String(score);
+          bumpScore();
+          btn.classList.add('correct');
+          el('feedback').textContent = pick(goodMsg);
+          el('feedback').className = 'feedback ok';
+          pulseFeedback();
+          if (streak === 3) showToast('ตอบถูกติดกัน 3 ข้อแล้ว');
+          if (streak === 5) showToast('ตอบถูกติดกัน 5 ข้อ');
+          setTimeout(nextQuestion, 600);
+        } else {
+          streak = 0;
+          btn.classList.add('wrong');
+          markCorrect();
+          wrongAnswer += 1;
+          wrongByCat[current.c] += 1;
+          mistakes.push({ q: current.q, picked: val, ans: current.a });
+          el('feedback').textContent = pick(badMsg);
+          el('feedback').className = 'feedback bad';
+          pulseFeedback();
+          setTimeout(nextQuestion, 950);
+        }
+      }
+
+      function buildOrder() {
+        var groups = { sq:[], diff2:[], cube:[], diff3:[], sum3:[] };
+        BANK.forEach(function(item, i){ groups[item.c].push(i); });
+        // บาลานซ์เป๊ะ: 15 ข้อ = หมวดละ 3 ข้อ
+        var out = [];
+        Object.keys(groups).forEach(function(k){
+          var g = shuffle(groups[k]);
+          while (g.length < 3) g = g.concat(shuffle(groups[k]));
+          out = out.concat(g.slice(0, 3));
+        });
+        return shuffle(out).slice(0, QUESTION_TOTAL);
+      }
+
+      function nextQuestion(){
+        idx += 1;
+        if (idx > QUESTION_TOTAL) { showEnd('ครบ 15 ข้อแล้ว'); return; }
+        current = BANK[order[idx - 1]];
+        answered = false;
+        el('qNum').textContent = String(idx);
+        el('feedback').textContent = '';
+        el('feedback').className = 'feedback';
+        setMath(el('question'), current.q);
+        animateQuestionCard();
+        var c = shuffle([current.a].concat(current.d));
+        var box = el('choices');
+        box.innerHTML = '';
+        c.forEach(function (txt) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'choice';
+          b.dataset.val = txt;
+          setMath(b, txt);
+          b.addEventListener('click', function () { onChoose(txt, b); });
+          box.appendChild(b);
+        });
+        typeset([el('question'), box]);
+        startTimer();
+      }
+      function showEnd(title){
+        clearAll();
+        ensureReviewHome();
+        el('formulaScreen').hidden = true;
+        el('gameArea').hidden = true;
+        el('endScreen').hidden = false;
+        el('endTitle').textContent = title;
+        el('sumCorrect').textContent = String(score);
+        var done = score + wrongAnswer + timeoutCount;
+        var acc = done ? Math.round((score / done) * 100) : 0;
+        el('accPct').textContent = acc + '%';
+        el('nCorrect').textContent = String(score);
+        el('nWrong').textContent = String(wrongAnswer);
+        el('nTimeout').textContent = String(timeoutCount);
+        el('wSq').textContent = String(wrongByCat.sq);
+        el('wDiff2').textContent = String(wrongByCat.diff2);
+        el('wCube').textContent = String(wrongByCat.cube);
+        el('wDiff3').textContent = String(wrongByCat.diff3);
+        el('wSum3').textContent = String(wrongByCat.sum3);
+
+        var total = Math.max(1, done);
+        var p1 = (score / total) * 100;
+        var p2 = ((score + wrongAnswer) / total) * 100;
+        el('resultPie').style.background =
+          'conic-gradient(#22c55e 0% ' + p1 + '%, #ef4444 ' + p1 + '% ' + p2 + '%, #f59e0b ' + p2 + '% 100%)';
+
+        var box = el('mistakeBox');
+        var list = el('mistakeList');
+        list.innerHTML = '';
+        if (!mistakes.length) {
+          box.hidden = true;
+          showToast('ตอบถูกครบทุกข้อ');
+        } else {
+          box.hidden = false;
+          mistakes.forEach(function(m){
+            var li = document.createElement('li');
+            var pickLine = m.picked === 'หมดเวลา'
+              ? 'ไม่ทันเลือก (หมดเวลาข้อนี้)'
+              : 'เลือก: \\(' + m.picked + '\\)';
+            li.innerHTML = '\\(' + m.q + '\\)<br>' + pickLine + ' · เฉลย: \\(' + m.ans + '\\)';
+            list.appendChild(li);
+          });
+          typeset([list]);
+        }
+      }
+      function startGame(){
+        score = 0;
+        idx = 0;
+        streak = 0;
+        wrongAnswer = 0;
+        timeoutCount = 0;
+        wrongByCat = { sq:0, diff2:0, cube:0, diff3:0, sum3:0 };
+        mistakes = [];
+        order = buildOrder();
+        formulaReturn = null;
+        ensureReviewHome();
+        el('score').textContent = '0';
+        el('qTotal').textContent = String(QUESTION_TOTAL);
+        el('sumTotal').textContent = String(QUESTION_TOTAL);
+        el('formulaScreen').hidden = true;
+        el('startScreen').hidden = true;
+        el('endScreen').hidden = true;
+        el('gameArea').hidden = false;
+        nextQuestion();
+      }
+
+      el('btnStart').addEventListener('click', startGame);
+      el('btnAgain').addEventListener('click', startGame);
+      el('btnStop').addEventListener('click', function(){ showEnd('หยุดก่อนครบชุด'); });
+      el('btnFormulas').addEventListener('click', function () { openFormula('game'); });
+      el('btnBackToGame').addEventListener('click', closeFormula);
+      el('btnBackToEnd').addEventListener('click', closeFormula);
+      el('btnReviewFormulas').addEventListener('click', function () { openFormula('end'); });
+      var tip = el('dailyTip');
+      if (tip) tip.textContent = pick(tipPool);
+      typeset([el('reviewMath')]);
+    })();
+  </script>
+</body>
+</html>
