@@ -1,0 +1,2983 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <title>แฟลชการ์ด เลขยกกำลัง</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <style>
+    :root {
+      --paper: #e8eef6;
+      --paper-2: #fbfcfe;
+      --ink: #0a1628;
+      --ink-strong: #050d18;
+      --ink-muted: #465a72;
+      --rule: #b8c5df;
+      --accent: #1d4ed8;
+      --accent-hover: #1e40af;
+      --accent-bright: #2563eb;
+      --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--paper));
+      --spark: #c2410c;
+      --spark-soft: color-mix(in srgb, var(--spark) 12%, var(--paper-2));
+      --success: #14532d;
+      --success-soft: color-mix(in srgb, var(--success) 10%, var(--paper-2));
+      --danger: #b91c1c;
+      --danger-soft: color-mix(in srgb, var(--danger) 9%, var(--paper-2));
+      --warn: #b45309;
+      --warn-soft: color-mix(in srgb, var(--warn) 8%, var(--paper-2));
+      --row-tint: color-mix(in srgb, var(--accent) 5%, var(--paper-2));
+      --row-border: color-mix(in srgb, var(--accent) 35%, var(--rule));
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --dur-fast: 0.14s;
+      --dur-normal: 0.28s;
+      --radius-lg: 1rem;
+      --radius-pill: 999px;
+      --shadow-card: 0 1px 0 rgba(15, 40, 90, 0.06), 0 14px 40px -18px rgba(15, 40, 90, 0.2);
+      --shadow-card-bold: 0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent),
+        0 2px 0 rgba(255, 255, 255, 0.75) inset,
+        0 22px 48px -28px rgba(15, 40, 90, 0.35);
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --content-max: min(30rem, 100vw - 1.5rem);
+      --tap-clear: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    @media (min-width: 480px) { :root { --content-max: min(32rem, 100vw - 2rem); } }
+    @media (min-width: 768px) { :root { --content-max: min(40rem, 100vw - 2.5rem); } }
+    @media (min-width: 1024px) { :root { --content-max: min(44rem, 100vw - 3rem); } }
+    @media (min-width: 1280px) { :root { --content-max: 48rem; } }
+
+    * { box-sizing: border-box; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-size: max(100%, 16px);
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: 'Kanit', sans-serif;
+      background-color: var(--paper);
+      /* เดียวกับ flashcard-คูณหาร — ไม่ใช้กริด ลดลายตา */
+      background-image:
+        radial-gradient(100% 55% at 50% -8%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 62%),
+        linear-gradient(
+          175deg,
+          color-mix(in srgb, var(--accent) 6%, var(--paper)) 0%,
+          var(--paper) 48%,
+          color-mix(in srgb, var(--rule) 35%, var(--paper)) 100%
+        );
+      background-repeat: no-repeat;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-top, 0px));
+      padding-right: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-right, 0px));
+      padding-bottom: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-bottom, 0px));
+      padding-left: max(clamp(var(--space-3), 3vw, var(--space-6)), env(safe-area-inset-left, 0px));
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: var(--tap-clear);
+    }
+
+    #main {
+      width: min(100%, calc(var(--content-max) + var(--space-6)));
+      max-width: 100%;
+      margin-inline: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 0;
+    }
+
+    .app-header {
+      width: min(100%, var(--content-max));
+      align-self: center;
+      text-align: left;
+      margin-bottom: var(--space-5);
+      padding-left: var(--space-3);
+      border-left: 5px solid color-mix(in srgb, var(--accent) 55%, var(--spark));
+      animation: headerIn var(--dur-normal) var(--ease-out-expo) both;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    /** ป้าย "แฟลชการ์ด" แบบปุ่ม pill ไล่สีน้ำเงิน + เลเยอร์เงา (ธีม oneclickmath) */
+    .brand-pill {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 0 var(--space-3);
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius-pill);
+      font-size: clamp(0.92rem, 2.8vw, 1.02rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #f8fafc;
+      text-shadow: 0 1px 1px rgba(15, 23, 42, 0.25);
+      background: linear-gradient(155deg, #172554 0%, #1e40af 38%, #2563eb 78%, #1d4ed8 100%);
+      box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.26),
+        inset 0 -2px 0 color-mix(in srgb, var(--spark) 35%, transparent),
+        0 4px 6px -1px rgba(30, 58, 138, 0.42),
+        0 14px 28px -10px rgba(37, 99, 235, 0.48);
+      isolation: isolate;
+    }
+
+    .brand-pill::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset: -3px;
+      border-radius: inherit;
+      background: linear-gradient(160deg, rgba(37, 99, 235, 0.45), rgba(59, 130, 246, 0.1));
+      opacity: 0.95;
+      transform: translate(3px, 4px) scale(1.02);
+      filter: blur(0.75px);
+    }
+
+    @keyframes headerIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: clamp(1.65rem, 5vw, 2.1rem);
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      color: var(--ink-strong);
+    }
+
+    .subtitle {
+      color: var(--ink-muted);
+      font-size: 0.98rem;
+      margin: var(--space-2) 0 0;
+      font-weight: 400;
+      max-width: 28rem;
+      line-height: 1.5;
+    }
+
+    #startScreen:not([hidden]),
+    #gameArea:not([hidden]),
+    #endScreen:not([hidden]) {
+      animation: viewIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #gameArea {
+      width: min(100%, var(--content-max));
+      max-width: 100%;
+      min-width: 0;
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    #streakWrap:not([hidden]) {
+      animation: streakIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes streakIn {
+      from { opacity: 0; transform: translateY(4px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .hud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-3);
+      justify-content: flex-start;
+      align-items: center;
+      margin: 0;
+      width: 100%;
+    }
+
+    @media (min-width: 900px) {
+      .hud { justify-content: center; gap: var(--space-3) var(--space-4); }
+    }
+
+    /* มือถือแคบ: จัด HUD เป็นตาราง ให้ "เวลาที่เหลือ" เต็มแถว — อ่านง่าย ใกล้นิ้วโป้ง */
+    @media (max-width: 480px) {
+      .hud {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-2);
+        align-items: stretch;
+      }
+
+      .stat--time {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+    }
+
+    .stat {
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-pill);
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+    }
+
+    .stat strong {
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat--score {
+      border-color: color-mix(in srgb, var(--success) 22%, var(--rule));
+      background: color-mix(in srgb, var(--success) 4%, var(--paper-2));
+    }
+
+    .stat--score strong { color: var(--success); }
+
+    .stat--progress {
+      border-color: color-mix(in srgb, var(--accent) 28%, var(--rule));
+      background: color-mix(in srgb, var(--accent) 4%, var(--paper-2));
+    }
+
+    .stat--progress strong { color: var(--accent); }
+
+    .stat--time {
+      border-color: color-mix(in srgb, var(--warn) 28%, var(--rule));
+      background: color-mix(in srgb, var(--warn) 5%, var(--paper-2));
+    }
+
+    .stat--time strong { color: color-mix(in srgb, var(--warn) 70%, var(--ink)); }
+
+    .stat--streak {
+      border-color: color-mix(in srgb, var(--warn) 32%, var(--rule));
+      background: color-mix(in srgb, var(--warn) 6%, var(--paper-2));
+    }
+
+    .stat--streak strong { color: color-mix(in srgb, var(--warn) 55%, var(--ink)); }
+
+    .stat--score.is-bump {
+      animation: scoreBump var(--dur-normal) var(--ease-out);
+    }
+
+    @keyframes scoreBump {
+      from { transform: scale(1); }
+      40% { transform: scale(1.04); }
+      to { transform: scale(1); }
+    }
+
+    .stat { transition: transform var(--dur-fast) var(--ease-out); }
+
+    .timer-wrap {
+      width: 100%;
+      height: 8px;
+      background: color-mix(in srgb, var(--rule) 65%, transparent);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin: 0;
+    }
+
+    #timerBar {
+      height: 100%;
+      width: 100%;
+      background: color-mix(in srgb, var(--accent-bright) 70%, var(--accent));
+      border-radius: inherit;
+      transform-origin: left center;
+      transition: transform 0.05s linear;
+    }
+
+    .timer-wrap.danger #timerBar {
+      background: color-mix(in srgb, #f59e0b 55%, var(--danger));
+    }
+
+    .flashcard {
+      width: 100%;
+      min-width: 0;
+      background: var(--paper-2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5) var(--space-4) var(--space-4);
+      box-shadow: var(--shadow-card-bold);
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--rule));
+      position: relative;
+    }
+
+    .flashcard::before {
+      content: '';
+      position: absolute;
+      top: var(--space-3);
+      left: var(--space-4);
+      right: var(--space-4);
+      height: 2px;
+      border-radius: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--accent) 55%, transparent),
+        color-mix(in srgb, var(--spark) 40%, var(--accent)),
+        transparent
+      );
+      opacity: 0.85;
+    }
+
+    .flashcard--enter {
+      animation: cardEnter 0.34s var(--ease-out-expo) both;
+    }
+
+    @keyframes cardEnter {
+      from { opacity: 0.9; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popOk {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.012); }
+      100% { transform: scale(1); }
+    }
+
+    .choice.choice--pop {
+      animation: popOk 0.28s var(--ease-out);
+    }
+
+    /* ตัวเลือกไหลเข้าทีละตัว — ช่วยให้รู้ว่ามี 4 ช่องหลังข้อเปลี่ยน */
+    @keyframes choiceIn {
+      from {
+        opacity: 0.72;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .choice.choice--in {
+      --choice-i: 0;
+      animation: choiceIn 0.26s var(--ease-out) both;
+      animation-delay: calc(var(--choice-i) * 45ms);
+    }
+
+    /* สตรีค: เน้นเมื่อเลขเพิ่ม (ไม่ใช่ตอนโผล่ครั้งแรก — ใช้ streakIn ของ CSS) */
+    @keyframes streakPop {
+      0% {
+        transform: scale(1);
+      }
+      35% {
+        transform: scale(1.06);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .stat--streak.streak--pop {
+      animation: streakPop 0.38s var(--ease-out) both;
+    }
+
+    /* แผนภูมิวง: โผล่ชัดตอนสรุป */
+    @keyframes pieShellIn {
+      from {
+        opacity: 0.88;
+        transform: scale(0.94);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .pie-donut-shell.pie-shell--in {
+      animation: pieShellIn 0.48s var(--ease-out) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .app-header,
+      #startScreen:not([hidden]),
+      #gameArea:not([hidden]),
+      #endScreen:not([hidden]),
+      #streakWrap:not([hidden]) { animation: none !important; }
+      .flashcard--enter,
+      .choice.choice--pop,
+      .choice.choice--in,
+      .stat--streak.streak--pop,
+      .pie-donut-shell.pie-shell--in,
+      #feedback.feedback--in { animation: none !important; }
+      .prep-panel.prep-panel--open .prep-section { animation: none !important; }
+      .stat--score.is-bump { animation: none !important; }
+      .stat { transition: none; }
+      .choice,
+      .chip-row label,
+      button.ghost { transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s; }
+      .choice:hover:not(:disabled),
+      .chip-row label:hover,
+      button.ghost:hover { transform: none; }
+      #timerBar { transition: none; }
+    }
+
+    .question-prompt {
+      margin: var(--space-3) 0 0;
+      font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+      font-weight: 700;
+      color: var(--ink);
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    #questionMath {
+      font-size: clamp(1.15rem, 4vw, 1.45rem);
+      min-height: 3.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.45;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+
+    #questionMath .katex { font-size: 1.05em; }
+
+    @media (min-width: 768px) {
+      #questionMath { font-size: clamp(1.2rem, 2.8vw, 1.55rem); }
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    @media (min-width: 520px) {
+      .choices {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-3);
+      }
+    }
+
+    @media (max-width: 519px) {
+      .choices {
+        gap: var(--space-3);
+      }
+    }
+
+    .choice {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1rem;
+      min-height: max(48px, 2.75rem);
+      padding: var(--space-3) var(--space-4);
+      border-radius: 0.65rem;
+      border: 2px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition:
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        box-shadow 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+      text-align: center;
+    }
+
+    .choice .katex { font-size: 1.1em; }
+
+    .choice:hover:not(:disabled) {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--rule));
+      background: var(--accent-soft);
+      transform: translateY(-1px);
+    }
+
+    .choice:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      outline-offset: 2px;
+    }
+
+    .choice:active:not(:disabled) { transform: translateY(0); }
+
+    .choice:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .choice.correct {
+      border-color: var(--success);
+      background: var(--success-soft);
+    }
+
+    .choice.wrong {
+      border-color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    #feedback {
+      margin-top: var(--space-3);
+      min-height: 1.45rem;
+      font-size: 0.95rem;
+      text-align: center;
+      font-weight: 500;
+      transition: color 0.2s var(--ease-out);
+    }
+
+    #feedback.feedback--in {
+      animation: feedbackIn var(--dur-normal) var(--ease-out) both;
+    }
+
+    @keyframes feedbackIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #feedback.ok { color: var(--success); }
+    #feedback.bad { color: var(--danger); }
+
+    .controls {
+      margin-top: var(--space-4);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+    }
+
+    button.ghost {
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.55rem 1rem;
+      min-height: max(44px, 2.75rem);
+      touch-action: manipulation;
+      border-radius: 0.5rem;
+      border: 1px solid var(--rule);
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition:
+        color 0.2s var(--ease-out),
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+
+    button.ghost:hover {
+      color: var(--ink);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: translateY(-1px);
+    }
+
+    button.ghost:active { transform: translateY(0); }
+
+    button.ghost:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      outline-offset: 2px;
+    }
+
+    #startScreen,
+    #endScreen {
+      text-align: left;
+      width: min(100%, var(--content-max));
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      min-width: 0;
+    }
+
+    @media (min-width: 768px) {
+      #endScreen {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        column-gap: var(--space-5);
+        row-gap: var(--space-4);
+      }
+
+      #endScreen > #endTitle,
+      #endScreen > #endKicker,
+      #endScreen > .pie-summary,
+      #endScreen > .summary-box--totals,
+      #endScreen > #sum-extra-box,
+      #endScreen > #reviewMissesBox,
+      #endScreen > #recommendations,
+      #endScreen > .end-screen-actions {
+        grid-column: 1 / -1;
+      }
+    }
+
+    #startScreen p,
+    #endScreen > p {
+      color: var(--ink-muted);
+      line-height: 1.65;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .setup-group {
+      margin: 0;
+      border: none;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .setup-group legend {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: var(--space-2);
+      padding: 0;
+    }
+
+    /* --- หน้าเริ่ม: ปุ่มเปิดตาราง / สมบัติ / สูตร --- */
+    .start-prep {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      width: 100%;
+      min-width: 0;
+      padding: var(--space-4);
+      border-radius: 1.1rem;
+      background:
+        linear-gradient(155deg, color-mix(in srgb, var(--accent) 7%, var(--paper-2)) 0%, var(--paper-2) 48%),
+        linear-gradient(180deg, color-mix(in srgb, var(--spark) 4%, transparent), transparent 58%);
+      border: 2px solid color-mix(in srgb, var(--accent) 28%, var(--rule));
+      box-shadow:
+        0 2px 0 color-mix(in srgb, var(--accent) 12%, transparent),
+        0 20px 50px -36px color-mix(in srgb, var(--accent) 55%, transparent),
+        0 1px 0 color-mix(in srgb, var(--spark) 18%, transparent) inset;
+    }
+
+    .prep-lead {
+      margin: 0;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      line-height: 1.55;
+    }
+
+    .prep-lead::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      margin-top: 0.35rem;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--accent-bright), var(--accent));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+      flex-shrink: 0;
+    }
+
+    .prep-lead strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prep-toggle {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      padding: 0.95rem 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      border: none;
+      border-radius: 0.95rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: #f8fafc;
+      text-align: center;
+      line-height: 1.35;
+      background: linear-gradient(150deg, var(--accent-hover) 0%, var(--accent) 45%, color-mix(in srgb, var(--accent-bright) 72%, var(--accent)) 100%);
+      box-shadow:
+        0 2px 0 color-mix(in srgb, #0f172a 28%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--spark) 22%, transparent),
+        0 10px 28px -10px color-mix(in srgb, var(--accent) 58%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 22%, transparent);
+      transition:
+        transform 0.18s var(--ease-out-expo),
+        box-shadow 0.24s var(--ease-out-expo),
+        filter 0.2s ease;
+    }
+
+    .prep-toggle:hover {
+      filter: brightness(1.04);
+      box-shadow:
+        0 3px 0 color-mix(in srgb, #0f172a 20%, transparent),
+        0 0 0 2px color-mix(in srgb, var(--spark) 45%, transparent),
+        0 14px 36px -12px color-mix(in srgb, var(--accent) 62%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 30%, transparent);
+    }
+
+    .prep-toggle:active {
+      transform: translateY(1px);
+    }
+
+    .prep-toggle:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      outline-offset: 3px;
+    }
+
+    .prep-toggle__glow {
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, color-mix(in srgb, #fff 35%, transparent), transparent 45%);
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .prep-toggle__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 0.55rem;
+      background: color-mix(in srgb, #fff 14%, transparent);
+      border: 1px solid color-mix(in srgb, #fff 28%, transparent);
+      flex-shrink: 0;
+    }
+
+    .prep-toggle__icon svg {
+      display: block;
+      width: 1.15rem;
+      height: 1.15rem;
+      opacity: 0.95;
+    }
+
+    .prep-toggle__text {
+      flex: 1;
+      min-width: 0;
+      text-shadow: 0 1px 2px rgba(15, 23, 42, 0.2);
+    }
+
+    .prep-toggle__chev {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-right: 2.5px solid color-mix(in srgb, #fff 90%, transparent);
+      border-bottom: 2.5px solid color-mix(in srgb, #fff 90%, transparent);
+      transform: rotate(45deg);
+      transition: transform 0.3s var(--ease-out);
+      flex-shrink: 0;
+      margin-top: -0.2rem;
+      opacity: 0.95;
+    }
+
+    .prep-toggle--open .prep-toggle__chev {
+      transform: rotate(225deg);
+      margin-top: 0.15rem;
+    }
+
+    .prep-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.45s var(--ease-out-expo);
+    }
+
+    .prep-panel.prep-panel--open {
+      grid-template-rows: 1fr;
+    }
+
+    .prep-panel__inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .prep-panel__scroller {
+      padding-top: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition:
+        opacity 0.38s var(--ease-out-expo),
+        transform 0.38s var(--ease-out-expo);
+    }
+
+    .prep-panel.prep-panel--open .prep-panel__scroller {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes prepSectionIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .prep-panel.prep-panel--open .prep-section {
+      animation: prepSectionIn 0.48s var(--ease-out-expo) both;
+    }
+
+    .prep-panel.prep-panel--open .prep-section:nth-child(1) { animation-delay: 0.05s; }
+    .prep-panel.prep-panel--open .prep-section:nth-child(2) { animation-delay: 0.11s; }
+    .prep-panel.prep-panel--open .prep-section:nth-child(3) { animation-delay: 0.17s; }
+    .prep-panel.prep-panel--open .prep-section:nth-child(4) { animation-delay: 0.23s; }
+    .prep-panel.prep-panel--open .prep-section:nth-child(5) { animation-delay: 0.29s; }
+
+    .prep-section {
+      padding: var(--space-4);
+      border-radius: 0.9rem;
+      border: 1px solid color-mix(in srgb, var(--rule) 80%, var(--accent));
+      background: linear-gradient(185deg, var(--paper-2) 0%, color-mix(in srgb, var(--accent) 3%, var(--paper)) 100%);
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, #fff 72%, transparent),
+        0 6px 24px -16px rgba(15, 40, 90, 0.16);
+    }
+
+    .prep-section--accent {
+      border-color: color-mix(in srgb, var(--success) 28%, var(--rule));
+      background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--success) 6%, var(--paper-2)),
+        var(--paper-2) 55%
+      );
+    }
+
+    .prep-section__head {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0 0 var(--space-3);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid color-mix(in srgb, var(--rule) 75%, transparent);
+    }
+
+    .prep-section__icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 18%, var(--paper-2)), var(--paper-2));
+      border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--rule));
+      color: var(--accent);
+    }
+
+    .prep-section--accent .prep-section__icon {
+      background: linear-gradient(145deg, color-mix(in srgb, var(--success) 16%, var(--paper-2)), var(--paper-2));
+      border-color: color-mix(in srgb, var(--success) 30%, var(--rule));
+      color: var(--success);
+    }
+
+    .prep-section__icon svg {
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+
+    .prep-section__title {
+      margin: 0;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .prep-section__sub {
+      margin: 0.15rem 0 0;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
+
+    .prep-rules {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--ink-muted);
+    }
+
+    .prep-rules li {
+      margin: 0;
+      padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-3) + 2px);
+      border-radius: 0.6rem;
+      background: var(--paper);
+      border: 1px solid color-mix(in srgb, var(--rule) 90%, var(--accent));
+      border-left: 3px solid color-mix(in srgb, var(--accent) 55%, var(--accent));
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .prep-rules .math-line {
+      color: var(--ink);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .prep-grid {
+      display: grid;
+      gap: var(--space-4);
+      padding-top: var(--space-1);
+    }
+
+    @media (min-width: 640px) {
+      .prep-grid--2col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
+    }
+
+    .prep-table-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .prep-table-title {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .prep-table-title--gap {
+      margin-top: var(--space-3);
+    }
+
+    .prep-table-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--accent) 15%, var(--ink-muted));
+      background: color-mix(in srgb, var(--accent) 10%, var(--paper));
+      border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--rule));
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .prep-table-sub {
+      font-weight: 500;
+      color: var(--ink-muted);
+      font-size: 0.82em;
+    }
+
+    .prep-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 0.65rem;
+      border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--rule));
+      background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent),
+        0 4px 18px -12px rgba(15, 40, 90, 0.15);
+    }
+
+    /* ตารางจำแบบสองคอลัมน์ (n | ค่า) — ไม่เลื่อนแนวนอน */
+    .prep-table-wrap--fit {
+      overflow-x: visible;
+      -webkit-overflow-scrolling: auto;
+    }
+
+    .mem-table--col {
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .mem-table--col th,
+    .mem-table--col td {
+      min-width: 0;
+      padding: 0.4rem 0.55rem;
+    }
+
+    .mem-table--col thead th:first-child {
+      width: 34%;
+    }
+
+    .mem-table--col tbody tr:nth-child(even) th[scope='row'] {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--accent) 10%, var(--paper-2)),
+        color-mix(in srgb, var(--accent) 6%, var(--paper-2))
+      );
+    }
+
+    .mem-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mem-table--sticky th:first-child,
+    .mem-table--sticky td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      box-shadow: 6px 0 14px -8px rgba(15, 23, 42, 0.18);
+    }
+
+    .mem-table--sticky thead th:first-child {
+      z-index: 3;
+    }
+
+    .mem-table caption {
+      caption-side: top;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      padding: var(--space-2) var(--space-2) var(--space-1);
+    }
+
+    .mem-table th,
+    .mem-table td {
+      border: 1px solid color-mix(in srgb, var(--rule) 88%, var(--ink));
+      padding: 0.42rem 0.48rem;
+      text-align: center;
+      min-width: 2.15rem;
+    }
+
+    .mem-table thead th {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent) 14%, var(--paper-2)),
+        color-mix(in srgb, var(--accent) 6%, var(--paper-2))
+      );
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+    }
+
+    .mem-table thead th:first-child {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent) 22%, var(--paper-2)),
+        color-mix(in srgb, var(--accent) 10%, var(--paper-2))
+      );
+    }
+
+    .mem-table tbody th[scope='row'] {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--accent) 12%, var(--paper-2)),
+        var(--paper-2)
+      );
+      font-weight: 700;
+      font-size: 0.74rem;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .mem-table tbody td {
+      color: var(--ink);
+      background: var(--paper-2);
+    }
+
+    .mem-table tbody tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--accent) 5%, var(--paper-2));
+    }
+
+    .mem-table .mem-strong {
+      font-weight: 800;
+      color: var(--accent-hover);
+      background: color-mix(in srgb, var(--accent) 8%, var(--paper-2)) !important;
+    }
+
+    .prep-squares-note {
+      margin: var(--space-3) 0 0;
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      padding: var(--space-3);
+      border-radius: 0.55rem;
+      background: color-mix(in srgb, var(--warn) 6%, var(--paper-2));
+      border: 1px dashed color-mix(in srgb, var(--warn) 35%, var(--rule));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .prep-toggle,
+      .prep-toggle__chev,
+      .prep-panel,
+      .prep-panel__scroller {
+        transition: none;
+      }
+
+      .prep-panel.prep-panel--open .prep-panel__scroller {
+        transform: none;
+      }
+    }
+
+    .setup-hint {
+      margin: 0 0 var(--space-3);
+      font-size: 0.86rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-3) + 3px);
+      border-radius: 0.55rem;
+      background: color-mix(in srgb, var(--accent) 7%, var(--paper-2));
+      border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--rule));
+      border-left: 3px solid var(--accent);
+      box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    .setup-hint strong {
+      color: color-mix(in srgb, var(--accent) 18%, var(--ink));
+      font-weight: 600;
+    }
+
+    .chip-row label.chip--recommended {
+      position: relative;
+      padding-top: 0.55rem;
+      border-width: 2px;
+      border-color: color-mix(in srgb, var(--accent) 42%, var(--rule));
+      background: linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--accent) 10%, var(--paper-2)) 0%,
+        var(--paper-2) 100%
+      );
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent),
+        0 6px 14px -8px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .chip-row label.chip--recommended::after {
+      content: 'แนะนำ';
+      position: absolute;
+      top: -0.42rem;
+      right: 0.35rem;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #f8fafc;
+      background: linear-gradient(145deg, var(--accent-hover), var(--accent-bright));
+      padding: 0.12rem 0.45rem;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 1px 4px rgba(29, 78, 216, 0.4);
+      line-height: 1.2;
+      pointer-events: none;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      touch-action: manipulation;
+    }
+
+    .chip-row input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .chip-row label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0.4rem 0.95rem;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--rule);
+      background: var(--paper-2);
+      color: var(--ink-muted);
+      cursor: pointer;
+      font-size: 0.92rem;
+      transition:
+        border-color 0.2s var(--ease-out),
+        background 0.2s var(--ease-out),
+        color 0.2s var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+
+    .chip-row label:hover { transform: translateY(-1px); }
+
+    .chip-row input:focus-visible + label {
+      outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      outline-offset: 2px;
+    }
+
+    .chip-row input:checked + label {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .chip-row input:checked + label.chip--recommended {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 16%, var(--paper-2));
+      box-shadow:
+        0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent),
+        0 8px 20px -10px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    .chip-row input:checked + label.chip--recommended::after {
+      background: linear-gradient(145deg, #1e40af, var(--accent));
+    }
+
+    .summary-box {
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin: 0;
+    }
+
+    .summary-box--totals .summary-row:nth-child(1) {
+      background: color-mix(in srgb, var(--success) 4%, transparent);
+      margin: 0 -0.25rem;
+      padding: 0.4rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+
+    .summary-box--totals .summary-row:nth-child(2) {
+      background: color-mix(in srgb, var(--danger) 4%, transparent);
+      margin: 0.12rem -0.25rem 0;
+      padding: 0.4rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+
+    .summary-box--totals .summary-row:nth-child(3) {
+      margin-top: 0.2rem;
+      padding-top: 0.4rem;
+      border-top: 1px solid color-mix(in srgb, var(--rule) 92%, var(--accent));
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.3rem 0;
+      font-size: 0.98rem;
+    }
+
+    .summary-row .ok { color: var(--success); font-weight: 600; }
+    .summary-row .bad { color: var(--danger); font-weight: 600; }
+
+    #recommendations.summary-box {
+      background: color-mix(in srgb, var(--accent) 3%, var(--paper-2));
+      border: 1px solid var(--rule);
+      border-left: 3px solid color-mix(in srgb, var(--accent) 55%, var(--rule));
+    }
+
+    #recommendations h3 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent-hover);
+      margin: 0 0 var(--space-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    #recommendations ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      font-size: 0.9rem;
+    }
+
+    #recommendations ul li::marker {
+      color: color-mix(in srgb, var(--accent) 65%, var(--ink-muted));
+    }
+
+    .weak-li-good {
+      list-style: none;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: var(--success) !important;
+      font-weight: 500;
+    }
+
+    #reviewMissesBox h3 {
+      margin: 0 0 var(--space-3);
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .review-misses-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .review-misses-list li {
+      padding: 0.55rem 0.7rem;
+      border-radius: 0.55rem;
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+    }
+
+    .review-miss__tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--danger);
+      text-transform: none;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.02em;
+    }
+
+    .review-miss__tag--time {
+      color: var(--warn);
+    }
+
+    .review-miss__math {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35em;
+      font-size: 0.95rem;
+    }
+
+    .weak-katex-row {
+      margin-top: 0.35rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35em;
+    }
+
+    .weak-hint-row {
+      margin-top: 0.35rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.2em 0.35em;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    #recommendList .summary-katex {
+      display: inline-block;
+      vertical-align: baseline;
+      max-width: 100%;
+    }
+
+    #recommendList .summary-katex .katex {
+      font-size: 1.02em;
+    }
+
+    #recommendList li strong {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.25em 0.4em;
+      font-weight: 700;
+      max-width: 100%;
+    }
+
+    .btn-primary {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: var(--space-3) var(--space-5);
+      min-height: max(48px, 2.75rem);
+      border: none;
+      border-radius: 0.65rem;
+      background: linear-gradient(165deg, var(--accent-hover) 0%, var(--accent) 55%, color-mix(in srgb, var(--accent-bright) 88%, var(--accent)) 100%);
+      color: #f8fafc;
+      cursor: pointer;
+      margin-top: 0;
+      width: 100%;
+      touch-action: manipulation;
+      box-shadow:
+        0 2px 0 color-mix(in srgb, #0f172a 35%, transparent),
+        0 10px 28px -14px color-mix(in srgb, var(--accent) 45%, transparent);
+      transition: background 0.22s var(--ease-out-expo), transform 0.14s var(--ease-out-expo), box-shadow 0.22s var(--ease-out-expo);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(165deg, color-mix(in srgb, var(--accent-hover) 92%, #0f172a) 0%, var(--accent-hover) 50%, var(--accent) 100%);
+      transform: translateY(-2px);
+      box-shadow:
+        0 3px 0 color-mix(in srgb, #0f172a 28%, transparent),
+        0 14px 32px -12px color-mix(in srgb, var(--accent) 38%, transparent);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.988);
+      box-shadow: 0 1px 0 color-mix(in srgb, var(--accent-hover) 70%, #0f172a);
+    }
+
+    .btn-primary:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+      outline-offset: 3px;
+    }
+
+    /* หน้าสรุป: ปุ่มหลักติดขอบล่างบนมือถือ (เลื่อนอ่านยาวแล้วยังกดได้) */
+    .end-screen-actions {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .end-screen-actions .btn-primary {
+      margin-top: 0;
+    }
+
+    @media (max-width: 767px) {
+      .end-screen-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 4;
+        margin-top: var(--space-2);
+        padding-top: var(--space-3);
+        padding-bottom: max(var(--space-3), env(safe-area-inset-bottom, 0px));
+        background: var(--paper);
+        box-shadow: 0 -10px 28px -14px rgba(15, 23, 42, 0.18);
+      }
+
+      html {
+        scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    @media (pointer: coarse) {
+      .chip-row {
+        gap: var(--space-3);
+      }
+
+      .chip-row label {
+        min-height: 46px;
+        padding: 0.45rem 1rem;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .subtitle {
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+
+      .stat {
+        font-size: 0.85rem;
+        padding: var(--space-2) var(--space-2);
+      }
+    }
+
+    #endTitle {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    #endTitle.endTitle--perfect {
+      color: color-mix(in srgb, var(--success) 18%, var(--ink));
+    }
+
+    .end-kicker {
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      margin: 0 !important;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 1024px) {
+      .stat {
+        padding: var(--space-2) var(--space-4);
+        font-size: 0.92rem;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 32rem) {
+      body {
+        padding-top: max(var(--space-2), env(safe-area-inset-top, 0px));
+        padding-bottom: max(var(--space-2), env(safe-area-inset-bottom, 0px));
+      }
+
+      .app-header { margin-bottom: var(--space-2); }
+
+      .subtitle { font-size: 0.9rem; }
+
+      #gameArea {
+        gap: var(--space-2);
+      }
+
+      .hud {
+        gap: var(--space-2);
+      }
+
+      .flashcard {
+        padding: var(--space-3) var(--space-4) var(--space-3);
+      }
+
+      #questionMath {
+        min-height: 2.5rem;
+        font-size: clamp(1.05rem, 3.5vw, 1.3rem);
+      }
+
+      .choices { margin-top: var(--space-3); }
+
+      .controls { margin-top: var(--space-3); }
+    }
+
+    /* --- แผนภูมิวง (pie / donut) สรุป ถูก · ตอบผิด · หมดเวลา --- */
+    .pie-summary {
+      border-left: 3px solid color-mix(in srgb, var(--accent) 48%, var(--rule));
+      background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 5%, var(--paper-2)), var(--paper-2));
+    }
+
+    .pie-topic-line {
+      margin: 0 0 var(--space-4);
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .pie-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-5);
+    }
+
+    .pie-donut-shell {
+      position: relative;
+      width: min(11.5rem, 78vw);
+      height: min(11.5rem, 78vw);
+      flex-shrink: 0;
+    }
+
+    .pie-donut {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #e2e8f0, #cbd5e1);
+      box-shadow:
+        0 8px 28px rgba(37, 99, 235, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+      transition: background 0.35s var(--ease-out);
+    }
+
+    .pie-hole {
+      position: absolute;
+      inset: 21%;
+      border-radius: 50%;
+      background: var(--paper-2);
+      box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.06);
+      z-index: 1;
+    }
+
+    .pie-center-text {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      text-align: center;
+      padding: 28%;
+    }
+
+    .pie-pct {
+      font-size: clamp(1.5rem, 5.5vw, 1.95rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .pie-pct-sub {
+      margin-top: 0.35rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .pie-legend {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      min-width: min(17rem, 100%);
+    }
+
+    .pie-legend li {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.94rem;
+      color: var(--ink-muted);
+    }
+
+    .pie-legend .swatch {
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+    }
+
+    .pie-legend__ok .swatch { background: #22c55e; }
+    .pie-legend__bad .swatch { background: #ef4444; }
+    .pie-legend__time .swatch { background: #f59e0b; }
+
+    .pie-legend strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    #gameArea[hidden], #endScreen[hidden], #startScreen[hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <span class="brand-pill">แฟลชการ์ด</span>
+    <h1>เลขยกกำลังแบบไว (ม.ต้น)</h1>
+    <p class="subtitle">ฐาน 1–12 · ฐาน 6, 7, 8, 9, 11 และ 12 ใช้ได้แค่กำลัง 1 หรือ 2 · รวมกำลังศูนย์ และโจทย์ลบซ้อนแบบ −(−a)<sup>n</sup> / −(−a<sup>n</sup>) เป็นบางข้อ — เลือกคำตอบจาก 4 ช่อง (แนะนำ 3 หรือ 5 วินาที)</p>
+  </header>
+
+  <main id="main">
+    <div id="startScreen">
+      <section class="start-prep" aria-label="ทบทวนก่อนเล่น">
+        <p class="prep-lead">กดปุ่มด้านล่างเพื่อเปิดดู <strong>สมบัติ · สูตร · ตารางอ้างอิง</strong> แบบย่อ — พร้อมแล้วค่อยปิดเพื่อโฟกัสเกม</p>
+        <button type="button" class="prep-toggle" id="btnPrepToggle" aria-expanded="false" aria-controls="prepPanel">
+          <span class="prep-toggle__glow" aria-hidden="true"></span>
+          <span class="prep-toggle__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="3" y1="15" x2="21" y2="15"/>
+              <line x1="9" y1="3" x2="9" y2="21"/>
+              <line x1="15" y1="3" x2="15" y2="21"/>
+            </svg>
+          </span>
+          <span class="prep-toggle__text">เปิดดู ตาราง สมบัติ และ สูตร</span>
+          <span class="prep-toggle__chev" aria-hidden="true"></span>
+        </button>
+
+        <div class="prep-panel" id="prepPanel" aria-hidden="true">
+          <div class="prep-panel__inner">
+            <div class="prep-panel__scroller">
+              <div class="prep-section">
+                <div class="prep-section__head">
+                  <div class="prep-section__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                      <line x1="8" y1="7" x2="16" y2="7"/>
+                      <line x1="8" y1="11" x2="14" y2="11"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="prep-section__title">สมบัติและสูตร</h3>
+                    <p class="prep-section__sub">สรุปเบื้องต้นสำหรับเลขยกกำลัง</p>
+                  </div>
+                </div>
+                <ul class="prep-rules">
+                  <li><span class="math-line">a<sup>0</sup> = 1</span> เมื่อ a ≠ 0 · <span class="math-line">a<sup>1</sup> = a</span></li>
+                  <li><span class="math-line">1<sup>n</sup> = 1</span> ทุก n · ฐาน 0 ยกกำลังบวกได้ 0 (เช่น <span class="math-line">0<sup>3</sup> = 0</span>)</li>
+                  <li><span class="math-line">(−a)<sup>n</sup></span> ยกกำลัง «ทั้งฐานในวงเล็บ» — n เป็นเลขคู่ → ผลเป็นบวก · n เป็นเลขคี่ → ผลเป็นลบ (เมื่อ a &gt; 0)</li>
+                  <li><span class="math-line">−a<sup>n</sup></span> = <span class="math-line">−(a<sup>n</sup>)</span> ลบอยู่หน้านิพจน์ ไม่ใช่ฐานลบ — ต่างจาก <span class="math-line">(−a)<sup>n</sup></span></li>
+                  <li>ลบซ้อน: <span class="math-line">−(−a)<sup>n</sup></span> คิด <span class="math-line">(−a)<sup>n</sup></span> ก่อน แล้วใส่ลบหน้า · <span class="math-line">−(−a<sup>n</sup>)</span> ในวงเล็บเป็น <span class="math-line">−(a<sup>n</sup>)</span> ก่อน แล้วลบข้างนอกชนกลาง</li>
+                </ul>
+              </div>
+
+              <div class="prep-section prep-section--accent">
+                <div class="prep-section__head">
+                  <div class="prep-section__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="4 18 8 14 12 16 20 8"/>
+                      <circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+                      <circle cx="8" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+                      <circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none"/>
+                      <circle cx="20" cy="8" r="1.5" fill="currentColor" stroke="none"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="prep-section__title">ตารางให้จำ</h3>
+                    <p class="prep-section__sub">2<sup>n</sup> · 3<sup>n</sup> · n<sup>2</sup> — จัดเป็นคู่ n กับค่า อ่านได้บนทุกขนาดจอ</p>
+                  </div>
+                </div>
+            <div class="prep-grid prep-grid--2col">
+              <div class="prep-table-card">
+                <h3 class="prep-table-title">
+                  <span class="prep-table-badge">ฐาน 2</span>
+                  2<sup>n</sup> <span class="prep-table-sub">(n = 0–10)</span>
+                </h3>
+                <div class="prep-table-wrap prep-table-wrap--fit" role="region" aria-label="ตาราง 2 ยกกำลัง n ถึง 10">
+                  <table class="mem-table mem-table--col">
+                    <thead>
+                      <tr>
+                        <th scope="col">n</th>
+                        <th scope="col">2<sup>n</sup></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row">0</th><td>1</td></tr>
+                      <tr><th scope="row">1</th><td>2</td></tr>
+                      <tr><th scope="row">2</th><td>4</td></tr>
+                      <tr><th scope="row">3</th><td>8</td></tr>
+                      <tr><th scope="row">4</th><td>16</td></tr>
+                      <tr><th scope="row">5</th><td>32</td></tr>
+                      <tr><th scope="row">6</th><td>64</td></tr>
+                      <tr><th scope="row">7</th><td>128</td></tr>
+                      <tr><th scope="row">8</th><td>256</td></tr>
+                      <tr><th scope="row">9</th><td>512</td></tr>
+                      <tr><th scope="row">10</th><td class="mem-strong">1024</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="prep-table-card">
+                <h3 class="prep-table-title">
+                  <span class="prep-table-badge">ฐาน 3</span>
+                  3<sup>n</sup>
+                </h3>
+                <div class="prep-table-wrap prep-table-wrap--fit" role="region" aria-label="ตาราง 3 ยกกำลัง n">
+                  <table class="mem-table mem-table--col">
+                    <thead>
+                      <tr>
+                        <th scope="col">n</th>
+                        <th scope="col">3<sup>n</sup></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row">0</th><td>1</td></tr>
+                      <tr><th scope="row">1</th><td>3</td></tr>
+                      <tr><th scope="row">2</th><td>9</td></tr>
+                      <tr><th scope="row">3</th><td>27</td></tr>
+                      <tr><th scope="row">4</th><td>81</td></tr>
+                      <tr><th scope="row">5</th><td class="mem-strong">243</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <h3 class="prep-table-title prep-table-title--gap">
+              <span class="prep-table-badge">กำลังสอง</span>
+              n<sup>2</sup> <span class="prep-table-sub">(n = 1–12)</span>
+            </h3>
+            <div class="prep-table-wrap prep-table-wrap--fit" role="region" aria-label="กำลังสอง 1 ถึง 12">
+              <table class="mem-table mem-table--col">
+                <thead>
+                  <tr>
+                    <th scope="col">n</th>
+                    <th scope="col">n<sup>2</sup></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><th scope="row">1</th><td>1</td></tr>
+                  <tr><th scope="row">2</th><td>4</td></tr>
+                  <tr><th scope="row">3</th><td>9</td></tr>
+                  <tr><th scope="row">4</th><td>16</td></tr>
+                  <tr><th scope="row">5</th><td>25</td></tr>
+                  <tr><th scope="row">6</th><td>36</td></tr>
+                  <tr><th scope="row">7</th><td>49</td></tr>
+                  <tr><th scope="row">8</th><td>64</td></tr>
+                  <tr><th scope="row">9</th><td>81</td></tr>
+                  <tr><th scope="row">10</th><td>100</td></tr>
+                  <tr><th scope="row">11</th><td>121</td></tr>
+                  <tr><th scope="row">12</th><td class="mem-strong">144</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="prep-squares-note">ฐาน 6–9 และ 11–12 ในเกมจะไม่เกินกำลัง 2 เพื่อไม่ให้ตัวเลขโตเกินไป</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <p>เลือกจำนวนข้อกับเวลาต่อข้อ แล้วกด «เริ่มเล่น» โจทย์สุ่มฐาน 1–12 เช่น 10<sup>2</sup> 3<sup>0</sup> (−4)<sup>2</sup> −4<sup>2</sup> หรือแบบลบซ้อนเป็นบางข้อ — ถ้าหมดเวลาก่อนตอบ ข้อนั้นจะไม่ได้คะแนน</p>
+      <fieldset class="setup-group">
+        <legend>จำนวนข้อ</legend>
+        <div class="chip-row" role="radiogroup" aria-label="จำนวนข้อในชุด">
+          <input type="radio" name="qcount" id="qc5" value="5">
+          <label for="qc5">5 ข้อ</label>
+          <input type="radio" name="qcount" id="qc10" value="10" checked>
+          <label for="qc10">10 ข้อ</label>
+          <input type="radio" name="qcount" id="qc15" value="15">
+          <label for="qc15">15 ข้อ</label>
+          <input type="radio" name="qcount" id="qc20" value="20">
+          <label for="qc20">20 ข้อ</label>
+        </div>
+      </fieldset>
+      <fieldset class="setup-group">
+        <legend>เวลาต่อข้อ</legend>
+        <p class="setup-hint">โหมดไว: แนะนำ <strong>3</strong> หรือ <strong>5</strong> วินาทีต่อข้อ · เลือก <strong>7</strong> วินาทีถ้าอยากอ่านโจทย์นานขึ้น</p>
+        <div class="chip-row" role="radiogroup" aria-label="เวลาต่อข้อ">
+          <input type="radio" name="qtime" id="qt3mul" value="3" checked>
+          <label for="qt3mul" class="chip--recommended">3 วิ</label>
+          <input type="radio" name="qtime" id="qt5mul" value="5">
+          <label for="qt5mul">5 วิ</label>
+          <input type="radio" name="qtime" id="qt7mul" value="7">
+          <label for="qt7mul" class="chip--recommended">7 วิ</label>
+        </div>
+      </fieldset>
+      <button type="button" class="btn-primary" id="btnStart">เริ่มเล่น</button>
+    </div>
+
+    <div id="gameArea" hidden>
+      <div class="hud" aria-label="สรุประหว่างเล่น">
+        <span class="stat stat--score">ตอบถูก <strong id="score">0</strong> ข้อ</span>
+        <span class="stat stat--streak" id="streakWrap" hidden>ต่อเนื่อง <strong id="streakCount">0</strong> ข้อ</span>
+        <span class="stat stat--progress">ข้อที่ <strong id="qNum">1</strong> จาก <span id="qTotal">10</span></span>
+        <span class="stat stat--time">เหลือเวลา <strong id="timeLabel">3.0</strong> วินาที</span>
+      </div>
+      <div class="timer-wrap" id="timerWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="เวลาที่เหลือของข้อนี้">
+        <div id="timerBar"></div>
+      </div>
+
+      <div class="flashcard" id="flashcard">
+        <div id="questionMath" role="status" aria-describedby="questionPromptText"></div>
+        <p class="question-prompt" id="questionPromptText">มีค่าเท่ากับเท่าไหร่</p>
+        <div class="choices" id="choices" role="group" aria-label="ตัวเลือกคำตอบ — เลือกค่าที่นิพจน์ด้านบนมีค่าเท่ากับ กดปุ่มหนึ่งปุ่ม"></div>
+        <div id="feedback" role="status" aria-live="polite"></div>
+        <div class="controls">
+          <button type="button" class="ghost" id="btnStop">หยุดเกมและไปหน้าสรุป</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="endScreen" hidden>
+      <p id="endTitle">จบชุดแล้ว</p>
+      <p class="end-kicker" id="endKicker"></p>
+      <div class="summary-box pie-summary" id="pieSummaryBox">
+        <p class="pie-topic-line" id="pieTopicLine"></p>
+        <div class="pie-wrap">
+          <div class="pie-donut-shell">
+            <div class="pie-donut" id="pieDonut" role="img" aria-label=""></div>
+            <div class="pie-hole" aria-hidden="true"></div>
+            <div class="pie-center-text">
+              <span class="pie-pct" id="pieAccPct">—</span>
+              <span class="pie-pct-sub">ความแม่นยำ</span>
+            </div>
+          </div>
+          <ul class="pie-legend">
+            <li class="pie-legend__ok"><span class="swatch"></span>ตอบถูก <strong id="pieNCorrect">0</strong> ข้อ</li>
+            <li class="pie-legend__bad"><span class="swatch"></span>ตอบผิด <strong id="pieNWrongAns">0</strong> ข้อ</li>
+            <li class="pie-legend__time"><span class="swatch"></span>หมดเวลา <strong id="pieNTimeout">0</strong> ข้อ</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary-box summary-box--totals">
+        <div class="summary-row"><span>ตอบถูก</span><strong class="ok" id="sumCorrect">0</strong></div>
+        <div class="summary-row"><span>ตอบผิดหรือหมดเวลา</span><strong class="bad" id="sumWrong">0</strong></div>
+        <div class="summary-row"><span>จำนวนข้อที่ทำ</span><strong id="sumTotal">0</strong></div>
+        <div class="summary-row"><span>ความแม่นยำ</span><strong id="sumAcc">0%</strong></div>
+      </div>
+      <div class="summary-box" id="sum-extra-box" hidden>
+        <div class="summary-row"><span>หมดเวลารวม</span><strong class="bad" id="sumTimeouts">0</strong></div>
+        <div class="summary-row"><span>ตอบผิดรวม</span><strong class="bad" id="sumWrongs">0</strong></div>
+      </div>
+      <div class="summary-box" id="reviewMissesBox" hidden>
+        <h3>ทบทวนข้อที่พลาด</h3>
+        <ul id="reviewMissesList" class="review-misses-list"></ul>
+      </div>
+      <div class="summary-box" id="recommendations">
+        <h3>แนะนำจุดที่ควรฝึกต่อ</h3>
+        <ul id="recommendList"></ul>
+      </div>
+      <div class="end-screen-actions">
+        <button type="button" class="btn-primary" id="btnAgain">เล่นอีกครั้ง</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script>
+(function () {
+  'use strict';
+
+  var questionSec = 5;
+
+  var BASE_MIN = 1;
+  var BASE_MAX = 12;
+
+  /** ฐาน 6,7,8,9,11,12 — กำลังได้แค่ 1 หรือ 2 (ห้ามกำลัง 3 ขึ้นไป) */
+  var BASES_EXP_MAX_TWO = [6, 7, 8, 9, 11, 12];
+
+  function maxExpForBase(base) {
+    if (BASES_EXP_MAX_TWO.indexOf(base) !== -1) return 2;
+    return 5;
+  }
+
+  /** ใช้กับ mag/ฐานบวก — ถ้าเป็นฐานที่จำกัดกำลัง แล้ว exp เกิน 2 ให้บังคับเป็น 1 หรือ 2 */
+  function clampExpForStrictBase(base, exp) {
+    if (BASES_EXP_MAX_TWO.indexOf(base) === -1) return exp;
+    if (exp <= 2) return exp;
+    return randInt(1, 2);
+  }
+
+  /** โจทย์ระดับ ม.ต้น: ฐาน 1–12 ตามที่กำหนด — titleParts/hintParts ใช้เรนเดอร์ KaTeX ในหน้าสรุป */
+  var CAT = {
+    exp_pos_simple: {
+      key: 'exp_pos_simple',
+      titleParts: [
+        { t: 'text', v: 'ฐานบวกยกกำลัง (ตัวเลขไม่ใหญ่) ' },
+        { t: 'tex', v: 'a^{n}' }
+      ],
+      examples: ['2^{4}', '5^{3}', '9^{2}'],
+      hintParts: [
+        { t: 'text', v: 'คิดเป็นผลคูณซ้ำ หรือท่องค่าที่ใช้บ่อย — เลขชี้กำลังสูงให้ยกทีละขั้นสำหรับ ' },
+        { t: 'tex', v: 'a^{n}' }
+      ]
+    },
+    exp_zero: {
+      key: 'exp_zero',
+      titleParts: [
+        { t: 'text', v: 'กำลังศูนย์ ' },
+        { t: 'tex', v: 'a^{0}' }
+      ],
+      examples: ['7^{0}', '3^{0}'],
+      hintParts: [
+        { t: 'text', v: 'ถ้า ' },
+        { t: 'tex', v: 'a' },
+        { t: 'text', v: ' ไม่เป็น ' },
+        { t: 'tex', v: '0' },
+        { t: 'text', v: ' แล้ว ' },
+        { t: 'tex', v: 'a^{0}=1' },
+        { t: 'text', v: ' เสมอ' }
+      ]
+    },
+    exp_neg_paren: {
+      key: 'exp_neg_paren',
+      titleParts: [
+        { t: 'text', v: 'ฐานลบในวงเล็บ ' },
+        { t: 'tex', v: '\\left(-a\\right)^{n}' }
+      ],
+      examples: ['\\left(-3\\right)^{2}', '\\left(-2\\right)^{3}'],
+      hintParts: [
+        { t: 'text', v: 'ยกกำลังทั้งฐานในวงเล็บ เช่น ' },
+        { t: 'tex', v: '\\left(-a\\right)^{n}' },
+        { t: 'text', v: ' — เลขคู่ทำให้ผลเป็นบวก เลขคี่ทำให้ผลเป็นลบ' }
+      ]
+    },
+    exp_neg_outside: {
+      key: 'exp_neg_outside',
+      titleParts: [
+        { t: 'text', v: 'ลบอยู่ข้างนอก ' },
+        { t: 'tex', v: '-a^{n}' }
+      ],
+      examples: ['-4^{2}', '-2^{5}'],
+      hintParts: [
+        { t: 'text', v: 'โจทย์แบบ ' },
+        { t: 'tex', v: '-a^{n}' },
+        { t: 'text', v: ' คิดเป็น ' },
+        { t: 'tex', v: '-(a^{n})' },
+        { t: 'text', v: ' ก่อน แล้วค่อยใส่เครื่องหมายลบหน้า — ไม่ใช่ ' },
+        { t: 'tex', v: '\\left(-a\\right)^{n}' }
+      ]
+    },
+    exp_result_not_tiny: {
+      key: 'exp_result_not_tiny',
+      titleParts: [{ t: 'text', v: 'ผลลัพธ์ค่าค่อนข้างใหญ่' }],
+      examples: ['10^{3}', '5^{5}'],
+      hintParts: [
+        { t: 'text', v: 'ตัวเลขเริ่มโต — คิดทีละขั้นหรือแยกเป็นท่อนที่จำได้ เช่น ' },
+        { t: 'tex', v: 'a^{n}' }
+      ]
+    },
+    exp_double_neg_paren: {
+      key: 'exp_double_neg_paren',
+      titleParts: [
+        { t: 'text', v: 'รูปแบบ ' },
+        { t: 'tex', v: '-\\left(-a\\right)^{n}' }
+      ],
+      examples: ['-\\left(-2\\right)^{4}'],
+      hintParts: [
+        { t: 'text', v: 'ยกกำลังที่ฐานในวงเล็บก่อน แล้วค่อยใส่ลบหน้าทั้งก้อน — อย่าสลับกับ ' },
+        { t: 'tex', v: '-a^{n}' }
+      ]
+    },
+    exp_double_neg_inner: {
+      key: 'exp_double_neg_inner',
+      titleParts: [
+        { t: 'text', v: 'รูปแบบ ' },
+        { t: 'tex', v: '-\\left(-a^{n}\\right)' }
+      ],
+      examples: ['-\\left(-2^{4}\\right)'],
+      hintParts: [
+        { t: 'text', v: 'ในวงเล็บคือ ' },
+        { t: 'tex', v: '-(a^{n})' },
+        { t: 'text', v: ' ก่อน แล้วลบข้างนอกชนกลาง — ผลเป็นบวกของ ' },
+        { t: 'tex', v: 'a^{n}' },
+        { t: 'text', v: ' เมื่อ ' },
+        { t: 'tex', v: 'n' },
+        { t: 'text', v: ' เป็นเลขคู่' }
+      ]
+    }
+  };
+
+  var totalQuestions = 10;
+  var questions = [];
+  var questionIndex = 0;
+  var sessionGeneration = 0;
+  var correctCount = 0;
+  var wrongCount = 0;
+  var sessionTimeouts = 0;
+  var sessionWrongs = 0;
+  var stats = {};
+  var timerId = null;
+  var nextDelayId = null;
+  var deadline = 0;
+  var rafId = null;
+  var answered = false;
+  var streak = 0;
+  var currentQ = null;
+  /** เก็บข้อที่ตอบผิดหรือหมดเวลา เพื่อโชว์เฉลยตอนสรุปท้าย */
+  var sessionMisses = [];
+  var FEEDBACK_DELAY_OK_MS = 1000;
+  var FEEDBACK_DELAY_BAD_MS = 1200;
+  var FEEDBACK_DELAY_AFTER_TIMEOUT_MS = 1000;
+
+  function el(id) {
+    return document.getElementById(id);
+  }
+
+  function katexReady() {
+    return typeof katex !== 'undefined';
+  }
+
+  function operandLatex(n) {
+    if (n < 0) return '\\left(' + n + '\\right)';
+    return String(n);
+  }
+
+  function buildPowerLatex(base, exp) {
+    return operandLatex(base) + '^{' + exp + '}';
+  }
+
+  /** ลบข้างนอก: -(a^n) แสดงเป็น -a^{n} */
+  function buildNegOutsideLatex(mag, exp) {
+    return '-' + operandLatex(mag) + '^{' + exp + '}';
+  }
+
+  function renderKatexInto(node, tex, displayMode) {
+    node.innerHTML = '';
+    if (!katexReady()) {
+      node.textContent = tex;
+      return;
+    }
+    try {
+      katex.render(tex, node, { displayMode: !!displayMode, throwOnError: false });
+    } catch (e) {
+      node.textContent = tex;
+    }
+  }
+
+  function randInt(a, b) {
+    return a + Math.floor(Math.random() * (b - a + 1));
+  }
+
+  function classifyQuickExp(q) {
+    var tags = [];
+    if (q.pattern === 'zero') tags.push('exp_zero');
+    else if (q.pattern === 'neg_paren') tags.push('exp_neg_paren');
+    else if (q.pattern === 'neg_outside') tags.push('exp_neg_outside');
+    else if (q.pattern === 'double_neg_paren') tags.push('exp_double_neg_paren');
+    else if (q.pattern === 'double_neg_inner') tags.push('exp_double_neg_inner');
+    else tags.push('exp_pos_simple');
+    if (Math.abs(q.correct) >= 400) tags.push('exp_result_not_tiny');
+    return tags;
+  }
+
+  function buildQZero() {
+    var base = randInt(1, 12);
+    var correct = 1;
+    return {
+      kind: 'exp',
+      pattern: 'zero',
+      base: base,
+      exp: 0,
+      a: base,
+      b: 0,
+      correct: correct,
+      text: base + '^0',
+      latex: buildPowerLatex(base, 0),
+      tags: classifyQuickExp({ pattern: 'zero', correct: correct })
+    };
+  }
+
+  function buildQNegOutside() {
+    var mag = randInt(2, 12);
+    var maxE = maxExpForBase(mag);
+    var exp = maxE <= 2 ? randInt(1, maxE) : randInt(2, Math.min(3, maxE));
+    if (exp < 1) exp = 1;
+    exp = clampExpForStrictBase(mag, exp);
+    var inner = Math.pow(mag, exp);
+    var correct = -inner;
+    return {
+      kind: 'exp',
+      pattern: 'neg_outside',
+      mag: mag,
+      exp: exp,
+      a: mag,
+      b: exp,
+      correct: correct,
+      text: '-' + mag + '^' + exp,
+      latex: buildNegOutsideLatex(mag, exp),
+      tags: classifyQuickExp({ pattern: 'neg_outside', correct: correct })
+    };
+  }
+
+  function buildQNegParen() {
+    var mag = randInt(2, 12);
+    var baseInner = -mag;
+    var maxE = maxExpForBase(mag);
+    var exp = maxE <= 2 ? randInt(1, maxE) : randInt(2, Math.min(4, maxE));
+    if (exp < 1) exp = 1;
+    exp = clampExpForStrictBase(mag, exp);
+    var correct = Math.pow(baseInner, exp);
+    return {
+      kind: 'exp',
+      pattern: 'neg_paren',
+      baseInner: baseInner,
+      exp: exp,
+      a: baseInner,
+      b: exp,
+      correct: correct,
+      text: '(' + baseInner + ')^' + exp,
+      latex: buildPowerLatex(baseInner, exp),
+      tags: classifyQuickExp({ pattern: 'neg_paren', correct: correct })
+    };
+  }
+
+  /** -(-a)^n  ค่า = - ((-a)^n) */
+  function buildQDoubleNegParen() {
+    var mag = randInt(2, 12);
+    var maxE = Math.min(3, maxExpForBase(mag));
+    var exp = randInt(2, maxE);
+    exp = clampExpForStrictBase(mag, exp);
+    var inner = Math.pow(-mag, exp);
+    var correct = -inner;
+    var latex = '-\\left(-' + mag + '\\right)^{' + exp + '}';
+    return {
+      kind: 'exp',
+      pattern: 'double_neg_paren',
+      mag: mag,
+      exp: exp,
+      a: -mag,
+      b: exp,
+      correct: correct,
+      text: '-(-' + mag + ')^' + exp,
+      latex: latex,
+      tags: classifyQuickExp({ pattern: 'double_neg_paren', correct: correct })
+    };
+  }
+
+  /** -(-a^n) ข้างในเป็น -(a^n) แล้วลบข้างนอก → ได้ a^n เมื่อ n คู่ */
+  function buildQDoubleNegInner() {
+    var mag = randInt(2, 12);
+    var maxE = Math.min(3, maxExpForBase(mag));
+    var exp = randInt(2, maxE);
+    exp = clampExpForStrictBase(mag, exp);
+    var correct = Math.pow(mag, exp);
+    var latex = '-\\left(-' + mag + '^{' + exp + '}\\right)';
+    return {
+      kind: 'exp',
+      pattern: 'double_neg_inner',
+      mag: mag,
+      exp: exp,
+      a: mag,
+      b: exp,
+      correct: correct,
+      text: '-(-' + mag + '^' + exp + ')',
+      latex: latex,
+      tags: classifyQuickExp({ pattern: 'double_neg_inner', correct: correct })
+    };
+  }
+
+  function buildQPos() {
+    var base;
+    var exp;
+    var correct;
+    var guard = 0;
+    do {
+      base = randInt(BASE_MIN, BASE_MAX);
+      if (base === 1 && Math.random() < 0.85) base = randInt(2, BASE_MAX);
+      var maxE = maxExpForBase(base);
+      exp = randInt(1, maxE);
+      correct = Math.pow(base, exp);
+      guard += 1;
+    } while ((correct > 2800 || (base === 1 && exp > 1)) && guard < 90);
+    if (base === 1) {
+      exp = randInt(1, 3);
+      correct = 1;
+    } else {
+      exp = clampExpForStrictBase(base, exp);
+      correct = Math.pow(base, exp);
+    }
+    return {
+      kind: 'exp',
+      pattern: 'pos',
+      base: base,
+      exp: exp,
+      a: base,
+      b: exp,
+      correct: correct,
+      text: base + '^' + exp,
+      latex: buildPowerLatex(base, exp),
+      tags: classifyQuickExp({ pattern: 'pos', correct: correct })
+    };
+  }
+
+  function buildOneQuestion() {
+    var r = Math.random();
+    if (r < 0.11) return buildQZero();
+    if (r < 0.11 + 0.18) return buildQNegOutside();
+    if (r < 0.11 + 0.18 + 0.2) return buildQNegParen();
+    if (r < 0.11 + 0.18 + 0.2 + 0.055) return buildQDoubleNegParen();
+    if (r < 0.11 + 0.18 + 0.2 + 0.055 + 0.055) return buildQDoubleNegInner();
+    return buildQPos();
+  }
+
+  function resetStats() {
+    stats = {};
+    Object.keys(CAT).forEach(function (k) {
+      stats[k] = { wrong: 0, timeout: 0 };
+    });
+  }
+
+  function recordResult(q, wasCorrect, timedOut) {
+    q.tags.forEach(function (tag) {
+      if (!stats[tag]) stats[tag] = { wrong: 0, timeout: 0 };
+      if (timedOut) stats[tag].timeout += 1;
+      else if (!wasCorrect) stats[tag].wrong += 1;
+    });
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+    }
+    return a;
+  }
+
+  function isSignSensitivePattern(q) {
+    if (!q || !q.pattern) return false;
+    return ['neg_outside', 'neg_paren', 'double_neg_paren', 'double_neg_inner'].indexOf(q.pattern) !== -1;
+  }
+
+  function oppositeSign(a, b) {
+    if (a === 0 || b === 0) return false;
+    return (a > 0 && b < 0) || (a < 0 && b > 0);
+  }
+
+  /** คัดตัวเลือกหลอก need ข้อ — ข้อที่มีลบ/วงเล็บ บังคับให้มีอย่างน้อย 1 ข้อที่เครื่องหมายต่างจากคำตอบที่ถูก */
+  function pickDistractors(correct, need, q) {
+    var pool = [];
+    var add = function (x) {
+      if (x !== correct && Number.isFinite(x) && x === Math.round(x) && pool.indexOf(x) === -1) pool.push(x);
+    };
+    var mixSign = isSignSensitivePattern(q) && correct !== 0;
+
+    if (mixSign) {
+      add(-correct);
+      add(Math.abs(correct));
+    }
+
+    if (q) {
+      if (q.pattern === 'neg_outside' && q.mag != null && q.exp != null) {
+        add(Math.pow(q.mag, q.exp));
+      }
+      if (q.pattern === 'zero') {
+        add(0);
+        if (q.base != null) {
+          add(q.base);
+          add(q.base * q.base);
+        }
+      }
+      if (q.pattern === 'neg_paren' && q.baseInner != null && q.exp != null) {
+        var pm = Math.pow(Math.abs(q.baseInner), q.exp);
+        add(pm);
+        add(-pm);
+      }
+      if (q.pattern === 'double_neg_paren' && q.mag != null && q.exp != null) {
+        add(Math.pow(-q.mag, q.exp));
+        add(Math.pow(q.mag, q.exp));
+        add(-Math.pow(q.mag, q.exp));
+      }
+      if (q.pattern === 'double_neg_inner' && q.mag != null && q.exp != null) {
+        add(-q.correct);
+        add(Math.pow(-q.mag, q.exp));
+      }
+    }
+    var ac = Math.abs(correct);
+    var magStep = ac === 0 ? 1 : Math.pow(10, Math.floor(Math.log10(ac)));
+    add(correct + 1);
+    add(correct - 1);
+    add(correct + 2);
+    add(correct - 2);
+    add(correct + 3);
+    add(correct - 3);
+    add(correct + 10);
+    add(correct - 10);
+    if (ac >= 100) {
+      add(correct + 100);
+      add(correct - 100);
+    }
+    add(correct + Math.max(1, Math.floor(magStep / 10)));
+    add(correct - Math.max(1, Math.floor(magStep / 10)));
+    if (correct !== 0 && ac <= 5000) {
+      add(correct * 2);
+      if (correct % 2 === 0) add(correct / 2);
+    }
+    var spread = ac <= 120 ? 35 : ac <= 800 ? 90 : ac <= 2500 ? 140 : 400;
+    var k = 0;
+    while (pool.length < need + 8 && k < 400) {
+      k += 1;
+      add(correct + randInt(-spread, spread));
+    }
+    k = 0;
+    while (pool.length < need + 12 && k < 100) {
+      k += 1;
+      add(correct + randInt(-Math.min(spread, 200), Math.min(spread, 200)));
+    }
+
+    var distractors = pool.filter(function (x) {
+      return x !== correct;
+    });
+    if (distractors.length <= need) return shuffle(distractors).slice(0, need);
+
+    if (!mixSign) return shuffle(distractors).slice(0, need);
+
+    var oppPool = distractors.filter(function (x) {
+      return oppositeSign(correct, x);
+    });
+    var samePool = distractors.filter(function (x) {
+      return !oppositeSign(correct, x);
+    });
+
+    if (oppPool.length === 0) {
+      var flip = -correct;
+      if (flip !== correct) oppPool = [flip];
+    }
+
+    if (oppPool.length === 0) return shuffle(distractors).slice(0, need);
+
+    var oneOpp = oppPool[Math.floor(Math.random() * oppPool.length)];
+    var restPool = distractors.filter(function (x) {
+      return x !== oneOpp;
+    });
+    var rest = shuffle(restPool).slice(0, need - 1);
+    return shuffle([oneOpp].concat(rest));
+  }
+
+  function readSetup() {
+    var q = document.querySelector('input[name="qcount"]:checked');
+    var n = q ? parseInt(q.value, 10) : 10;
+    totalQuestions = Number.isFinite(n) && n > 0 ? Math.min(100, Math.max(1, n)) : 10;
+    var t = document.querySelector('input[name="qtime"]:checked');
+    questionSec = t ? parseInt(t.value, 10) : 5;
+    if (questionSec !== 3 && questionSec !== 5 && questionSec !== 7) questionSec = 5;
+  }
+
+  function updateStreakDisplay() {
+    var wrap = el('streakWrap');
+    var n = el('streakCount');
+    if (!wrap || !n) return;
+    if (streak >= 3) {
+      var firstShow = wrap.hidden;
+      wrap.hidden = false;
+      n.textContent = String(streak);
+      if (!firstShow) {
+        wrap.classList.remove('streak--pop');
+        void wrap.offsetWidth;
+        wrap.classList.add('streak--pop');
+        wrap.addEventListener(
+          'animationend',
+          function () {
+            wrap.classList.remove('streak--pop');
+          },
+          { once: true }
+        );
+      }
+    } else {
+      wrap.hidden = true;
+      wrap.classList.remove('streak--pop');
+    }
+  }
+
+  function resetStreak() {
+    streak = 0;
+    updateStreakDisplay();
+  }
+
+  function triggerCardEnter() {
+    var card = el('flashcard');
+    card.classList.remove('flashcard--enter');
+    void card.offsetWidth;
+    card.classList.add('flashcard--enter');
+  }
+
+  function renderChoices(q) {
+    var correct = q.correct;
+    var distractors = pickDistractors(correct, 3, q);
+    var values = shuffle([correct].concat(distractors));
+    var container = el('choices');
+    container.innerHTML = '';
+    values.forEach(function (val, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'choice choice--in';
+      btn.style.setProperty('--choice-i', String(i));
+      btn.dataset.value = String(val);
+      renderKatexInto(btn, String(val), false);
+      btn.addEventListener('click', function () {
+        onChoose(val, btn);
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function setFeedback(text, cls) {
+    var f = el('feedback');
+    f.textContent = text;
+    f.className = cls || '';
+    if (!text) return;
+    f.classList.add('feedback--in');
+    f.addEventListener(
+      'animationend',
+      function () {
+        f.classList.remove('feedback--in');
+      },
+      { once: true }
+    );
+  }
+
+  function wrongAnswerFeedback(chosen, correct, q) {
+    var tail = ' · คำตอบที่ถูกอยู่ที่ช่องสีเขียว';
+    if (q && q.pattern === 'neg_outside' && q.mag != null && q.exp != null && chosen === Math.pow(q.mag, q.exp) && correct < 0) {
+      return 'โจทย์แบบ -a^n คิดเป็น -(a^n) ก่อน แล้วค่อยใส่เครื่องหมายลบหน้า — ไม่ใช่ค่าบวกของ a^n — ' + tail;
+    }
+    if (q && q.pattern === 'neg_paren' && q.baseInner != null && q.exp != null) {
+      var naive = Math.pow(Math.abs(q.baseInner), q.exp);
+      if (chosen === -naive && correct === naive) {
+        return 'ฐานลบอยู่ในวงเล็บ — ยกกำลังทั้งก้อน เลขชี้กำลังคู่ทำให้ผลเป็นบวก — ' + tail;
+      }
+      if (chosen === naive && correct === -naive) {
+        return 'เลขชี้กำลังคี่กับฐานลบ → ผลเป็นลบ — อย่าลืมเครื่องหมายจากฐาน — ' + tail;
+      }
+    }
+    if (q && q.pattern === 'zero' && chosen === 0) {
+      return 'a^0 = 1 เมื่อ a ไม่เป็น 0 — ' + tail;
+    }
+    if (q && q.pattern === 'double_neg_paren' && q.mag != null && q.exp != null && chosen === Math.pow(-q.mag, q.exp)) {
+      return 'หลังคิด (-a)^n แล้ว ยังมีเครื่องหมายลบนำหน้าอีกชั้น — อย่าลืมลบท้ายสุด — ' + tail;
+    }
+    if (q && q.pattern === 'double_neg_inner' && q.mag != null && q.exp != null && chosen === -Math.pow(q.mag, q.exp)) {
+      return 'ในวงเล็บคือ -(a^n) ก่อน แล้วลบข้างนอกชนกลาง — ไม่ใช่แค่ (-a)^n — ' + tail;
+    }
+    var near =
+      chosen !== correct &&
+      Math.abs(chosen - correct) <= Math.max(3, Math.round(Math.abs(correct) * 0.02));
+    if (near) {
+      return 'ใกล้เฉลยแล้ว — ลองยกกำลังทีละขั้น หรือแยกเป็นผลคูณซ้ำ — ' + tail;
+    }
+    return 'ยังไม่ถูก — ดูทั้งฐาน เลขชี้กำลัง และวงเล็บ/ลบข้างหน้าให้ตรงโจทย์ — ' + tail;
+  }
+
+  function pushSessionMiss(reason, q) {
+    sessionMisses.push({
+      reason: reason,
+      latex: q.latex,
+      correct: q.correct
+    });
+  }
+
+  function renderReviewMisses() {
+    var box = el('reviewMissesBox');
+    var ul = el('reviewMissesList');
+    if (!box || !ul) return;
+    ul.innerHTML = '';
+    if (sessionMisses.length === 0) {
+      box.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    sessionMisses.forEach(function (m) {
+      var li = document.createElement('li');
+      var tag = document.createElement('div');
+      tag.className = 'review-miss__tag' + (m.reason === 'timeout' ? ' review-miss__tag--time' : '');
+      tag.textContent = m.reason === 'timeout' ? 'หมดเวลา' : 'ตอบผิด';
+      li.appendChild(tag);
+      var row = document.createElement('div');
+      row.className = 'review-miss__math';
+      row.appendChild(document.createTextNode('คำตอบที่ถูก: '));
+      var eq = document.createElement('span');
+      renderKatexInto(eq, m.latex + '=' + String(m.correct), false);
+      row.appendChild(eq);
+      li.appendChild(row);
+      ul.appendChild(li);
+    });
+  }
+
+  function clearTimers() {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
+    if (nextDelayId) {
+      clearTimeout(nextDelayId);
+      nextDelayId = null;
+    }
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  function updateTimerBar(remainingMs) {
+    var total = questionSec * 1000;
+    var t = Math.max(0, remainingMs / total);
+    el('timerBar').style.transform = 'scaleX(' + t + ')';
+    var pct = Math.round(t * 100);
+    el('timerWrap').setAttribute('aria-valuenow', String(pct));
+    el('timeLabel').textContent = (Math.max(0, remainingMs) / 1000).toFixed(1);
+    el('timerWrap').classList.toggle('danger', remainingMs < Math.max(700, questionSec * 260));
+  }
+
+  function tick() {
+    var left = deadline - performance.now();
+    updateTimerBar(left);
+    if (left <= 0) {
+      onTimeout();
+      return;
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function startQuestionTimer() {
+    clearTimers();
+    answered = false;
+    deadline = performance.now() + questionSec * 1000;
+    el('timerBar').style.transform = 'scaleX(1)';
+    el('timerWrap').classList.remove('danger');
+    el('timerWrap').setAttribute('aria-valuenow', '100');
+    rafId = requestAnimationFrame(tick);
+    timerId = setTimeout(onTimeout, questionSec * 1000 + 50);
+  }
+
+  function disableChoices() {
+    el('choices').querySelectorAll('.choice').forEach(function (b) {
+      b.disabled = true;
+    });
+  }
+
+  function highlightCorrect() {
+    var c = currentQ ? currentQ.correct : null;
+    if (c === null || c === undefined) return;
+    el('choices').querySelectorAll('.choice').forEach(function (b) {
+      if (parseInt(b.dataset.value, 10) === c) b.classList.add('correct');
+    });
+  }
+
+  function onTimeout() {
+    if (answered) return;
+    answered = true;
+    clearTimers();
+    resetStreak();
+    sessionTimeouts += 1;
+    wrongCount += 1;
+    if (currentQ) recordResult(currentQ, false, true);
+    if (currentQ) pushSessionMiss('timeout', currentQ);
+      setFeedback('หมดเวลาแล้ว ข้อนี้ไม่นับคะแนน', 'bad');
+    disableChoices();
+    highlightCorrect();
+    var genTO = sessionGeneration;
+    nextDelayId = setTimeout(function () {
+      nextDelayId = null;
+      if (genTO !== sessionGeneration) return;
+      nextQuestion();
+    }, FEEDBACK_DELAY_AFTER_TIMEOUT_MS);
+  }
+
+  function onChoose(value, btn) {
+    if (answered) return;
+    answered = true;
+    clearTimers();
+    disableChoices();
+    var ok = value === currentQ.correct;
+    if (ok) {
+      correctCount += 1;
+      streak += 1;
+      el('score').textContent = String(correctCount);
+      var scoreStat = el('score').closest('.stat--score');
+      if (scoreStat) {
+        scoreStat.classList.remove('is-bump');
+        void scoreStat.offsetWidth;
+        scoreStat.classList.add('is-bump');
+        scoreStat.addEventListener(
+          'animationend',
+          function () {
+            scoreStat.classList.remove('is-bump');
+          },
+          { once: true }
+        );
+      }
+      updateStreakDisplay();
+      btn.classList.add('correct', 'choice--pop');
+      setFeedback('ถูกต้อง +1 คะแนน', 'ok');
+    } else {
+      resetStreak();
+      sessionWrongs += 1;
+      wrongCount += 1;
+      recordResult(currentQ, false, false);
+      pushSessionMiss('wrong', currentQ);
+      btn.classList.add('wrong');
+      highlightCorrect();
+      setFeedback(wrongAnswerFeedback(value, currentQ.correct, currentQ), 'bad');
+    }
+    var genAns = sessionGeneration;
+    nextDelayId = setTimeout(function () {
+      nextDelayId = null;
+      if (genAns !== sessionGeneration) return;
+      nextQuestion();
+    }, ok ? FEEDBACK_DELAY_OK_MS : FEEDBACK_DELAY_BAD_MS);
+  }
+
+  function nextQuestion() {
+    questionIndex += 1;
+    if (questionIndex > totalQuestions) {
+      clearTimers();
+      answered = true;
+      showEndScreen('จบชุดแล้ว');
+      return;
+    }
+    el('qNum').textContent = String(questionIndex);
+    setFeedback('', '');
+    currentQ = questions[questionIndex - 1];
+    var qEl = el('questionMath');
+    renderKatexInto(qEl, currentQ.latex, true);
+    qEl.setAttribute('aria-label', 'มีค่าเท่ากับเท่าไหร่ — ' + currentQ.text);
+    triggerCardEnter();
+    renderChoices(currentQ);
+    startQuestionTimer();
+  }
+
+  /** ข้อความไทยสลับนิพจน์ LaTeX สำหรับหน้าสรุป — parts: { t: 'text'|'tex', v: string } */
+  function appendMixedParts(container, parts) {
+    if (!parts || !parts.length) return;
+    parts.forEach(function (p) {
+      if (p.t === 'tex') {
+        var sp = document.createElement('span');
+        sp.className = 'summary-katex';
+        renderKatexInto(sp, p.v, false);
+        container.appendChild(sp);
+      } else {
+        container.appendChild(document.createTextNode(p.v));
+      }
+    });
+  }
+
+  function appendKatexExamples(container, examples) {
+    examples.forEach(function (tex, i) {
+      if (i > 0) container.appendChild(document.createTextNode(' หรือ '));
+      var sp = document.createElement('span');
+      sp.className = 'summary-katex';
+      renderKatexInto(sp, tex, false);
+      container.appendChild(sp);
+    });
+  }
+
+  function updatePieChart(topicLine, correct, wrongAns, timeout) {
+    var lineEl = el('pieTopicLine');
+    if (lineEl) lineEl.textContent = topicLine;
+    var total = correct + wrongAns + timeout;
+    var nc = el('pieNCorrect');
+    var nw = el('pieNWrongAns');
+    var nt = el('pieNTimeout');
+    var accEl = el('pieAccPct');
+    var donut = el('pieDonut');
+    if (nc) nc.textContent = String(correct);
+    if (nw) nw.textContent = String(wrongAns);
+    if (nt) nt.textContent = String(timeout);
+    if (!donut) return;
+    var shell = donut.closest('.pie-donut-shell');
+    function triggerPieShellAnim() {
+      if (!shell) return;
+      shell.classList.remove('pie-shell--in');
+      void shell.offsetWidth;
+      shell.classList.add('pie-shell--in');
+    }
+    if (total === 0) {
+      donut.style.background = 'linear-gradient(145deg, #e2e8f0, #cbd5e1)';
+      if (accEl) accEl.textContent = '—';
+      donut.setAttribute('aria-label', 'ยังไม่มีข้อมูล');
+      triggerPieShellAnim();
+      return;
+    }
+    var acc = Math.round((correct / total) * 100);
+    if (accEl) accEl.textContent = acc + '%';
+    var p1 = (correct / total) * 100;
+    var p2 = ((correct + wrongAns) / total) * 100;
+    donut.style.background =
+      'conic-gradient(from -90deg, #22c55e 0% ' +
+      p1 +
+      '%, #ef4444 ' +
+      p1 +
+      '% ' +
+      p2 +
+      '%, #f59e0b ' +
+      p2 +
+      '% 100%)';
+    donut.setAttribute(
+      'aria-label',
+      'ตอบถูก ' + correct + ' ข้อ ตอบผิด ' + wrongAns + ' ข้อ หมดเวลา ' + timeout + ' ข้อ'
+    );
+    triggerPieShellAnim();
+  }
+
+  function showEndScreen(title) {
+    el('gameArea').hidden = true;
+    var endEl = el('endScreen');
+    endEl.hidden = false;
+    var done = correctCount + wrongCount;
+    var perfect = wrongCount === 0 && done === totalQuestions && correctCount > 0;
+    var partialGood = wrongCount === 0 && done < totalQuestions && correctCount > 0;
+    var titleEl = el('endTitle');
+    if (perfect && title === 'จบชุดแล้ว') {
+      titleEl.textContent = 'จบชุดครบทุกข้อ';
+      titleEl.classList.add('endTitle--perfect');
+    } else {
+      titleEl.textContent = title;
+      titleEl.classList.remove('endTitle--perfect');
+    }
+    el('endKicker').textContent = perfect
+      ? 'ตอบถูกครบทุกข้อในรอบนี้'
+      : partialGood
+        ? 'ในรอบที่เล่นมา ยังไม่พลาด — ลองเล่นให้ครบทุกข้อเมื่อพร้อม'
+        : 'ดูสรุปด้านล่าง แล้วลองฝึกจุดที่ยังสับสน';
+
+    el('sumCorrect').textContent = String(correctCount);
+    el('sumWrong').textContent = String(wrongCount);
+    el('sumTotal').textContent = String(done);
+    var acc = done ? Math.round((correctCount / done) * 100) : 0;
+    el('sumAcc').textContent = acc + '%';
+
+    el('sumTimeouts').textContent = String(sessionTimeouts) + ' ครั้ง';
+    el('sumWrongs').textContent = String(sessionWrongs) + ' ครั้ง';
+    el('sum-extra-box').hidden = false;
+
+    updatePieChart(
+      'สรุปรอบนี้: ตอบถูก ' +
+        correctCount +
+        ' ข้อ · ตอบผิด ' +
+        sessionWrongs +
+        ' ข้อ · หมดเวลา ' +
+        sessionTimeouts +
+        ' ข้อ',
+      correctCount,
+      sessionWrongs,
+      sessionTimeouts
+    );
+
+    var list = el('recommendList');
+    list.innerHTML = '';
+
+    var issues = [];
+    Object.keys(CAT).forEach(function (k) {
+      var s = stats[k] || { wrong: 0, timeout: 0 };
+      var totalIssues = s.wrong + s.timeout;
+      if (totalIssues === 0) return;
+      var parts = [];
+      if (s.timeout > 0) parts.push('หมดเวลา ' + s.timeout + ' ครั้ง');
+      if (s.wrong > 0) parts.push('ตอบผิด ' + s.wrong + ' ครั้ง');
+      issues.push({ key: k, parts: parts, n: totalIssues });
+    });
+    issues.sort(function (a, b) {
+      return b.n - a.n;
+    });
+
+    if (issues.length === 0) {
+      var li = document.createElement('li');
+      li.className = 'weak-li-good';
+      li.textContent =
+        'รอบนี้ไม่มีประเภทโจทย์ที่พลาดบ่อย — ทำได้ดีมาก ลองเพิ่มจำนวนข้อหรือลดเวลาต่อข้อเพื่อฝึกความเร็ว';
+      list.appendChild(li);
+    } else {
+      issues.forEach(function (it) {
+        var cat = CAT[it.key];
+        var li = document.createElement('li');
+
+        var strong = document.createElement('strong');
+        if (cat.titleParts && cat.titleParts.length) {
+          appendMixedParts(strong, cat.titleParts);
+        } else {
+          strong.textContent = cat.title || '';
+        }
+        li.appendChild(strong);
+
+        var ex = document.createElement('div');
+        ex.className = 'weak-katex-row';
+        ex.appendChild(document.createTextNode('ตัวอย่างโจทย์: '));
+        appendKatexExamples(ex, cat.examples);
+        li.appendChild(ex);
+
+        var hint = document.createElement('div');
+        hint.className = 'weak-hint-row';
+        hint.appendChild(document.createTextNode('วิธีฝึก: '));
+        if (cat.hintParts && cat.hintParts.length) {
+          appendMixedParts(hint, cat.hintParts);
+        } else {
+          hint.appendChild(document.createTextNode(cat.hint || ''));
+        }
+        li.appendChild(hint);
+
+        var st = document.createElement('div');
+        st.style.marginTop = '0.35rem';
+        st.style.fontSize = '0.85rem';
+        st.style.opacity = '0.9';
+        st.textContent = it.parts.join(' · ');
+        li.appendChild(st);
+
+        list.appendChild(li);
+      });
+    }
+
+    renderReviewMisses();
+    postHeight();
+  }
+
+  function showGame() {
+    clearTimers();
+    sessionGeneration += 1;
+    readSetup();
+    resetStats();
+    questions = [];
+    for (var i = 0; i < totalQuestions; i++) {
+      questions.push(buildOneQuestion());
+    }
+    correctCount = 0;
+    wrongCount = 0;
+    sessionTimeouts = 0;
+    sessionWrongs = 0;
+    sessionMisses = [];
+    questionIndex = 0;
+    streak = 0;
+    updateStreakDisplay();
+
+    (function closePrepForGame() {
+      var p = el('prepPanel');
+      var b = el('btnPrepToggle');
+      if (!p || !b) return;
+      p.classList.remove('prep-panel--open');
+      b.classList.remove('prep-toggle--open');
+      b.setAttribute('aria-expanded', 'false');
+      p.setAttribute('aria-hidden', 'true');
+      var te = b.querySelector('.prep-toggle__text');
+      if (te) te.textContent = 'เปิดดู ตาราง สมบัติ และ สูตร';
+    })();
+
+    el('startScreen').hidden = true;
+    el('endScreen').hidden = true;
+    el('endTitle').classList.remove('endTitle--perfect');
+    el('gameArea').hidden = false;
+
+    el('score').textContent = '0';
+    el('qTotal').textContent = String(totalQuestions);
+    el('timeLabel').textContent = questionSec.toFixed(1);
+    nextQuestion();
+  }
+
+  function stopGame() {
+    clearTimers();
+    sessionGeneration += 1;
+    answered = true;
+    showEndScreen('หยุดเกม');
+  }
+
+  var btnPrep = el('btnPrepToggle');
+  var prepPanel = el('prepPanel');
+  if (btnPrep && prepPanel) {
+    var prepLabelOpen = 'ซ่อนตาราง สมบัติ และ สูตร';
+    var prepLabelClosed = 'เปิดดู ตาราง สมบัติ และ สูตร';
+    var prepTextEl = btnPrep.querySelector('.prep-toggle__text');
+    btnPrep.addEventListener('click', function () {
+      var open = prepPanel.classList.toggle('prep-panel--open');
+      btnPrep.classList.toggle('prep-toggle--open', open);
+      btnPrep.setAttribute('aria-expanded', open ? 'true' : 'false');
+      prepPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (prepTextEl) prepTextEl.textContent = open ? prepLabelOpen : prepLabelClosed;
+      postHeight();
+    });
+  }
+
+  el('btnStart').addEventListener('click', showGame);
+  el('btnAgain').addEventListener('click', function () {
+    sessionGeneration += 1;
+    el('endScreen').hidden = true;
+    el('startScreen').hidden = false;
+    el('gameArea').hidden = true;
+    postHeight();
+  });
+  el('btnStop').addEventListener('click', stopGame);
+
+  function postHeight() {
+    if (window.parent === window) return;
+    try {
+      var h = document.documentElement.scrollHeight;
+      window.parent.postMessage({ type: 'flashcard-resize', height: h }, '*');
+    } catch (err) {}
+  }
+  window.addEventListener('load', postHeight);
+  window.addEventListener('resize', postHeight);
+  var ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(postHeight) : null;
+  if (ro) ro.observe(document.body);
+})();
+  </script>
+</body>
+</html>
