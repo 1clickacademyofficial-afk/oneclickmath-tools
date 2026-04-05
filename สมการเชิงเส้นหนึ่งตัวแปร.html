@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e2ecfc">
+  <meta name="description" content="ตาชั่งคานเท่ากัน (equal-arm balance): มวลซ้ายเท่าขวาเมื่อสมดุล ลากก้อน x กับตัวเลข ลองค่า x">
+  <title>สมการเชิงเส้นหนึ่งตัวแปร — ตาชั่งสมการ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <style>
+    :root {
+      --paper: #eef5ff;
+      --paper-2: #fbfdff;
+      --ink: #10213f;
+      --ink-muted: #4f6482;
+      --rule: #c4d4ec;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--paper-2));
+      --x-block: #7c3aed;
+      --x-block-soft: color-mix(in srgb, #7c3aed 18%, #fff);
+      --unit-block: #0d9488;
+      --unit-block-soft: color-mix(in srgb, #0d9488 15%, #fff);
+      --success: #15803d;
+      --warn: #b45309;
+      --radius-lg: 1rem;
+      --radius-md: 0.75rem;
+      --shadow-card: 0 1px 0 rgba(29, 78, 216, 0.06), 0 14px 36px -16px rgba(15, 40, 90, 0.22);
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --content-max: min(44rem, 100vw - 1.25rem);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.45, 0.64, 1);
+      --motion-duration: 0.55s;
+      --motion-stagger: 0.1s;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :root {
+        --motion-duration: 0.01s;
+        --motion-stagger: 0s;
+      }
+    }
+    * { box-sizing: border-box; }
+    html {
+      font-size: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: 'Kanit', sans-serif;
+      background: linear-gradient(165deg, #e2ecfc 0%, #f0f6ff 40%, #ffffff 75%);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(var(--space-4), 5vw, var(--space-6)) clamp(var(--space-3), 4vw, var(--space-5));
+    }
+    .app-header {
+      width: min(100%, var(--content-max));
+      margin-bottom: var(--space-5);
+      border-left: 4px solid color-mix(in srgb, var(--accent) 70%, #1e3a8a);
+      padding-left: var(--space-4);
+    }
+    .brand {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #f8fbff;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      background: linear-gradient(150deg, #1e3a8a, #2563eb 55%, #3b82f6);
+    }
+    h1 {
+      margin: var(--space-2) 0 0;
+      font-size: clamp(1.2rem, 4vw, 1.65rem);
+      font-weight: 700;
+      color: color-mix(in srgb, var(--accent) 22%, var(--ink));
+    }
+    .subtitle {
+      margin: var(--space-2) 0 0;
+      color: var(--ink-muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      max-width: 38rem;
+    }
+    .nav-back {
+      margin-top: var(--space-3);
+    }
+    .nav-back a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .nav-back a:hover { text-decoration: underline; }
+    main {
+      width: min(100%, var(--content-max));
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-card);
+    }
+    .result-panel {
+      width: 100%;
+      margin-top: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .result-panel .equation-panel {
+      margin-bottom: 0;
+    }
+    .equation-panel {
+      text-align: center;
+      padding: var(--space-4);
+      background: var(--accent-soft);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-5);
+      min-height: 3.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      gap: var(--space-3);
+    }
+    .equation-panel__main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      width: 100%;
+    }
+    .eq-legend {
+      margin: 0;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+      max-width: 32rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+    .eq-legend[hidden] {
+      display: none !important;
+    }
+    .equation-panel .katex { font-size: 1.15rem; }
+    .solve-wrap {
+      text-align: start;
+      width: 100%;
+      margin-top: var(--space-2);
+      padding-top: var(--space-4);
+      border-top: 1px solid color-mix(in srgb, var(--accent) 22%, var(--rule));
+    }
+    main .result-panel .solve-wrap {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid #c4bfb5;
+      border-radius: var(--radius-md);
+      background: rgba(255, 252, 248, 0.94);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    }
+    .solve-wrap[hidden] {
+      display: none !important;
+    }
+    .solve-title {
+      margin: 0 0 var(--space-2);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .solve-title::before {
+      content: "";
+      width: 4px;
+      height: 1.1em;
+      border-radius: 2px;
+      background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #1e3a8a));
+    }
+    #eq-steps {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      align-items: center;
+      text-align: center;
+    }
+    .eq-line {
+      width: 100%;
+      padding: 0.35rem var(--space-2);
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: var(--radius-md);
+      border: 1px solid color-mix(in srgb, var(--rule) 88%, var(--accent));
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .eq-line .katex { font-size: 1.05rem; }
+    .equation-panel.equation--balanced {
+      animation: eqGlow 1.1s var(--ease-out) 1;
+    }
+    @keyframes eqGlow {
+      0%, 100% { box-shadow: inset 0 0 0 0 transparent; }
+      40% {
+        box-shadow:
+          inset 0 0 0 2px color-mix(in srgb, var(--success) 45%, transparent),
+          0 0 28px color-mix(in srgb, var(--success) 22%, transparent);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .equation-panel.equation--balanced { animation: none; }
+    }
+    .balance-status {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .balance-status.ok { color: var(--success); }
+    .balance-status.no { color: var(--warn); }
+    /* แผงสไลเดอร์ x — อยู่ใต้ตาชั่ง (ไม่ซ้อน z ทับจาน; เว้นที่ด้วย padding ของ rotor-wrap) */
+    .x-slider-panel {
+      position: relative;
+      z-index: 0;
+      margin-top: var(--space-3);
+      padding: var(--space-4) clamp(var(--space-3), 3vw, var(--space-5));
+      border-radius: 0.7rem;
+      background: linear-gradient(165deg, #fdfcfa 0%, #f3efe6 48%, #ebe4d8 100%);
+      border: 1px solid #b8b0a2;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 3px 14px rgba(15, 23, 42, 0.08);
+    }
+    .x-slider-panel__top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-2);
+    }
+    .x-slider-panel__label {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #2d3a52;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+    }
+    .x-slider-panel__label span[lang="en"] {
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .x-val-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 3rem;
+      padding: 0.35rem 0.85rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #1e3a8a;
+      background: linear-gradient(180deg, #fff 0%, #f0f4ff 100%);
+      border: 2px solid color-mix(in srgb, var(--accent) 55%, #93c5fd);
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+    }
+    .x-slider-panel__sub {
+      margin: 0 0 var(--space-4);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #5c6578;
+      line-height: 1.4;
+    }
+    .x-slider-rail {
+      --x-pct: 25%;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .x-slider-end {
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #64748b;
+      min-width: 1.25rem;
+      text-align: center;
+    }
+    .x-slider-track-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      padding: 0.5rem 0;
+    }
+    .x-slider-track-wrap input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 2.75rem;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .x-slider-track-wrap input[type="range"]:focus {
+      outline: none;
+    }
+    .x-slider-track-wrap input[type="range"]:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 65%, transparent);
+      outline-offset: 4px;
+      border-radius: 0.5rem;
+    }
+    .x-slider-track-wrap input[type="range"]::-webkit-slider-runnable-track {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--accent) 92%, #1e40af) 0%,
+        color-mix(in srgb, #7c3aed 75%, var(--accent)) var(--x-pct),
+        #d4dbe8 var(--x-pct),
+        #e8ecf4 100%
+      );
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12);
+    }
+    .x-slider-track-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 26px;
+      height: 26px;
+      margin-top: -7px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffffff 0%, #e8eef9 100%);
+      border: 3px solid var(--accent);
+      box-shadow:
+        0 2px 10px rgba(37, 99, 235, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+      transition: transform 0.15s var(--ease-out), box-shadow 0.15s ease;
+    }
+    .x-slider-track-wrap input[type="range"]:hover::-webkit-slider-thumb {
+      transform: scale(1.06);
+      box-shadow:
+        0 4px 16px rgba(37, 99, 235, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+    }
+    .x-slider-track-wrap input[type="range"]:active::-webkit-slider-thumb {
+      transform: scale(1.02);
+    }
+    .x-slider-track-wrap input[type="range"]::-moz-range-track {
+      height: 12px;
+      border-radius: 999px;
+      background: #e8ecf4;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.1);
+    }
+    .x-slider-track-wrap input[type="range"]::-moz-range-progress {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--accent) 92%, #1e40af),
+        color-mix(in srgb, #7c3aed 80%, var(--accent))
+      );
+    }
+    .x-slider-track-wrap input[type="range"]::-moz-range-thumb {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffffff 0%, #e8eef9 100%);
+      border: 3px solid var(--accent);
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+      cursor: pointer;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .x-slider-track-wrap input[type="range"]::-webkit-slider-thumb,
+      .x-slider-track-wrap input[type="range"]:hover::-webkit-slider-thumb {
+        transition: none;
+        transform: none;
+      }
+    }
+    /* —— ตาชั่งแบบคลาสสิก (ภาพเส้น + โซนวางก้อนทับจาน) —— */
+    .scale-stage {
+      --beam-angle: 0deg;
+      /* จานไม่อยู่ในคานที่หมุน — เลื่อนเฉพาะแกน Y (px) ตามมวล */
+      --pan-dy-left: 0px;
+      --pan-dy-right: 0px;
+      position: relative;
+      margin: var(--space-5) auto var(--space-6);
+      padding: var(--space-4) var(--space-4) var(--space-3);
+      border-radius: var(--radius-md);
+      background: #f0ebe3;
+      border: 1px solid #c9c2b8;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
+      overflow: visible;
+    }
+    .rotor-wrap {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 26rem);
+      margin: 0 auto;
+      /* จาน absolute ยื่นลงจากกรอบ SVG — เว้นพื้นที่ด้านล่างให้จานขยายแนว Y ไม่ทับคำอธิบาย/สไลด์ */
+      padding-bottom: clamp(4rem, 16vw, 12rem);
+    }
+    /* คาน + โซ่หมุนรอบจุดกลาง — ฝั่งมวลมากปลายคานลง */
+    .rotor.scale-classic-rotor {
+      transform: rotate(var(--beam-angle));
+      transform-origin: 50% 35%;
+      transition: transform 0.45s var(--ease-out);
+      will-change: transform;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+    }
+    .rotor.rotor--wobble {
+      animation: rotorWobble 0.65s var(--ease-out) 1;
+    }
+    @keyframes rotorWobble {
+      0%, 100% { filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.08)); }
+      40% { filter: drop-shadow(0 10px 22px rgba(37, 99, 235, 0.18)); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .rotor.rotor--wobble { animation: none; }
+    }
+    .scale-classic-frame {
+      position: relative;
+      z-index: 1;
+      isolation: isolate;
+      display: block;
+      width: 100%;
+      max-width: 26rem;
+      margin: 0 auto;
+      aspect-ratio: 400 / 360;
+    }
+    /* ค่า x จากสไลด์ — แสดงใกล้ตาชั่ง (ซ้ำกับแผงล่างเพื่อมองจากภาพได้ทันที) */
+    .scale-x-hint {
+      position: absolute;
+      left: 50%;
+      top: 0.4rem;
+      transform: translateX(-50%);
+      z-index: 5;
+      margin: 0;
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.2rem;
+      padding: 0.28rem 0.65rem 0.32rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--rule));
+      border-radius: 999px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .scale-x-hint__eq {
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+    .scale-x-hint__eq span[lang="en"] {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .scale-x-hint__val {
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: color-mix(in srgb, var(--accent) 28%, var(--ink));
+    }
+    /* โซ่แขวน: หมุน -beam-angle รอบจุดยึดบนคาน รวมกับคานที่หมุน +beam → โซ่ตั้งตรง (แนว y) */
+    .scale-svg--arm .scale-chain-vertical {
+      transform: rotate(calc(-1 * var(--beam-angle, 0deg)));
+      transform-origin: 0 0;
+    }
+    .scale-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      user-select: none;
+      pointer-events: none;
+      shape-rendering: geometricPrecision;
+    }
+    .scale-svg--static {
+      position: relative;
+      z-index: 0;
+    }
+    .scale-rotor-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .scale-rotor-layer .scale-svg--arm {
+      position: absolute;
+      inset: 0;
+    }
+    .scale-gauge-needle {
+      transform-origin: 200px 218px;
+      transform: rotate(calc(var(--beam-angle, 0deg) * 0.82));
+      transition: transform 0.45s var(--ease-out);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scale-gauge-needle { transition: none; }
+      .scale-pan-overlay { transition: none; }
+      .scale-pan-overlay .pan-head,
+      .scale-classic-frame .pan-shell { transition: none; }
+    }
+    /* จานอยู่นอก rotor: X คงที่ (กึ่งกลาง 25%/75%) เคลื่อนที่แค่ translateY ตามมวล — ไม่หมุนไปกับคาน */
+    .scale-pan-overlay {
+      position: absolute;
+      z-index: 4;
+      display: block;
+      width: 27%;
+      min-width: 0;
+      pointer-events: none;
+      transition: transform 0.45s var(--ease-out);
+      will-change: transform;
+      top: calc(258 / 360 * 100%);
+    }
+    .scale-pan-overlay .pan-head {
+      position: absolute;
+      right: auto;
+      bottom: 100%;
+      left: 50%;
+      margin-bottom: 0.3rem;
+      transform: translate(-50%, 0);
+      transform-origin: center bottom;
+      transition: none;
+      white-space: nowrap;
+    }
+    .pan-head {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      margin-bottom: 0;
+      pointer-events: none;
+    }
+    .scale-pan-overlay .pan-tag {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .pan-mass-readout {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--rule);
+      padding: 0.1rem 0.4rem;
+      border-radius: 0.35rem;
+      min-width: 1.75rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .pan-mass-readout:empty {
+      display: none;
+    }
+    .scale-pan-overlay--left {
+      left: 25%;
+      transform: translateX(-50%) translateY(var(--pan-dy-left));
+    }
+    .scale-pan-overlay--right {
+      left: 75%;
+      transform: translateX(-50%) translateY(var(--pan-dy-right));
+    }
+    .scale-classic-frame .pan-shell {
+      width: 100%;
+      flex: 1 1 auto;
+      margin: 0;
+      padding: 0.35rem;
+      min-height: 2.6rem;
+      display: flex;
+      align-items: stretch;
+      border-radius: 0.65rem;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      pointer-events: auto;
+      position: relative;
+    }
+    .scale-classic-frame .pan-shell::before {
+      display: none;
+    }
+    .pan-zone.pan--thud {
+      animation: panThudZone 0.42s var(--ease-bounce) 1;
+    }
+    @keyframes panThudZone {
+      0% { transform: translateY(0); }
+      35% { transform: translateY(4px); }
+      65% { transform: translateY(-2px); }
+      100% { transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pan-zone.pan--thud { animation: none; }
+    }
+    .scale-classic-caption {
+      margin: var(--space-2) 0 0;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+      position: relative;
+      z-index: 0;
+    }
+    .pan-zone {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 7.5rem;
+      padding: var(--space-3);
+      border-radius: 0.65rem;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: var(--space-2);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.25s;
+    }
+    .pan-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .pan-zone.focus-pan {
+      outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      outline-offset: 2px;
+    }
+    .pan-zone.pan--balanced {
+      box-shadow:
+        0 0 0 2px color-mix(in srgb, var(--success) 45%, transparent),
+        0 0 24px color-mix(in srgb, var(--success) 28%, transparent);
+      border-color: color-mix(in srgb, var(--success) 55%, var(--rule));
+    }
+    /* สูงสุด 10 ก้อน/จาน: 2 คอลัมน์ เรียงแถว (ซ้าย→ขวา แล้วลงแถว) ไม่ใช้ column-flow ที่บีบก้อนซ้อนในแนวนอน */
+    .scale-classic-frame .pan-zone {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: row;
+      grid-auto-rows: minmax(2.35rem, auto);
+      gap: 0.45rem 0.4rem;
+      align-content: start;
+      justify-items: stretch;
+      align-items: stretch;
+      min-height: 2.4rem;
+      max-height: none;
+      overflow: visible;
+      flex: 0 1 auto;
+      align-self: stretch;
+      border-radius: 0.45rem;
+      padding: 0.45rem 0.35rem;
+      border: 1px dashed #cbd5e1;
+      background: #fafafa;
+    }
+    .scale-classic-frame .pan-zone .block {
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      min-height: 2.35rem;
+      padding: 0.26rem 0.85rem 0.26rem 0.26rem;
+      font-size: clamp(0.78rem, 2.4vw, 0.95rem);
+      font-weight: 800;
+      line-height: 1.15;
+      border-radius: 10px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.75) inset,
+        0 2px 0 rgba(91, 33, 182, 0.35),
+        0 3px 6px rgba(91, 33, 182, 0.18);
+    }
+    .scale-classic-frame .pan-zone .block .block-label {
+      font-size: 1em;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+    .scale-classic-frame .pan-zone .block--u {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 2px 0 rgba(13, 148, 136, 0.45),
+        0 3px 6px rgba(13, 148, 136, 0.16);
+    }
+    .scale-classic-frame .pan-zone .block--u .block-label {
+      color: #0a5c52;
+    }
+    .scale-classic-frame .pan-zone .block--x .block-label {
+      color: #4c1d95;
+    }
+    .scale-classic-frame .pan-zone .block--on-pan {
+      padding-right: 0.95rem;
+    }
+    .scale-classic-frame .pan-zone .block-remove {
+      top: -4px;
+      right: -4px;
+      width: 1.25rem;
+      height: 1.25rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .palette-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: var(--space-5) 0 var(--space-3);
+      color: var(--ink-muted);
+    }
+    .palette-title--first {
+      margin-top: 0;
+    }
+    main > .palette {
+      margin-bottom: var(--space-5);
+      padding: var(--space-3) var(--space-4);
+      background: color-mix(in srgb, var(--accent-soft) 55%, #fff);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+    }
+    .palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+    }
+    .pan-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 2px;
+    }
+    #palette .block {
+      transition: transform 0.18s var(--ease-out), box-shadow 0.18s;
+    }
+    #palette .block:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 8px 18px -6px rgba(15, 23, 42, 0.28);
+    }
+    .block {
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      transition: transform 0.12s var(--ease-out);
+    }
+    .block:active { cursor: grabbing; }
+    .block--x {
+      background:
+        linear-gradient(165deg, rgba(255, 255, 255, 0.9) 0%, var(--x-block-soft) 48%, #ddd6fe 100%);
+      color: #4c1d95;
+      border-color: color-mix(in srgb, var(--x-block) 42%, #fff);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 4px 0 #5b21b6,
+        0 8px 14px rgba(91, 33, 182, 0.25);
+    }
+    .block--u {
+      background:
+        linear-gradient(165deg, rgba(255, 255, 255, 0.95) 0%, var(--unit-block-soft) 50%, #99f6e4 100%);
+      color: #0f766e;
+      border-color: color-mix(in srgb, var(--unit-block) 40%, #fff);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 4px 0 #0d9488,
+        0 8px 14px rgba(13, 148, 136, 0.22);
+    }
+    .block--on-pan {
+      position: relative;
+      padding-right: 1.35rem;
+    }
+    .block-label {
+      pointer-events: none;
+    }
+    .block--drop-in {
+      animation: blockDropIn 0.55s var(--ease-bounce) both;
+    }
+    @keyframes blockDropIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-72px) scale(0.75) rotate(-6deg);
+      }
+      55% {
+        opacity: 1;
+        transform: translateY(4px) scale(1.05) rotate(1deg);
+      }
+      75% {
+        transform: translateY(-2px) scale(0.98) rotate(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .block--drop-in {
+        animation: blockDropInReduced 0.2s ease both;
+      }
+      @keyframes blockDropInReduced {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    }
+    .block-remove {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 1.35rem;
+      height: 1.35rem;
+      border: none;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-size: 0.75rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      opacity: 0.85;
+    }
+    .block-remove:hover { opacity: 1; }
+    .hint {
+      margin-top: var(--space-5);
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+    }
+    .actions {
+      margin-top: var(--space-4);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .btn {
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      border-radius: 0.65rem;
+      border: 1px solid var(--rule);
+      background: #fff;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--ink);
+      background: var(--accent-soft);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: transparent;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      color: #fff;
+    }
+
+    /* —— adapt: จอแคบ / มือถือ —— */
+    @media (max-width: 480px) {
+      body {
+        padding-left: max(0.65rem, env(safe-area-inset-left, 0px));
+        padding-right: max(0.65rem, env(safe-area-inset-right, 0px));
+        padding-bottom: max(0.65rem, env(safe-area-inset-bottom, 0px));
+      }
+      .app-header {
+        padding-left: var(--space-3);
+      }
+      main {
+        padding: var(--space-4);
+      }
+      .scale-stage {
+        margin: var(--space-4) auto var(--space-5);
+        padding: var(--space-3) var(--space-2) var(--space-2);
+      }
+      .rotor-wrap {
+        padding-bottom: clamp(3.25rem, 12vw, 9rem);
+      }
+      .palette-title {
+        font-size: 0.85rem;
+        line-height: 1.45;
+      }
+      main > .palette {
+        padding: var(--space-3);
+      }
+      .palette {
+        gap: var(--space-3);
+        justify-content: center;
+      }
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .actions .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.75rem;
+        width: 100%;
+      }
+      .x-slider-panel__top {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+      .x-val-pill {
+        align-self: center;
+      }
+      .hint {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* ปุ่มลบก้อน / แถบเลื่อน: เป้าสัมผัสไม่เล็กเกินไป */
+    @media (pointer: coarse) {
+      .block-remove {
+        min-width: 2.75rem;
+        min-height: 2.75rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 0.9rem;
+        opacity: 1;
+      }
+      .scale-classic-frame .pan-zone .block-remove {
+        top: -0.3rem;
+        right: -0.3rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        min-width: 2.75rem;
+        min-height: 2.75rem;
+        font-size: 0.85rem;
+      }
+      .x-slider-track-wrap input[type="range"] {
+        min-height: 3rem;
+      }
+      .x-slider-track-wrap input[type="range"]::-webkit-slider-thumb {
+        width: 32px;
+        height: 32px;
+        margin-top: -10px;
+      }
+      .x-slider-track-wrap input[type="range"]::-moz-range-thumb {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      #palette .block:hover {
+        transform: none;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.8) inset,
+          0 4px 0 #5b21b6,
+          0 8px 14px rgba(91, 33, 182, 0.25);
+      }
+      #palette .block--u:hover {
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.85) inset,
+          0 4px 0 #0d9488,
+          0 8px 14px rgba(13, 148, 136, 0.22);
+      }
+      #palette .block:active {
+        transform: scale(0.96);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .pan-zone { min-height: 7rem; }
+      .scale-classic-frame .pan-zone {
+        min-height: 2.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <span class="brand" lang="en">OneClickMath</span>
+    <h1>สมการเชิงเส้นหนึ่งตัวแปร — ตาชั่งสมการ</h1>
+    <p class="subtitle">
+      <strong>ตาชั่งคานเท่ากัน</strong> (<span lang="en">equal-arm</span>): สมดุลเมื่อ <strong>มวลซ้าย = มวลขวา</strong> — ลากก้อน <strong>x</strong> หรือตัวเลขไปจาน แล้วเลื่อน <strong>x</strong>
+    </p>
+    <p class="nav-back"><a href="roadmap.html">← กลับไปยังแผนการเรียน</a></p>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <p class="palette-title palette-title--first">ลากจากแถบด้านบนไปจาน · คลิกจานแล้วคลิกก้อนเพื่อเพิ่ม · จานละสูงสุด 10 ก้อน · × เอาก้อนออก</p>
+    <div class="palette" id="palette" aria-label="ก้อนให้ลาก">
+      <div class="block block--x" draggable="true" data-kind="x" data-template="1" title="ก้อน x">x</div>
+      <div class="block block--u" draggable="true" data-kind="u" data-val="1" title="น้ำหนัก 1">1</div>
+      <div class="block block--u" draggable="true" data-kind="u" data-val="2" title="น้ำหนัก 2">2</div>
+      <div class="block block--u" draggable="true" data-kind="u" data-val="3" title="น้ำหนัก 3">3</div>
+      <div class="block block--u" draggable="true" data-kind="u" data-val="5" title="น้ำหนัก 5">5</div>
+    </div>
+
+    <div class="scale-stage" id="scale-stage" aria-label="ตาชั่งคานเท่ากัน หมุดกลางคาน แขนยาวเท่ากัน">
+      <div class="rotor-wrap">
+        <div class="scale-classic-frame">
+          <p class="scale-x-hint" aria-live="polite" title="ค่า x จากแถบเลื่อนด้านล่าง">
+            <span class="scale-x-hint__eq"><span lang="en">x</span> = </span>
+            <strong class="scale-x-hint__val" id="scale-x-near">5</strong>
+          </p>
+          <!-- ฐาน + เสา + มาตรวัด: นิ่ง — คาน+โซ่อยู่ชั้น rotor -->
+          <svg class="scale-svg scale-svg--static" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="clPillar" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#9ca3af"/>
+                <stop offset="45%" stop-color="#f3f4f6"/>
+                <stop offset="100%" stop-color="#6b7280"/>
+              </linearGradient>
+              <linearGradient id="clBase" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#6b7280"/>
+                <stop offset="100%" stop-color="#1f2937"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="200" cy="336" rx="138" ry="9" fill="#0f172a" opacity="0.14"/>
+            <path d="M 72 342 L 328 342 L 308 298 L 92 298 Z" fill="url(#clBase)" stroke="#111827" stroke-width="1.3"/>
+            <path d="M 92 298 L 308 298 L 300 278 L 100 278 Z" fill="#4b5563" opacity="0.55"/>
+            <rect x="182" y="148" width="36" height="132" rx="6" fill="url(#clPillar)" stroke="#1f2937" stroke-width="1.4"/>
+            <rect x="188" y="156" width="24" height="116" rx="3" fill="#e5e7eb" opacity="0.22"/>
+            <ellipse cx="200" cy="148" rx="34" ry="12" fill="#e5e7eb" stroke="#374151" stroke-width="1.2"/>
+            <path d="M 162 218 A 38 38 0 0 1 238 218" fill="none" stroke="#64748b" stroke-width="2"/>
+            <g class="scale-gauge-needle">
+              <line x1="200" y1="218" x2="200" y2="184" stroke="#dc2626" stroke-width="2.8" stroke-linecap="round"/>
+              <circle cx="200" cy="218" r="4" fill="#111827"/>
+            </g>
+          </svg>
+          <div class="rotor scale-classic-rotor scale-rotor-layer" id="tilt">
+            <svg class="scale-svg scale-svg--arm" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="clBeam" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#f9fafb"/>
+                  <stop offset="45%" stop-color="#d1d5db"/>
+                  <stop offset="100%" stop-color="#9ca3af"/>
+                </linearGradient>
+              </defs>
+              <!-- Equal-arm: จุดหมุน x=200 กึ่งกลางคาน 72–328 แขนซ้าย/ขวาเท่ากัน -->
+              <path d="M 72 118 Q 200 98 328 118 L 328 134 Q 200 122 72 134 Z" fill="url(#clBeam)" stroke="#111827" stroke-width="1.5" stroke-linejoin="round"/>
+              <circle cx="200" cy="126" r="13" fill="#e5e7eb" stroke="#111827" stroke-width="1.6"/>
+              <circle cx="200" cy="126" r="5" fill="#374151"/>
+              <!-- โซ่คู่ละข้าง: แนวตั้ง + หักมุม -θ ให้คงตั้งเมื่อคานหมุน θ -->
+              <g transform="translate(100, 134)"><g class="scale-chain-vertical"><line x1="0" y1="0" x2="0" y2="124" stroke="#64748b" stroke-width="2.4" stroke-linecap="round"/></g></g>
+              <g transform="translate(300, 134)"><g class="scale-chain-vertical"><line x1="0" y1="0" x2="0" y2="124" stroke="#64748b" stroke-width="2.4" stroke-linecap="round"/></g></g>
+            </svg>
+          </div>
+          <!-- จานอยู่นอกคานที่หมุน: เลื่อนแนวตั้งอย่างเดียว (ดู JS --pan-dy-*) -->
+          <div class="scale-pan-overlay scale-pan-overlay--left">
+            <div class="pan-head">
+              <span class="pan-tag">ซ้าย</span>
+              <span class="pan-mass-readout" id="pan-mass-left" aria-live="polite" title="มวลรวมฝั่งนี้"></span>
+            </div>
+            <div class="pan-shell" id="shell-left">
+              <div class="pan-zone" data-side="left" id="pan-left" aria-label="จานซ้าย วางก้อน"></div>
+            </div>
+          </div>
+          <div class="scale-pan-overlay scale-pan-overlay--right">
+            <div class="pan-head">
+              <span class="pan-tag">ขวา</span>
+              <span class="pan-mass-readout" id="pan-mass-right" aria-live="polite" title="มวลรวมฝั่งนี้"></span>
+            </div>
+            <div class="pan-shell" id="shell-right">
+              <div class="pan-zone" data-side="right" id="pan-right" aria-label="จานขวา วางก้อน"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="scale-classic-caption">คานเอียงตามมวล · จานเลื่อน<strong>แนวตั้ง</strong>อย่างเดียว · โซ่ตั้ง · ก้อน <span lang="en">x</span> = มวลต่อก้อนตามแถบ</p>
+
+      <div class="x-slider-panel" id="x-slider-panel">
+        <div class="x-slider-panel__top">
+          <label class="x-slider-panel__label" for="x-slider">ปรับค่า <span lang="en">x</span> เพื่อทดสอบมวลบนตาชั่ง</label>
+          <output class="x-val-pill" id="x-display" for="x-slider">5</output>
+        </div>
+        <p class="x-slider-panel__sub">มวลต่อก้อน <span lang="en">x</span> — 3 ก้อน = 3×ค่านี้</p>
+        <div class="x-slider-rail" id="x-slider-rail">
+          <span class="x-slider-end">0</span>
+          <div class="x-slider-track-wrap">
+            <input type="range" id="x-slider" min="0" max="20" value="5" step="1" aria-label="ค่า x ตั้งแต่ 0 ถึง 20" />
+          </div>
+          <span class="x-slider-end">20</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-panel" id="result-panel">
+      <div class="equation-panel" id="equation-panel" aria-live="polite">
+        <div class="equation-panel__main">
+          <div id="eq-katex"></div>
+          <p class="eq-legend" id="eq-legend" hidden aria-live="polite"></p>
+          <p id="balance-msg" class="balance-status"></p>
+        </div>
+      </div>
+      <div class="solve-wrap" id="solve-wrap" hidden>
+        <p class="solve-title">วิธีทำ</p>
+        <div id="eq-steps"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn" id="btn-clear">ล้างจานทั้งสองข้าง</button>
+      <button type="button" class="btn btn-primary" id="btn-example">ใส่ตัวอย่าง: 2x+3 = x+7</button>
+    </div>
+
+    <p class="hint">
+      <strong>เคล็ด:</strong> ถ้าสมการเป็นรูป <span lang="en">ax + b = cx + d</span> ค่า <span lang="en">x</span> ที่ทำให้ตาชั่งราบคือคำตอบของสมการนั้น
+      (ลองจัดก้อนให้ได้สมการเดียวกันแล้วหาค่า x ที่ทำให้สมดุล)
+    </p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script>
+    (function () {
+      let idSeq = 0;
+      function uid() { idSeq += 1; return 'b' + idSeq; }
+
+      const panLeft = document.getElementById('pan-left');
+      const panRight = document.getElementById('pan-right');
+      const tilt = document.getElementById('tilt');
+      const scaleStage = document.getElementById('scale-stage');
+      const eqEl = document.getElementById('eq-katex');
+      const eqPanel = document.getElementById('equation-panel');
+      const balanceMsg = document.getElementById('balance-msg');
+      const xSlider = document.getElementById('x-slider');
+      const xSliderRail = document.getElementById('x-slider-rail');
+      const xDisplay = document.getElementById('x-display');
+      const panMassLeft = document.getElementById('pan-mass-left');
+      const panMassRight = document.getElementById('pan-mass-right');
+      const scaleXNear = document.getElementById('scale-x-near');
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      /** จำกัดจานละก้อน — ให้กริด 2×5 จัดวางได้ชัด */
+      const MAX_BLOCKS_PER_PAN = 10;
+
+      let wasBalanced = false;
+
+      const state = {
+        left: [],
+        right: [],
+        focusSide: 'left'
+      };
+
+      function setFocusPan(side) {
+        state.focusSide = side;
+        panLeft.classList.toggle('focus-pan', side === 'left');
+        panRight.classList.toggle('focus-pan', side === 'right');
+      }
+
+      function totals(arr) {
+        let xc = 0;
+        let c = 0;
+        for (const b of arr) {
+          if (b.kind === 'x') xc += 1;
+          else c += b.val;
+        }
+        return { xc, c };
+      }
+
+      function sideToLatex(t) {
+        if (t.xc === 0 && t.c === 0) return '0';
+        const parts = [];
+        if (t.xc > 0) parts.push(t.xc === 1 ? 'x' : String(t.xc) + 'x');
+        if (t.c > 0) parts.push(String(t.c));
+        return parts.join('+');
+      }
+
+      /** มวลรวมฝั่งหนึ่ง ณ ค่า x — โมเดล equal-arm (แขนยาว L เท่ากัน): สมดุลเมื่อ mass(ซ้าย) = mass(ขวา) */
+      function mass(arr, x) {
+        const t = totals(arr);
+        return t.xc * x + t.c;
+      }
+
+      /** สมการหลัก: = เมื่อสมดุลหรือยังไม่มีก้อน; > / < เมื่อฝั่งหนึ่งหนักกว่า (ณ ค่า x จากสไลเดอร์) */
+      function renderMainEquationDisplay() {
+        const L = totals(state.left);
+        const R = totals(state.right);
+        const x = Number(xSlider.value);
+        const hasBlocks = state.left.length > 0 || state.right.length > 0;
+        var ml = 0;
+        var mr = 0;
+        /** @type {'eq'|'gt'|'lt'} */
+        var cmp = 'eq';
+        if (hasBlocks) {
+          ml = mass(state.left, x);
+          mr = mass(state.right, x);
+          if (ml > mr) cmp = 'gt';
+          else if (ml < mr) cmp = 'lt';
+        }
+        const Lt = sideToLatex(L);
+        const Rt = sideToLatex(R);
+        var tex;
+        if (cmp === 'gt') tex = Lt + ' > ' + Rt;
+        else if (cmp === 'lt') tex = Lt + ' < ' + Rt;
+        else tex = Lt + '=' + Rt;
+        if (typeof katex !== 'undefined') {
+          try {
+            katex.render(tex, eqEl, { throwOnError: false, displayMode: false });
+          } catch (e) {
+            eqEl.textContent = (cmp === 'gt' ? Lt + ' > ' + Rt : cmp === 'lt' ? Lt + ' < ' + Rt : Lt + ' = ' + Rt);
+          }
+        } else {
+          eqEl.textContent = (cmp === 'gt' ? Lt + ' > ' + Rt : cmp === 'lt' ? Lt + ' < ' + Rt : Lt + ' = ' + Rt);
+        }
+        const legend = document.getElementById('eq-legend');
+        if (legend) {
+          if (!hasBlocks) {
+            legend.hidden = true;
+            legend.textContent = '';
+          } else {
+            legend.hidden = false;
+            if (cmp === 'eq') {
+              legend.textContent = 'เครื่องหมาย = หมายถึงมวลสองข้างเท่ากัน ณ ค่า x = ' + x + ' (จากสไลเดอร์)';
+            } else if (cmp === 'gt') {
+              legend.textContent = 'เครื่องหมาย > หมายถึงมวลฝั่งซ้าย (ซ้ายของสมการ) มากกว่าฝั่งขวา ณ x = ' + x + ' — ลองปรับ x จนได้ =';
+            } else {
+              legend.textContent = 'เครื่องหมาย < หมายถึงมวลฝั่งซ้ายน้อยกว่าฝั่งขวา ณ x = ' + x + ' — ลองปรับ x จนได้ =';
+            }
+          }
+        }
+      }
+
+      function appendSolveLine(list, tex) {
+        const row = document.createElement('div');
+        row.className = 'eq-line';
+        if (typeof katex !== 'undefined') {
+          katex.render(tex, row, { throwOnError: false, displayMode: false });
+        } else {
+          row.textContent = tex;
+        }
+        list.appendChild(row);
+      }
+
+      /** แทนค่า x แล้วเขียนเป็นพจน์ตัวเลข (สำหรับขั้น “แทนค่า”) */
+      function expandSubstituteTex(t, x0) {
+        if (t.xc === 0) return String(t.c);
+        if (t.xc === 1 && t.c === 0) return String(x0);
+        if (t.xc === 1 && t.c > 0) return String(x0) + '+' + t.c;
+        if (t.c === 0) return t.xc + '\\cdot ' + x0;
+        return t.xc + '\\cdot ' + x0 + '+' + t.c;
+      }
+
+      function renderSolutionSteps() {
+        const wrap = document.getElementById('solve-wrap');
+        const list = document.getElementById('eq-steps');
+        if (!wrap || !list) return;
+
+        const L = totals(state.left);
+        const R = totals(state.right);
+        if (L.xc === 0 && L.c === 0 && R.xc === 0 && R.c === 0) {
+          wrap.hidden = true;
+          list.innerHTML = '';
+          return;
+        }
+
+        const x0 = Number(xSlider.value);
+        const ml = mass(state.left, x0);
+        const mr = mass(state.right, x0);
+        const Lt = sideToLatex(L);
+        const Rt = sideToLatex(R);
+        const a = L.xc;
+        const b = L.c;
+        const c = R.xc;
+        const d = R.c;
+        const coef = a - c;
+        const rhs = d - b;
+
+        list.innerHTML = '';
+        wrap.hidden = false;
+
+        if (a === 0 && c === 0) {
+          appendSolveLine(list, (b === d ? String(b) + '=' + String(d) : String(b) + '\\neq ' + String(d)));
+          return;
+        }
+
+        if (coef === 0 && rhs === 0) {
+          appendSolveLine(list, Lt + '=' + Rt);
+          return;
+        }
+        if (coef === 0 && rhs !== 0) {
+          appendSolveLine(list, String(b) + '\\neq ' + String(d));
+          return;
+        }
+
+        if (ml === mr) {
+          appendSolveLine(list, Lt + '=' + Rt);
+          appendSolveLine(list, String(ml) + '=' + String(mr));
+          return;
+        }
+
+        var heavyT;
+        var lightT;
+        var symTex;
+        if (ml > mr) {
+          heavyT = L;
+          lightT = R;
+          symTex = Lt + ' > ' + Rt;
+        } else {
+          heavyT = R;
+          lightT = L;
+          symTex = Rt + ' > ' + Lt;
+        }
+
+        appendSolveLine(list, symTex);
+
+        var exH = expandSubstituteTex(heavyT, x0);
+        var exL = expandSubstituteTex(lightT, x0);
+        var subTex = exH + ' > ' + exL;
+        appendSolveLine(list, subTex);
+
+        var composite = subTex.indexOf('+') !== -1 || subTex.indexOf('\\cdot') !== -1;
+        if (composite) {
+          var hM = ml > mr ? ml : mr;
+          var lM = ml > mr ? mr : ml;
+          appendSolveLine(list, String(hM) + ' > ' + String(lM));
+        }
+      }
+
+      function renderEquation() {
+        renderMainEquationDisplay();
+      }
+
+      function updateScale() {
+        const x = Number(xSlider.value);
+        xDisplay.textContent = String(x);
+        if (scaleXNear) scaleXNear.textContent = String(x);
+        if (xSliderRail && xSlider) {
+          const smin = Number(xSlider.min);
+          const smax = Number(xSlider.max);
+          const pct = smax <= smin ? 0 : ((x - smin) / (smax - smin)) * 100;
+          xSliderRail.style.setProperty('--x-pct', pct + '%');
+        }
+        const ml = mass(state.left, x);
+        const mr = mass(state.right, x);
+        const diff = ml - mr;
+        /* Equal-arm: โทร์กสัดส่วนกับ (ml−mr) เมื่อ L ซ้าย=ขวา — diff>0 ซ้ายหนัก → ปลายซ้ายลง */
+        const cap = 18;
+        const maxTilt = 46;
+        let angle = 0;
+        if (diff !== 0) {
+          angle = (-diff / cap) * maxTilt;
+          angle = Math.max(-maxTilt, Math.min(maxTilt, angle));
+        }
+        if (scaleStage) {
+          scaleStage.style.setProperty('--beam-angle', angle + 'deg');
+        } else if (tilt) {
+          tilt.style.transform = 'rotate(' + angle + 'deg)';
+        }
+        /* จานไม่อยู่ใน rotor: เลื่อนแนวตั้งอย่างเดียว ตามสัดส่วน diff (ไม่เลื่อนแกน X) */
+        var fr = document.querySelector('.scale-classic-frame');
+        var maxPanDy = 40;
+        if (fr && fr.offsetHeight) {
+          maxPanDy = Math.round(Math.min(56, Math.max(24, fr.offsetHeight * 0.11)));
+        }
+        var panT = Math.max(-1, Math.min(1, diff / cap));
+        var dyL = panT * maxPanDy;
+        var dyR = -panT * maxPanDy;
+        if (scaleStage) {
+          scaleStage.style.setProperty('--pan-dy-left', dyL + 'px');
+          scaleStage.style.setProperty('--pan-dy-right', dyR + 'px');
+        }
+
+        const hasBlocks = state.left.length > 0 || state.right.length > 0;
+        const balanced = diff === 0 && hasBlocks;
+        panLeft.classList.toggle('pan--balanced', balanced);
+        panRight.classList.toggle('pan--balanced', balanced);
+        if (balanced && !wasBalanced && hasBlocks) {
+          eqPanel.classList.remove('equation--balanced');
+          void eqPanel.offsetWidth;
+          eqPanel.classList.add('equation--balanced');
+          eqPanel.addEventListener('animationend', function onEqGlow(e) {
+            if (e.target !== eqPanel) return;
+            eqPanel.classList.remove('equation--balanced');
+          }, { once: true });
+        }
+        wasBalanced = balanced;
+
+        balanceMsg.className = 'balance-status' + (diff === 0 ? ' ok' : ' no');
+        if (state.left.length === 0 && state.right.length === 0) {
+          balanceMsg.textContent = 'วางก้อนบนจานเพื่อสร้างสมการ';
+          balanceMsg.className = 'balance-status';
+          wasBalanced = false;
+          panLeft.classList.remove('pan--balanced');
+          panRight.classList.remove('pan--balanced');
+          if (panMassLeft) panMassLeft.textContent = '';
+          if (panMassRight) panMassRight.textContent = '';
+        } else if (diff === 0) {
+          balanceMsg.textContent = 'สมดุล — ' + ml + ' = ' + mr + ' (x = ' + x + ')';
+          if (panMassLeft) panMassLeft.textContent = String(ml);
+          if (panMassRight) panMassRight.textContent = String(mr);
+        } else if (diff > 0) {
+          balanceMsg.textContent =
+            'ซ้ายหนักกว่า — ' + ml + ' > ' + mr + ' (x = ' + x + ')';
+          if (panMassLeft) panMassLeft.textContent = String(ml);
+          if (panMassRight) panMassRight.textContent = String(mr);
+        } else {
+          balanceMsg.textContent =
+            'ขวาหนักกว่า — ' + mr + ' > ' + ml + ' (x = ' + x + ')';
+          if (panMassLeft) panMassLeft.textContent = String(ml);
+          if (panMassRight) panMassRight.textContent = String(mr);
+        }
+
+        renderMainEquationDisplay();
+        renderSolutionSteps();
+      }
+
+      function createBlockEl(b, doDropAnim) {
+        const div = document.createElement('div');
+        div.className = 'block block--on-pan ' + (b.kind === 'x' ? 'block--x' : 'block--u');
+        div.dataset.id = b.id;
+        if (doDropAnim) div.classList.add('block--drop-in');
+        const lab = document.createElement('span');
+        lab.className = 'block-label';
+        lab.textContent = b.kind === 'x' ? 'x' : String(b.val);
+        const rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'block-remove';
+        rm.setAttribute('aria-label', 'เอาก้อนออก');
+        rm.textContent = '×';
+        rm.addEventListener('click', function (e) {
+          e.stopPropagation();
+          removeBlock(b.id);
+        });
+        div.appendChild(lab);
+        div.appendChild(rm);
+        if (doDropAnim) {
+          div.addEventListener('animationend', function onDropEnd(e) {
+            if (e.target !== div) return;
+            var n = e.animationName || '';
+            if (n.indexOf('blockDropIn') === -1) return;
+            div.removeEventListener('animationend', onDropEnd);
+            div.classList.remove('block--drop-in');
+            if (reduceMotion) return;
+            var zone = div.closest('.pan-zone');
+            if (zone) {
+              zone.classList.remove('pan--thud');
+              void zone.offsetWidth;
+              zone.classList.add('pan--thud');
+              zone.addEventListener('animationend', function thudDone() {
+                zone.classList.remove('pan--thud');
+              }, { once: true });
+            }
+            tilt.classList.remove('rotor--wobble');
+            void tilt.offsetWidth;
+            tilt.classList.add('rotor--wobble');
+            tilt.addEventListener('animationend', function rotWobbleEnd(ev) {
+              if (ev.target === tilt) tilt.classList.remove('rotor--wobble');
+            }, { once: true });
+          });
+        }
+        return div;
+      }
+
+      function renderPans(animateId) {
+        panLeft.innerHTML = '';
+        panRight.innerHTML = '';
+        state.left.forEach(function (b) {
+          panLeft.appendChild(createBlockEl(b, animateId && b.id === animateId));
+        });
+        state.right.forEach(function (b) {
+          panRight.appendChild(createBlockEl(b, animateId && b.id === animateId));
+        });
+        setFocusPan(state.focusSide);
+        renderEquation();
+        updateScale();
+      }
+
+      function addBlock(side, kind, val, doAnimate) {
+        const arr = side === 'left' ? state.left : state.right;
+        if (arr.length >= MAX_BLOCKS_PER_PAN) return;
+        var newId = uid();
+        arr.push({ id: newId, kind: kind, val: val });
+        renderPans(doAnimate !== false ? newId : undefined);
+      }
+
+      function removeBlock(id) {
+        state.left = state.left.filter(function (b) { return b.id !== id; });
+        state.right = state.right.filter(function (b) { return b.id !== id; });
+        renderPans();
+      }
+
+      function clearAll() {
+        state.left = [];
+        state.right = [];
+        wasBalanced = false;
+        renderPans();
+      }
+
+      function loadExample() {
+        clearAll();
+        var steps = [
+          { side: 'left', kind: 'x', val: 1 },
+          { side: 'left', kind: 'x', val: 1 },
+          { side: 'left', kind: 'u', val: 3 },
+          { side: 'right', kind: 'x', val: 1 },
+          { side: 'right', kind: 'u', val: 7 }
+        ];
+        var i = 0;
+        var delay = reduceMotion ? 0 : 145;
+        function step() {
+          if (i >= steps.length) {
+            xSlider.value = '4';
+            updateScale();
+            return;
+          }
+          var s = steps[i++];
+          var arr = s.side === 'left' ? state.left : state.right;
+          if (arr.length >= MAX_BLOCKS_PER_PAN) return;
+          var newId = uid();
+          arr.push({ id: newId, kind: s.kind, val: s.val });
+          renderPans(newId);
+          setTimeout(step, delay);
+        }
+        step();
+      }
+
+      document.querySelectorAll('#palette .block').forEach(function (el) {
+        el.addEventListener('dragstart', function (e) {
+          dragKind = el.dataset.kind;
+          dragVal = dragKind === 'u' ? Number(el.dataset.val) : 1;
+          e.dataTransfer.setData('text/plain', dragKind + ':' + dragVal);
+          e.dataTransfer.effectAllowed = 'copy';
+        });
+        el.addEventListener('click', function () {
+          addBlock(state.focusSide, el.dataset.kind, el.dataset.kind === 'u' ? Number(el.dataset.val) : 1);
+        });
+      });
+
+      panLeft.addEventListener('click', function (e) {
+        if (e.target.closest('.block-remove')) return;
+        setFocusPan('left');
+      });
+      panRight.addEventListener('click', function (e) {
+        if (e.target.closest('.block-remove')) return;
+        setFocusPan('right');
+      });
+
+      function setupPanDrop(zone, side) {
+        zone.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          zone.classList.add('drag-over');
+          e.dataTransfer.dropEffect = 'copy';
+        });
+        zone.addEventListener('dragleave', function () {
+          zone.classList.remove('drag-over');
+        });
+        zone.addEventListener('drop', function (e) {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          const raw = e.dataTransfer.getData('text/plain');
+          if (!raw) return;
+          const parts = raw.split(':');
+          const k = parts[0];
+          const v = k === 'u' ? Number(parts[1]) : 1;
+          addBlock(side, k, v, true);
+        });
+      }
+
+      setupPanDrop(panLeft, 'left');
+      setupPanDrop(panRight, 'right');
+
+      document.getElementById('btn-clear').addEventListener('click', clearAll);
+      document.getElementById('btn-example').addEventListener('click', loadExample);
+
+      xSlider.addEventListener('input', updateScale);
+
+      setFocusPan('left');
+      renderPans();
+    })();
+  </script>
+</body>
+</html>
