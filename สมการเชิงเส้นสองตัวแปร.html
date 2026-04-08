@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สมการเชิงเส้นสองตัวแปร</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=IBM+Plex+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --ink:#1f2937;
+      --muted:#4b5563;
+      --line:#d6dde8;
+      --accent1:#2563eb;
+      --accent2:#dc2626;
+      --ok:#15803d;
+      --card:#ffffff;
+      --shadow:0 8px 22px -18px rgba(15,23,42,.3);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"IBM Plex Sans Thai","Noto Sans Thai","Segoe UI",Tahoma,sans-serif;
+      background:
+        radial-gradient(900px 240px at -10% -20%, #eef4ff 0%, transparent 58%),
+        var(--bg);
+      color:var(--ink);
+    }
+    .wrap{
+      width:min(980px, 94vw);
+      margin:1.2rem auto 2rem;
+    }
+    .head{
+      margin-bottom:1rem;
+      padding:1rem 1rem .95rem;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      box-shadow:0 8px 18px -16px rgba(15,23,42,.35);
+    }
+    .head h1{
+      margin:.12rem 0;
+      font-size:clamp(1.3rem,3vw,2rem);
+      line-height:1.2;
+      font-family:"Prompt","IBM Plex Sans Thai","Segoe UI",sans-serif;
+      font-weight:700;
+    }
+    .head p{
+      margin:.4rem 0 0;
+      color:var(--muted);
+      font-size:1rem;
+      max-width:72ch;
+    }
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:1rem;
+      box-shadow:var(--shadow);
+      position:relative;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      left:0; right:0; top:0;
+      height:3px;
+      background:linear-gradient(90deg, #2563eb, #60a5fa);
+      border-top-left-radius:12px;
+      border-top-right-radius:12px;
+    }
+    .controls{
+      display:grid;
+      grid-template-columns:minmax(240px,1fr) minmax(240px,1fr) auto auto;
+      gap:.7rem;
+      align-items:end;
+      margin-bottom:.9rem;
+    }
+    label{
+      display:block;
+      font-weight:700;
+      font-size:.9rem;
+      margin-bottom:.32rem;
+    }
+    input{
+      width:100%;
+      border:1px solid #c8d5f2;
+      border-radius:10px;
+      min-height:44px;
+      padding:.55rem .7rem;
+      font-size:1rem;
+      color:var(--ink);
+      background:#fff;
+    }
+    input:focus{
+      outline:none;
+      border-color:var(--accent1);
+      box-shadow:0 0 0 3px rgba(37,99,235,.14);
+    }
+    .btn{
+      min-height:44px;
+      border:0;
+      border-radius:10px;
+      background:var(--accent1);
+      color:#fff;
+      font-weight:700;
+      padding:.55rem .95rem;
+      cursor:pointer;
+      transition:background-color .15s ease;
+      box-shadow:0 6px 14px -12px rgba(37,99,235,.7);
+    }
+    .btn:hover{
+      background:#1d4ed8;
+    }
+    .btn:focus-visible,
+    input:focus-visible,
+    svg:focus-visible,
+    .zoom-btn:focus-visible{
+      outline:3px solid rgba(29,78,216,.28);
+      outline-offset:2px;
+    }
+    .btn-secondary{
+      background:#f3f4f6;
+      color:#1f2937;
+      border:1px solid #d1d5db;
+      box-shadow:none;
+    }
+    .status{
+      margin-bottom:.7rem;
+      min-height:1.4rem;
+      font-weight:700;
+      color:var(--muted);
+      transition:color .24s cubic-bezier(.22,1,.36,1), transform .24s cubic-bezier(.22,1,.36,1);
+    }
+    .status.ok{color:var(--ok)}
+    .status.err{color:#dc2626}
+    .status.bump{transform:translateY(-1px)}
+    .graph-box{
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      overflow:hidden;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    .graph-hint{
+      padding:.55rem .8rem;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:.85rem;
+      background:#f8fafc;
+      line-height:1.45;
+    }
+    .graph-toolbar{
+      display:flex;
+      gap:.5rem;
+      justify-content:flex-end;
+      padding:.55rem .7rem 0;
+    }
+    .zoom-btn{
+      min-width:44px;
+      min-height:44px;
+      border-radius:10px;
+      border:1px solid #d1d5db;
+      background:#f3f4f6;
+      color:#1f2937;
+      font-size:1.1rem;
+      font-weight:700;
+      cursor:pointer;
+    }
+    svg{
+      display:block;
+      width:100%;
+      height:auto;
+      aspect-ratio: 16/10;
+      touch-action:none;
+      cursor:grab;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    svg.dragging{cursor:grabbing}
+    .legend{
+      display:flex;
+      gap:1rem;
+      flex-wrap:wrap;
+      padding:.7rem .85rem .9rem;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:.9rem;
+      background:#fcfdff;
+    }
+    .legend span{
+      display:inline-flex;
+      align-items:center;
+      font-weight:600;
+      background:#fff;
+      border:1px solid #e5eaf2;
+      border-radius:999px;
+      padding:.22rem .56rem;
+    }
+    .dot{
+      display:inline-block;
+      width:.72rem;height:.72rem;border-radius:50%;
+      margin-right:.35rem;
+      vertical-align:middle;
+    }
+    .l1{background:var(--accent1)}
+    .l2{background:var(--accent2)}
+    .li{background:var(--ok)}
+    .draw-line{
+      stroke-dasharray:1200;
+      stroke-dashoffset:1200;
+      animation:drawLine .9s cubic-bezier(.22,1,.36,1) forwards;
+      transition:stroke-width .2s cubic-bezier(.22,1,.36,1), filter .2s cubic-bezier(.22,1,.36,1);
+    }
+    .line-focus{
+      stroke-width:5 !important;
+      filter:none;
+    }
+    @keyframes drawLine{to{stroke-dashoffset:0}}
+    .pt{
+      transform-box:fill-box;
+      transform-origin:center;
+      animation:pop .55s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    .pulse{
+      animation:pulse 1s ease-out 2;
+    }
+    @keyframes pop{
+      0%{transform:scale(.2);opacity:0}
+      100%{transform:scale(1);opacity:1}
+    }
+    @keyframes pulse{
+      0%{opacity:.85;transform:scale(.2)}
+      100%{opacity:0;transform:scale(2.6)}
+    }
+    @media (max-width:760px){
+      .controls{grid-template-columns:1fr}
+      .btn{width:100%}
+      .wrap{width:min(100%, 96vw)}
+      .panel{padding:.8rem}
+      .head{padding:.85rem .8rem}
+      .graph-toolbar{justify-content:space-between}
+    }
+    @media (max-width:420px){
+      input{font-size:16px}
+      .status{font-size:.94rem}
+      .legend{gap:.55rem}
+      .legend span{padding:.25rem .5rem;font-size:.82rem}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .draw-line,.pt,.status{animation:none !important;transition:none !important}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <h1>สมการเชิงเส้นสองตัวแปร (x, y)</h1>
+      <p>พิมพ์สมการ 2 บรรทัด เช่น <b>2x + y = 7</b> และ <b>x - y = 1</b> แล้วกดปุ่มเพื่อดูเส้นและจุดตัด</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <div>
+          <label for="eq1">สมการที่ 1</label>
+          <input id="eq1" value="2x + y = 7" />
+        </div>
+        <div>
+          <label for="eq2">สมการที่ 2</label>
+          <input id="eq2" value="x - y = 1" />
+        </div>
+        <button id="plotBtn" class="btn" type="button">แสดงกราฟ</button>
+        <button id="resetBtn" class="btn btn-secondary" type="button">รีเซ็ตมุมมองกราฟ</button>
+      </div>
+
+      <div id="status" class="status">พร้อมแล้ว • ใส่สมการแล้วกด "แสดงกราฟ"</div>
+
+      <div class="graph-box">
+        <div class="graph-toolbar">
+          <button id="zoomInBtn" class="zoom-btn" type="button" aria-label="ซูมเข้า">+</button>
+          <button id="zoomOutBtn" class="zoom-btn" type="button" aria-label="ซูมออก">−</button>
+        </div>
+        <svg id="graph" viewBox="0 0 800 500" tabindex="0" aria-label="กราฟสมการเชิงเส้นสองตัวแปร"></svg>
+        <div class="graph-hint">ลากพื้นที่กราฟเพื่อเลื่อนมุมมอง • หมุนล้อเมาส์/ทัชแพดเพื่อซูมเข้า-ออก • ลากเส้นเพื่อเลื่อนเส้น • ลูกศร = เลื่อน, + / - = ซูม, 0 = รีเซ็ต</div>
+        <div class="legend">
+          <span><i class="dot l1"></i>สมการที่ 1</span>
+          <span><i class="dot l2"></i>สมการที่ 2</span>
+          <span><i class="dot li"></i>จุดตัด</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var svg = document.getElementById("graph");
+      var eq1El = document.getElementById("eq1");
+      var eq2El = document.getElementById("eq2");
+      var btn = document.getElementById("plotBtn");
+      var resetBtn = document.getElementById("resetBtn");
+      var zoomInBtn = document.getElementById("zoomInBtn");
+      var zoomOutBtn = document.getElementById("zoomOutBtn");
+      var statusEl = document.getElementById("status");
+
+      var W = 800, H = 500, PAD = 38;
+      var view = { xmin:-10, xmax:10, ymin:-10, ymax:10 };
+      var state = {
+        eq1Raw: "",
+        eq2Raw: "",
+        eq1Parsed: null,
+        eq2Parsed: null,
+        seg1: null,
+        seg2: null,
+        line1El: null,
+        line2El: null,
+        interEls: []
+      };
+
+      var viewportLayer = make("g");
+      var gridLayer = make("g");
+      var line1Layer = make("g");
+      var line2Layer = make("g");
+      var interLayer = make("g");
+      viewportLayer.appendChild(gridLayer);
+      viewportLayer.appendChild(line1Layer);
+      viewportLayer.appendChild(line2Layer);
+      viewportLayer.appendChild(interLayer);
+      svg.appendChild(viewportLayer);
+
+      function sx(x){ return PAD + (x - view.xmin) * (W - PAD*2) / (view.xmax - view.xmin); }
+      function sy(y){ return H - PAD - (y - view.ymin) * (H - PAD*2) / (view.ymax - view.ymin); }
+      function wx(px){ return view.xmin + (px - PAD) * (view.xmax - view.xmin) / (W - PAD*2); }
+      function wy(py){ return view.ymax - (py - PAD) * (view.ymax - view.ymin) / (H - PAD*2); }
+
+      function setStatus(msg, kind){
+        statusEl.textContent = msg;
+        statusEl.className = "status " + (kind || "");
+        statusEl.classList.remove("bump");
+        requestAnimationFrame(function(){ statusEl.classList.add("bump"); });
+      }
+
+      function clearViewportTransform(){
+        viewportLayer.removeAttribute("transform");
+      }
+      function applyZoomAt(cx, cy, zoom){
+        var nxMin = cx + (view.xmin - cx) * zoom;
+        var nxMax = cx + (view.xmax - cx) * zoom;
+        var nyMin = cy + (view.ymin - cy) * zoom;
+        var nyMax = cy + (view.ymax - cy) * zoom;
+        if ((nxMax - nxMin) < 0.4 || (nyMax - nyMin) < 0.4) return false;
+        if ((nxMax - nxMin) > 400 || (nyMax - nyMin) > 400) return false;
+        view.xmin = nxMin; view.xmax = nxMax;
+        view.ymin = nyMin; view.ymax = nyMax;
+        return true;
+      }
+
+      function make(tag, attrs){
+        var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        Object.keys(attrs || {}).forEach(function(k){ el.setAttribute(k, attrs[k]); });
+        return el;
+      }
+
+      function drawGrid(lightMode){
+        gridLayer.innerHTML = "";
+        var g = make("g");
+        var xStart = Math.ceil(view.xmin);
+        var xEnd = Math.floor(view.xmax);
+        for (var x = xStart; x <= xEnd; x += 1){
+          var px = sx(x);
+          g.appendChild(make("line", {
+            x1:px, y1:PAD, x2:px, y2:H-PAD,
+            stroke: x === 0 ? "#7f93bc" : "#e6ecfa",
+            "stroke-width": x === 0 ? 2 : 1
+          }));
+          if (!lightMode && x !== 0 && x % 2 === 0){
+            var tx = make("text", {x:px+2, y:H-PAD+15, fill:"#6d7fa5", "font-size":"11"});
+            tx.textContent = x;
+            g.appendChild(tx);
+          }
+        }
+        var yStart = Math.ceil(view.ymin);
+        var yEnd = Math.floor(view.ymax);
+        for (var y = yStart; y <= yEnd; y += 1){
+          var py = sy(y);
+          g.appendChild(make("line", {
+            x1:PAD, y1:py, x2:W-PAD, y2:py,
+            stroke: y === 0 ? "#7f93bc" : "#e6ecfa",
+            "stroke-width": y === 0 ? 2 : 1
+          }));
+          if (!lightMode && y !== 0 && y % 2 === 0){
+            var ty = make("text", {x:10, y:py-2, fill:"#6d7fa5", "font-size":"11"});
+            ty.textContent = y;
+            g.appendChild(ty);
+          }
+        }
+        if (!lightMode) {
+          var xLabel = make("text", {x:W-PAD+8, y:sy(0)-8, fill:"#415377", "font-size":"12", "font-weight":"700"});
+          xLabel.textContent = "x";
+          var yLabel = make("text", {x:sx(0)+8, y:PAD-8, fill:"#415377", "font-size":"12", "font-weight":"700"});
+          yLabel.textContent = "y";
+          g.appendChild(xLabel);
+          g.appendChild(yLabel);
+        }
+        gridLayer.appendChild(g);
+      }
+
+      function parseCoeff(raw){
+        if (raw === "" || raw === "+") return 1;
+        if (raw === "-") return -1;
+        return Number(raw);
+      }
+
+      function parseSide(side){
+        var s = side.replace(/\s+/g,"").replace(/−/g,"-");
+        s = s.replace(/-/g,"+-");
+        var parts = s.split("+").filter(Boolean);
+        var out = {x:0, y:0, c:0};
+        for (var i=0;i<parts.length;i++){
+          var t = parts[i];
+          if (t.includes("x")){
+            out.x += parseCoeff(t.replace("x",""));
+          } else if (t.includes("y")){
+            out.y += parseCoeff(t.replace("y",""));
+          } else {
+            var n = Number(t);
+            if (Number.isNaN(n)) throw new Error("พจน์ไม่ถูกต้อง: " + t);
+            out.c += n;
+          }
+        }
+        return out;
+      }
+
+      // Return A,B,C for Ax + By = C
+      function parseEquation(eq){
+        var txt = eq.trim();
+        var sides = txt.split("=");
+        if (sides.length !== 2) throw new Error("ต้องมีเครื่องหมาย = เพียง 1 ตัว");
+        var L = parseSide(sides[0]);
+        var R = parseSide(sides[1]);
+        var A = L.x - R.x;
+        var B = L.y - R.y;
+        var C = R.c - L.c;
+        if (Math.abs(A) < 1e-12 && Math.abs(B) < 1e-12){
+          throw new Error("สมการนี้ไม่เป็นเส้นตรงที่ใช้วาดได้");
+        }
+        return {A:A, B:B, C:C};
+      }
+
+      function lineSegment(eq){
+        var pts = [];
+        if (Math.abs(eq.B) > 1e-12){
+          var yL = (eq.C - eq.A * view.xmin) / eq.B;
+          var yR = (eq.C - eq.A * view.xmax) / eq.B;
+          if (yL >= view.ymin-1 && yL <= view.ymax+1) pts.push({x:view.xmin,y:yL});
+          if (yR >= view.ymin-1 && yR <= view.ymax+1) pts.push({x:view.xmax,y:yR});
+        }
+        if (Math.abs(eq.A) > 1e-12){
+          var xB = (eq.C - eq.B * view.ymin) / eq.A;
+          var xT = (eq.C - eq.B * view.ymax) / eq.A;
+          if (xB >= view.xmin-1 && xB <= view.xmax+1) pts.push({x:xB,y:view.ymin});
+          if (xT >= view.xmin-1 && xT <= view.xmax+1) pts.push({x:xT,y:view.ymax});
+        }
+        // unique by rounded
+        var uniq = [];
+        pts.forEach(function(p){
+          var key = p.x.toFixed(5)+","+p.y.toFixed(5);
+          if (!uniq.some(function(u){ return (u.x.toFixed(5)+","+u.y.toFixed(5))===key; })) uniq.push(p);
+        });
+        if (uniq.length < 2) return null;
+        return [uniq[0], uniq[1]];
+      }
+
+      function drawLine(seg, color){
+        var p1 = seg[0], p2 = seg[1];
+        var ln = make("line", {
+          x1:sx(p1.x), y1:sy(p1.y),
+          x2:sx(p2.x), y2:sy(p2.y),
+          stroke:color, "stroke-width":"3.5", "stroke-linecap":"round",
+          class:"draw-line"
+        });
+        return ln;
+      }
+
+      function drawIntersection(pt){
+        var gx = sx(pt.x), gy = sy(pt.y);
+        var c = make("circle", {cx:gx, cy:gy, r:"5.5", fill:"var(--ok)", class:"pt"});
+        var tag = make("rect", {x:gx+10, y:gy-34, rx:"8", ry:"8", width:"150", height:"24", fill:"#ffffff", stroke:"#cfe7d6"});
+        var txt = make("text", {x:gx+18, y:gy-18, fill:"#1f6a3f", "font-size":"12", "font-weight":"700"});
+        txt.textContent = "จุดตัด (" + pt.x.toFixed(2) + ", " + pt.y.toFixed(2) + ")";
+        return [c, tag, txt];
+      }
+
+      function solveIntersection(e1,e2){
+        var D = e1.A*e2.B - e2.A*e1.B;
+        if (Math.abs(D) < 1e-12) return null;
+        var x = (e1.C*e2.B - e2.C*e1.B)/D;
+        var y = (e1.A*e2.C - e2.A*e1.C)/D;
+        return {x:x,y:y};
+      }
+
+      function areSameLine(e1, e2){
+        var eps = 1e-12;
+        var z1 = Math.abs(e1.A) < eps && Math.abs(e1.B) < eps;
+        var z2 = Math.abs(e2.A) < eps && Math.abs(e2.B) < eps;
+        if (z1 || z2) return false;
+        var p1 = e1.A * e2.B - e2.A * e1.B;
+        var p2 = e1.A * e2.C - e2.A * e1.C;
+        var p3 = e1.B * e2.C - e2.B * e1.C;
+        return Math.abs(p1) < eps && Math.abs(p2) < eps && Math.abs(p3) < eps;
+      }
+
+      function fmt(n){
+        var r = Math.round(n * 100) / 100;
+        if (Object.is(r, -0)) r = 0;
+        return String(r);
+      }
+
+      function equationToString(eq){
+        return fmt(eq.A) + "x + " + fmt(eq.B) + "y = " + fmt(eq.C);
+      }
+
+      function setLine(layer, oldLineEl, seg, color, animate){
+        if (!seg) {
+          if (oldLineEl && oldLineEl.parentNode) oldLineEl.parentNode.removeChild(oldLineEl);
+          return null;
+        }
+        if (oldLineEl && !animate) {
+          oldLineEl.setAttribute("x1", sx(seg[0].x));
+          oldLineEl.setAttribute("y1", sy(seg[0].y));
+          oldLineEl.setAttribute("x2", sx(seg[1].x));
+          oldLineEl.setAttribute("y2", sy(seg[1].y));
+          oldLineEl.removeAttribute("class");
+          return oldLineEl;
+        }
+        if (oldLineEl && oldLineEl.parentNode) oldLineEl.parentNode.removeChild(oldLineEl);
+        var ln = drawLine(seg, color);
+        if (!animate) ln.removeAttribute("class");
+        layer.appendChild(ln);
+        return ln;
+      }
+
+      function drawIntersectionLayer(pt, animate){
+        interLayer.innerHTML = "";
+        if (!pt) return;
+        var els = drawIntersection(pt);
+        els.forEach(function(el){
+          if (!animate) el.removeAttribute("class");
+          interLayer.appendChild(el);
+        });
+      }
+
+      function plot(forceRedrawAll, suppressAnimation, lightMode, skipStatus){
+        drawGrid(!!lightMode);
+        try{
+          var raw1 = eq1El.value.trim();
+          var raw2 = eq2El.value.trim();
+          var eq1Changed = forceRedrawAll || raw1 !== state.eq1Raw;
+          var eq2Changed = forceRedrawAll || raw2 !== state.eq2Raw;
+          if (suppressAnimation) {
+            eq1Changed = false;
+            eq2Changed = false;
+          }
+
+          var E1 = parseEquation(eq1El.value);
+          var E2 = parseEquation(eq2El.value);
+          var S1 = lineSegment(E1);
+          var S2 = lineSegment(E2);
+          if (!S1 || !S2){
+            if (!skipStatus) setStatus("ไม่เห็นเส้นครบในมุมมองนี้ • ลองซูมออกหรือกดรีเซ็ตมุมมองกราฟ", "err");
+            return;
+          }
+          state.line1El = setLine(line1Layer, state.line1El, S1, "var(--accent1)", eq1Changed);
+          state.line2El = setLine(line2Layer, state.line2El, S2, "var(--accent2)", eq2Changed);
+          state.seg1 = S1;
+          state.seg2 = S2;
+
+          var I = solveIntersection(E1,E2);
+          if (!I){
+            drawIntersectionLayer(null, false);
+            if (areSameLine(E1, E2)) {
+              if (!skipStatus) setStatus("สองเส้นทับกัน • มีคำตอบมากมายนับไม่ถ้วน", "ok");
+            } else {
+              if (!skipStatus) setStatus("สองเส้นขนานกัน • ไม่มีจุดตัด", "err");
+            }
+            return;
+          }
+          var intersectionAnimate = suppressAnimation ? false : (eq1Changed || eq2Changed || !!forceRedrawAll);
+          drawIntersectionLayer(I, intersectionAnimate);
+          state.eq1Raw = raw1;
+          state.eq2Raw = raw2;
+          state.eq1Parsed = E1;
+          state.eq2Parsed = E2;
+          if (!skipStatus) setStatus("แสดงกราฟแล้ว • จุดตัดคือ (" + I.x.toFixed(2) + ", " + I.y.toFixed(2) + ")", "ok");
+        } catch(err){
+          drawIntersectionLayer(null, false);
+          if (!skipStatus) setStatus("สมการยังไม่ถูกต้อง: " + err.message + " • ตัวอย่าง: 2x + y = 7", "err");
+        }
+      }
+
+      btn.addEventListener("click", function(){ plot(false, false); });
+      resetBtn.addEventListener("click", function(){
+        view = { xmin:-10, xmax:10, ymin:-10, ymax:10 };
+        plot(true, true);
+      });
+      eq1El.addEventListener("keydown", function(e){ if (e.key === "Enter") plot(false, false); });
+      eq2El.addEventListener("keydown", function(e){ if (e.key === "Enter") plot(false, false); });
+      zoomInBtn.addEventListener("click", function(){
+        clearViewportTransform();
+        applyZoomAt((view.xmin + view.xmax) / 2, (view.ymin + view.ymax) / 2, 0.9);
+        plot(true, true);
+      });
+      zoomOutBtn.addEventListener("click", function(){
+        clearViewportTransform();
+        applyZoomAt((view.xmin + view.xmax) / 2, (view.ymin + view.ymax) / 2, 1.1);
+        plot(true, true);
+      });
+
+      var dragging = false;
+      var dragStart = null;
+      var lineDragging = null;
+      var pendingPanDx = 0;
+      var pendingPanDy = 0;
+      var panRaf = null;
+
+      function pointLineDistancePx(px, py, p1, p2){
+        var x1 = sx(p1.x), y1 = sy(p1.y);
+        var x2 = sx(p2.x), y2 = sy(p2.y);
+        var A = px - x1, B = py - y1, C = x2 - x1, D = y2 - y1;
+        var dot = A * C + B * D;
+        var lenSq = C * C + D * D;
+        var t = lenSq > 0 ? Math.max(0, Math.min(1, dot / lenSq)) : 0;
+        var xx = x1 + t * C;
+        var yy = y1 + t * D;
+        var dx = px - xx, dy = py - yy;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      function pointerToSvgPx(e){
+        var rect = svg.getBoundingClientRect();
+        return {
+          x: (e.clientX - rect.left) * (W / rect.width),
+          y: (e.clientY - rect.top) * (H / rect.height)
+        };
+      }
+
+      function hitLine(px, py){
+        var threshold = 12;
+        var hit = null;
+        if (state.seg1 && state.eq1Parsed) {
+          var d1 = pointLineDistancePx(px, py, state.seg1[0], state.seg1[1]);
+          if (d1 < threshold) hit = { which:1, d:d1 };
+        }
+        if (state.seg2 && state.eq2Parsed) {
+          var d2 = pointLineDistancePx(px, py, state.seg2[0], state.seg2[1]);
+          if (d2 < threshold && (!hit || d2 < hit.d)) hit = { which:2, d:d2 };
+        }
+        return hit;
+      }
+
+      function pulseInput(el){
+        if (!el) return;
+        var old = el.style.boxShadow;
+        el.style.boxShadow = "0 0 0 4px rgba(37,99,235,.2)";
+        setTimeout(function(){ el.style.boxShadow = old || ""; }, 180);
+      }
+      function applyPanTransformRaf(){
+        if (panRaf) return;
+        panRaf = requestAnimationFrame(function(){
+          if (!dragStart) {
+            panRaf = null;
+            return;
+          }
+          var dxW = pendingPanDx * (dragStart.xmax - dragStart.xmin) / (W - PAD*2);
+          var dyW = pendingPanDy * (dragStart.ymax - dragStart.ymin) / (H - PAD*2);
+          view.xmin = dragStart.xmin - dxW;
+          view.xmax = dragStart.xmax - dxW;
+          view.ymin = dragStart.ymin + dyW;
+          view.ymax = dragStart.ymax + dyW;
+          plot(true, true, true, true);
+          panRaf = null;
+        });
+      }
+
+      svg.addEventListener("pointerdown", function(e){
+        e.preventDefault();
+        clearViewportTransform();
+        var p = pointerToSvgPx(e);
+        var hit = hitLine(p.x, p.y);
+        if (hit) {
+          lineDragging = { which: hit.which };
+          svg.classList.add("dragging");
+          svg.setPointerCapture(e.pointerId);
+          return;
+        }
+        dragging = true;
+        svg.classList.add("dragging");
+        svg.setPointerCapture(e.pointerId);
+        dragStart = {
+          x:e.clientX, y:e.clientY,
+          xmin:view.xmin, xmax:view.xmax,
+          ymin:view.ymin, ymax:view.ymax
+        };
+      });
+      svg.addEventListener("pointermove", function(e){
+        if (!lineDragging && !dragging) {
+          var pp = pointerToSvgPx(e);
+          var hover = hitLine(pp.x, pp.y);
+          if (state.line1El) state.line1El.classList.toggle("line-focus", !!hover && hover.which === 1);
+          if (state.line2El) state.line2El.classList.toggle("line-focus", !!hover && hover.which === 2);
+        }
+        if (lineDragging) {
+          e.preventDefault();
+          var p = pointerToSvgPx(e);
+          var xw = wx(p.x), yw = wy(p.y);
+          if (lineDragging.which === 1 && state.eq1Parsed) {
+            state.eq1Parsed.C = state.eq1Parsed.A * xw + state.eq1Parsed.B * yw;
+            eq1El.value = equationToString(state.eq1Parsed);
+          } else if (lineDragging.which === 2 && state.eq2Parsed) {
+            state.eq2Parsed.C = state.eq2Parsed.A * xw + state.eq2Parsed.B * yw;
+            eq2El.value = equationToString(state.eq2Parsed);
+          }
+          plot(false, true);
+          return;
+        }
+        if (!dragging || !dragStart) return;
+        e.preventDefault();
+        var dxPx = e.clientX - dragStart.x;
+        var dyPx = e.clientY - dragStart.y;
+        pendingPanDx = dxPx;
+        pendingPanDy = dyPx;
+        applyPanTransformRaf();
+      });
+      function endDrag(){
+        var hadLineDragging = !!lineDragging;
+        if (dragging && dragStart){
+          if (panRaf) {
+            cancelAnimationFrame(panRaf);
+            panRaf = null;
+          }
+          var dxW = pendingPanDx * (dragStart.xmax - dragStart.xmin) / (W - PAD*2);
+          var dyW = pendingPanDy * (dragStart.ymax - dragStart.ymin) / (H - PAD*2);
+          view.xmin = dragStart.xmin - dxW;
+          view.xmax = dragStart.xmax - dxW;
+          view.ymin = dragStart.ymin + dyW;
+          view.ymax = dragStart.ymax + dyW;
+          clearViewportTransform();
+          plot(true, true, false, false);
+        }
+        if (hadLineDragging) {
+          if (lineDragging.which === 1) pulseInput(eq1El);
+          if (lineDragging.which === 2) pulseInput(eq2El);
+          // animate once after drag ends so interaction feels alive
+          plot(false, false);
+        }
+        dragging = false;
+        dragStart = null;
+        lineDragging = null;
+        pendingPanDx = 0;
+        pendingPanDy = 0;
+        svg.classList.remove("dragging");
+        if (state.line1El) state.line1El.classList.remove("line-focus");
+        if (state.line2El) state.line2El.classList.remove("line-focus");
+      }
+      svg.addEventListener("pointermove", function(e){
+        window._lastPointerX = e.clientX;
+        window._lastPointerY = e.clientY;
+      });
+      svg.addEventListener("pointerup", endDrag);
+      svg.addEventListener("pointercancel", endDrag);
+
+      svg.addEventListener("wheel", function(e){
+        e.preventDefault();
+        clearViewportTransform();
+        var rect = svg.getBoundingClientRect();
+        var px = (e.clientX - rect.left) * (W / rect.width);
+        var py = (e.clientY - rect.top) * (H / rect.height);
+        var cx = wx(px);
+        var cy = wy(py);
+        var zoom = e.deltaY < 0 ? 0.9 : 1.1;
+        if (!applyZoomAt(cx, cy, zoom)) return;
+        plot(true, true);
+      }, { passive:false });
+      svg.addEventListener("keydown", function(e){
+        var spanX = view.xmax - view.xmin;
+        var spanY = view.ymax - view.ymin;
+        var stepX = spanX * 0.08;
+        var stepY = spanY * 0.08;
+        var used = true;
+        if (e.key === "ArrowLeft") { view.xmin -= stepX; view.xmax -= stepX; }
+        else if (e.key === "ArrowRight") { view.xmin += stepX; view.xmax += stepX; }
+        else if (e.key === "ArrowUp") { view.ymin += stepY; view.ymax += stepY; }
+        else if (e.key === "ArrowDown") { view.ymin -= stepY; view.ymax -= stepY; }
+        else if (e.key === "+" || e.key === "=") { applyZoomAt((view.xmin + view.xmax) / 2, (view.ymin + view.ymax) / 2, 0.9); }
+        else if (e.key === "-") { applyZoomAt((view.xmin + view.xmax) / 2, (view.ymin + view.ymax) / 2, 1.1); }
+        else if (e.key === "0") { view = { xmin:-10, xmax:10, ymin:-10, ymax:10 }; }
+        else { used = false; }
+        if (!used) return;
+        e.preventDefault();
+        clearViewportTransform();
+        plot(true, true);
+      });
+
+      plot(true, true);
+    })();
+  </script>
+</body>
+</html>
