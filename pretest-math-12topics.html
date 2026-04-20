@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แบบทดสอบก่อนเรียนคณิต - 12 เรื่อง</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <style>
+    :root {
+      --bg: #eff6ff;
+      --card: #f8fbff;
+      --text: #0f172a;
+      --muted: #334155;
+      --primary: #1d4ed8;
+      --primary-strong: #1e3a8a;
+      --primary-soft: #dbeafe;
+      --good: #0369a1;
+      --warn: #1e40af;
+      --bad: #be123c;
+      --border: #bfdbfe;
+      --space-1: 0.5rem;
+      --space-2: 0.75rem;
+      --space-3: 1rem;
+      --space-4: 1.5rem;
+      --space-5: 2rem;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans Thai", "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(1200px 520px at 8% -10%, #dbeafe 0%, transparent 60%),
+        radial-gradient(900px 420px at 92% -20%, #bfdbfe 0%, transparent 58%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .container {
+      max-width: 1040px;
+      margin: var(--space-4) auto 40px;
+      padding: 0 16px;
+    }
+    #quizForm {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: var(--space-3);
+      box-shadow: 0 8px 18px rgba(29, 78, 216, 0.08);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .quiz-card {
+      opacity: 0;
+      transform: translateY(8px);
+      animation: card-in 320ms ease-out forwards;
+      animation-delay: var(--stagger, 0ms);
+    }
+    .card:hover { border-color: #93c5fd; }
+    @keyframes card-in {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 3.3vw, 2.25rem);
+      line-height: 1.15;
+      letter-spacing: -0.3px;
+    }
+    h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    p { margin: 0 0 var(--space-1); }
+    .muted { color: var(--muted); }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 42%, #f8fbff 100%);
+      border-color: #8eb7ff;
+      box-shadow: 0 14px 30px rgba(30, 64, 175, 0.16);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: -58px;
+      right: -60px;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, rgba(147, 197, 253, 0.35) 55%, rgba(96, 165, 250, 0.1) 100%);
+      pointer-events: none;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      margin-bottom: 8px;
+      color: #1e3a8a;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #9dc1ff;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 12px rgba(30, 64, 175, 0.12);
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .chip {
+      border: 1px solid #bdd5ff;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 0.86rem;
+      color: #15346b;
+      background: #e7f0ff;
+      font-weight: 700;
+    }
+    .topic-tag {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: var(--primary-strong);
+      background: var(--primary-soft);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+    .topic-divider {
+      margin: 2px 0 8px;
+      padding: 10px 12px;
+      border: 1px solid #a9caff;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #eef5ff 0%, #e6f0ff 100%);
+      color: #1e3a8a;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    }
+    #quizForm > .topic-divider {
+      grid-column: 1 / -1;
+    }
+    .question {
+      margin-bottom: 8px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .choices label {
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: 0.15s ease;
+      background: #fcfdff;
+    }
+    .choices label:hover { border-color: #93c5fd; background: #f8fbff; }
+    .choices label.selected {
+      border-color: #2563eb;
+      background: #e7f0ff;
+      box-shadow: inset 4px 0 0 #1d4ed8, 0 5px 10px rgba(37, 99, 235, 0.08);
+    }
+    .card.missing {
+      border-color: #f43f5e;
+      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
+      background: #fff7f8;
+      position: relative;
+    }
+    .card.missing .question {
+      color: #9f1239;
+    }
+    .missing-note {
+      display: none;
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: #fff1f2;
+      border: 1px solid #fda4af;
+      color: #9f1239;
+    }
+    .card.missing .missing-note {
+      display: inline-block;
+    }
+    .choices span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      bottom: 10px;
+      z-index: 5;
+      backdrop-filter: blur(4px);
+    }
+    .actions-left {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      min-height: 44px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    button:focus-visible,
+    .choices label:focus-within {
+      outline: 3px solid #93c5fd;
+      outline-offset: 2px;
+    }
+    #submitBtn {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.28);
+    }
+    #submitBtn:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      transform: translateY(-1px);
+    }
+    #resetBtn { background: #dbeafe; color: #1e3a8a; }
+    #resetBtn:hover { background: #cfe4ff; }
+    #submitBtn:active,
+    #resetBtn:active {
+      transform: translateY(1px) scale(0.99);
+    }
+    .hidden { display: none; }
+    .progress {
+      font-size: 0.92rem;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+    .score {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: #e8f1ff;
+      border: 1px solid #bfd6ff;
+      border-radius: 999px;
+      padding: 6px 12px;
+    }
+    .score-percent {
+      color: #1e40af;
+      font-weight: 800;
+    }
+    .score-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .score-ring {
+      --ring-value: 0;
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(closest-side, #f8fbff 74%, transparent 76% 100%),
+        conic-gradient(#2563eb calc(var(--ring-value) * 1%), #dbeafe 0);
+      border: 1px solid #bfdbfe;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.17);
+      transition: background 520ms ease-out, transform 280ms ease-out;
+    }
+    .score-ring.bump {
+      transform: scale(1.03);
+    }
+    .score-ring-value {
+      font-weight: 800;
+      color: #1e3a8a;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+    .score-alert {
+      display: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #ffe4e6;
+      border: 1px solid #fda4af;
+      color: #9f1239;
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+    .score-alert.show { display: inline-block; }
+    .foundation-cta {
+      display: none;
+      margin: 10px 0 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+    .foundation-cta.show { display: block; }
+    .foundation-cta p {
+      margin: 0 0 8px;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+    .foundation-link {
+      display: inline-block;
+      text-decoration: none;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-weight: 700;
+      box-shadow: 0 10px 16px rgba(37, 99, 235, 0.24);
+    }
+    .foundation-link:hover { background: #1e3a8a; }
+    .result-summary {
+      margin: 8px 0 14px;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+    .learning-plan {
+      margin: 10px 0 14px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #bfdbfe;
+      background: #eef5ff;
+    }
+    .learning-plan h3 {
+      margin: 0 0 8px;
+      font-size: 0.98rem;
+      color: #1e3a8a;
+    }
+    .learning-plan p {
+      margin: 0 0 6px;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+    .learning-plan ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      color: #1e3a8a;
+    }
+    .learning-plan li { margin-bottom: 4px; }
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+    }
+    .result-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      background: #f0f7ff;
+    }
+    .topic-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .topic-name {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 0.95rem;
+    }
+    .topic-percent {
+      font-weight: 800;
+      color: #1e40af;
+      min-width: 44px;
+      text-align: right;
+    }
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      background: #dbeafe;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 7px;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #93c5fd, #2563eb);
+      transition: width 0.25s ease;
+    }
+    .bar-fill.low { background: linear-gradient(90deg, #fda4af, #e11d48); }
+    .bar-fill.mid { background: linear-gradient(90deg, #fde68a, #f59e0b); }
+    .topic-meta {
+      font-size: 0.86rem;
+      color: #334155;
+    }
+    .recommend-badge {
+      display: inline-block;
+      margin-top: 6px;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #dbeafe;
+      color: #1e3a8a;
+    }
+    .recommend-badge.excellent {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+    .recommend-badge.priority {
+      background: #ffe4e6;
+      color: #9f1239;
+    }
+    .katex { font-size: 1.02em; }
+    fieldset {
+      border: 0;
+      margin: 0;
+      padding: 0;
+      min-width: 0;
+    }
+    legend { width: 100%; }
+    .visually-hidden {
+      position: absolute !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+    .alert {
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin: 0 0 10px;
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+      font-weight: 600;
+    }
+    .error-box {
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
+      font-weight: 600;
+    }
+    @media (max-width: 640px) {
+      .container { padding: 0 10px; }
+      .card { padding: 14px; border-radius: 10px; }
+      h1 { font-size: 1.25rem; }
+      .question { font-size: 1rem; }
+      .choices label { min-height: 44px; display: flex; align-items: center; gap: 6px; }
+      .actions { flex-direction: column; align-items: flex-start; }
+      .progress { width: 100%; }
+      .topic-divider { font-size: 0.92rem; }
+    }
+    @media (min-width: 760px) {
+      #quizForm {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .container {
+        max-width: 1160px;
+      }
+      .actions {
+        position: static;
+        backdrop-filter: none;
+      }
+    }
+    @media (min-width: 1200px) {
+      #quizForm {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .container {
+        max-width: 1340px;
+      }
+    }
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+      }
+      .actions,
+      #mathFallbackNote {
+        display: none !important;
+      }
+      .card,
+      .hero,
+      .result-item {
+        box-shadow: none !important;
+        border: 1px solid #bbb !important;
+        background: #fff !important;
+      }
+      #quizForm {
+        grid-template-columns: 1fr;
+      }
+      a {
+        color: #000;
+        text-decoration: none;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .quiz-card {
+        opacity: 1;
+        transform: none;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="card hero">
+      <div class="brand">คณิตคลิกเดียว</div>
+      <h1>แบบทดสอบเช็คพื้นฐานที่จำเป็น</h1>
+      <p><strong>วิเคราะห์จุดอ่อนรายหัวข้อจาก 12 บทเรียนหลัก</strong></p>
+      <p class="muted">ระบบจะสรุปให้ว่าน้องพลาดเรื่องไหน</p>
+      <div class="meta-row">
+        <span class="chip">เหมาะสำหรับนักเรียนที่อยากจะปรับพื้นฐาน มต้น</span>
+      </div>
+      <p id="mathFallbackNote" class="alert hidden" role="status">โหมดสมการสวย (KaTeX) โหลดไม่สำเร็จ จะแสดงสมการแบบข้อความแทน</p>
+    </div>
+
+    <form id="quizForm" aria-label="แบบทดสอบก่อนเรียนคณิตศาสตร์"></form>
+
+    <div class="card actions">
+      <div class="actions-left">
+        <button type="button" id="submitBtn">ตรวจคำตอบ</button>
+        <button type="button" id="resetBtn">เริ่มทำใหม่</button>
+      </div>
+      <div id="progressText" class="progress" aria-live="polite">ตอบแล้ว 0/30 ข้อ</div>
+    </div>
+
+    <div id="resultCard" class="card hidden" aria-live="polite">
+      <h2>ผลการประเมิน</h2>
+      <div id="validationText" class="error-box hidden" role="alert"></div>
+      <div class="score-wrap">
+        <div id="scoreRing" class="score-ring" style="--ring-value: 0;">
+          <span id="scoreRingValue" class="score-ring-value">0%</span>
+        </div>
+        <div>
+          <div id="scoreText" class="score"></div>
+          <div id="scoreAlert" class="score-alert">ควรปรับพื้นฐานด่วน</div>
+        </div>
+      </div>
+      <div id="foundationCta" class="foundation-cta">
+        <p>เพราะเราเชื่อว่าไม่มีใครที่หัวไม่ดี มีแค่คนที่ยังไม่เจอวิธีการที่ถูกต้อง ให้คณิตคลิกเดียวช่วย เปลี่ยนวิธีคิดของน้อง</p>
+        <p>เริ่มต้นวันนี้ เพื่อพื้นฐานที่มั่นคงตลอดไป</p>
+        <a class="foundation-link" href="https://1clickacademy.openmirai.app/th/courses/69c2a3397616a0488e904310" target="_blank" rel="noopener noreferrer">เริ่มเรียนกับคณิตคลิกเดียว</a>
+      </div>
+      <div id="weaknessText"></div>
+      <h2 style="margin-top:14px;">ผลรายเรื่องทั้ง 12 เรื่อง</h2>
+      <div id="topicResults" class="topic-grid"></div>
+    </div>
+  </main>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    const questions = [
+      { topic: "01 จำนวนเต็ม", q: "ข้อใดเป็นจำนวนเต็มทั้งหมด", choices: ["\\(2, -5, 0\\)", "\\(\\frac{1}{2}, -3, 0\\)", "\\(2.5, -1, 3\\)", "\\(\\sqrt{2}, 0, -4\\)"], answer: 0 },
+      { topic: "01 จำนวนเต็ม", q: "หาค่า \\(\\frac{-18}{3} \\times (2+4) - 5\\)", choices: ["\\(-41\\)", "\\(31\\)", "\\(-11\\)", "\\(11\\)"], answer: 0 },
+      { topic: "01 จำนวนเต็ม", q: "หาค่า \\(-4 - 3 \\times (-2)\\)", choices: ["\\(-14\\)", "\\(2\\)", "\\(-2\\)", "\\(14\\)"], answer: 1 },
+
+      { topic: "02 เศษส่วน", q: "หา \\(\\frac{1}{3}+\\left(-\\frac{1}{6}\\right)-\\left(-\\frac{1}{2}\\right)\\) เท่ากับเท่าใด", choices: ["\\(\\frac{2}{3}\\)", "\\(\\frac{1}{6}\\)", "\\(-\\frac{1}{3}\\)", "\\(\\frac{5}{6}\\)"], answer: 0 },
+      { topic: "02 เศษส่วน", q: "เศษส่วนใดมากที่สุด", choices: ["\\(\\frac{3}{8}\\)", "\\(\\frac{2}{5}\\)", "\\(\\frac{5}{12}\\)", "\\(\\frac{1}{2}\\)"], answer: 3 },
+      { topic: "02 เศษส่วน", q: "หา \\(\\frac{3}{4} - \\frac{1}{8}\\) เท่ากับเท่าใด", choices: ["\\(\\frac{1}{2}\\)", "\\(\\frac{5}{8}\\)", "\\(\\frac{7}{8}\\)", "\\(\\frac{3}{8}\\)"], answer: 1 },
+
+      { topic: "03 ทศนิยม", q: "หา \\(-1.5 + 0.4 \\times 5\\) เท่ากับเท่าใด", choices: ["0.5", "2.5", "-5.5", "-1.1"], answer: 0 },
+      { topic: "03 ทศนิยม", q: "จำนวนใดมีค่ามากที่สุด", choices: ["0.509", "0.59", "0.599", "0.589"], answer: 2 },
+      { topic: "03 ทศนิยม", q: "หา \\(3.6 \\div 0.6\\) เท่ากับเท่าใด", choices: ["0.6", "6", "60", "5"], answer: 1 },
+
+      { topic: "04 เลขยกกำลัง", q: "จงเปรียบเทียบค่าต่อไปนี้ \\(( -2)^4\\) ____ \\(-2^4\\)", choices: [">", "<", "="], answer: 0 },
+      { topic: "04 เลขยกกำลัง", q: "หา \\(10^0\\) มีค่าเท่าใด", choices: ["0", "1", "10", "หาค่าไม่ได้"], answer: 1 },
+      { topic: "04 เลขยกกำลัง", q: "หา \\(3^2 \\times 3^3\\) เท่ากับเท่าใด", choices: ["\\(3^5\\)", "\\(3^6\\)", "\\(9^5\\)", "\\(3^1\\)"], answer: 0 },
+
+      { topic: "05 พหุนาม", q: "หาค่า \\(2x(3x-5)\\) โดยใช้การกระจาย", choices: ["\\(6x^2-10x\\)", "\\(6x^2-5\\)", "\\(5x-6x^2\\)", "\\(6x-10x^2\\)"], answer: 0 },
+      { topic: "05 พหุนาม", q: "ทำให้อยู่ในรูปอย่างง่าย \\((3x^2-2x+1)+(x^2+5x-4)\\)", choices: ["\\(4x^2+3x-3\\)", "\\(4x^2-7x+5\\)", "\\(3x^2+3x-3\\)", "\\(4x^2+7x-5\\)"], answer: 0 },
+      { topic: "05 พหุนาม", q: "ข้อใดเท่ากับ \\((x+3)^2\\)", choices: ["\\(x^2+6x+9\\)", "\\(x^2+9\\)", "\\(x^2+3x+9\\)", "\\(x^2-6x+9\\)"], answer: 0 },
+
+      { topic: "06 แยกตัวประกอบ", q: "แยกตัวประกอบ \\(x^2 - 9\\) ได้เป็น", choices: ["\\((x-9)(x+1)\\)", "\\((x-3)(x+3)\\)", "\\((x-1)(x-9)\\)", "\\((x+9)(x-1)\\)"], answer: 1 },
+      { topic: "06 แยกตัวประกอบ", q: "แยกตัวประกอบ \\(x^2 + 5x + 6\\) ได้เป็น", choices: ["\\((x+2)(x+3)\\)", "\\((x-2)(x-3)\\)", "\\((x+1)(x+6)\\)", "\\((x-1)(x-6)\\)"], answer: 0 },
+      { topic: "06 แยกตัวประกอบ", q: "แยกตัวประกอบ \\(2x^2 + 7x + 3\\) ได้เป็น", choices: ["\\((2x+1)(x+3)\\)", "\\((2x+3)(x+1)\\)", "\\((x+1)(x+3)\\)", "\\((2x-1)(x-3)\\)"], answer: 0 },
+
+      { topic: "07 จำนวนจริง", q: "ข้อใดเป็นค่าของ \\(-\\sqrt{49}\\)", choices: ["-7", "3", "9", "7"], answer: 0 },
+      { topic: "07 จำนวนจริง", q: "ถ้า \\(x^2 = 4\\) แล้วค่า \\(x\\) คือข้อใด", choices: ["2", "-2", "2 หรือ -2", "ไม่มีคำตอบ"], answer: 2 },
+
+      { topic: "08 สมการเชิงเส้นตัวแปรเดียว", q: "แก้สมการ \\(2x + 3 = 11\\) ได้ \\(x\\) เท่าใด", choices: ["3", "4", "5", "6"], answer: 1 },
+      { topic: "08 สมการเชิงเส้นตัวแปรเดียว", q: "แก้สมการ \\(5x - 10 = 0\\) ได้ \\(x\\) เท่าใด", choices: ["-2", "0", "2", "10"], answer: 2 },
+
+      { topic: "09 สมการกำลังสอง", q: "คำตอบของ \\(x^2 - 4 = 0\\) คือ", choices: ["\\(x = 2\\)", "\\(x = -2\\)", "\\(x = 2\\) หรือ \\(x = -2\\)", "\\(x = 2\\) และ \\(x = -2\\)"], answer: 2 },
+      { topic: "09 สมการกำลังสอง", q: "จาก \\(x^2 + 3x + 2 = 0\\) คำตอบคือ", choices: ["\\(x = 1,2\\)", "\\(x = -1,-2\\)", "\\(x = -1,2\\)", "\\(x = 0,-2\\)"], answer: 1 },
+
+      { topic: "10 ระบบสมการเชิงเส้นสองตัวแปร", q: "จาก \\(x + y = 7\\) และ \\(x - y = 1\\) ค่าของ \\(x\\) คือ", choices: ["2", "3", "4", "5"], answer: 2 },
+      { topic: "10 ระบบสมการเชิงเส้นสองตัวแปร", q: "จาก \\(x + y = 10\\) และ \\(y = 3\\) ค่าของ \\(x\\) คือ", choices: ["3", "5", "7", "13"], answer: 2 },
+
+      { topic: "11 ทฤษฎีบทพีทาโกรัส", q: "สามเหลี่ยมมุมฉากที่มีด้านประกอบมุมฉาก 3 และ 4 ด้านตรงข้ามมุมฉากยาวเท่าใด", choices: ["5", "6", "7", "8"], answer: 0 },
+      { topic: "11 ทฤษฎีบทพีทาโกรัส", q: "ถ้าด้านตรงข้ามมุมฉากยาว 13 และอีกด้านยาว 5 ด้านที่เหลือยาวเท่าใด", choices: ["8", "10", "12", "14"], answer: 2 },
+
+      { topic: "12 อัตราส่วนตรีโกณมิติ", q: "ในสามเหลี่ยมมุมฉาก \\(\\sin(\\theta)\\) เท่ากับ", choices: ["ด้านประชิดมุมฉาก/ด้านตรงข้ามมุมฉาก", "ด้านตรงข้าม/ด้านตรงข้ามมุมฉาก", "ด้านประชิดมุมฉาก/ด้านตรงข้ามมุมฉาก", "ด้านตรงข้ามมุมฉาก/ด้านตรงข้าม"], answer: 1 },
+      { topic: "12 อัตราส่วนตรีโกณมิติ", q: "ถ้า \\(\\sin(\\theta)=\\frac{3}{5}\\) และเป็นมุมแหลม \\(\\cos(\\theta)\\) เท่ากับ", choices: ["\\(\\frac{4}{5}\\)", "\\(\\frac{5}{4}\\)", "\\(\\frac{3}{4}\\)", "\\(\\frac{2}{5}\\)"], answer: 0 }
+    ];
+
+    const form = document.getElementById("quizForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const resultCard = document.getElementById("resultCard");
+    const scoreText = document.getElementById("scoreText");
+    const weaknessText = document.getElementById("weaknessText");
+    const topicResults = document.getElementById("topicResults");
+    const mathFallbackNote = document.getElementById("mathFallbackNote");
+    const progressText = document.getElementById("progressText");
+    const validationText = document.getElementById("validationText");
+    const scoreRing = document.getElementById("scoreRing");
+    const scoreRingValue = document.getElementById("scoreRingValue");
+    const scoreAlert = document.getElementById("scoreAlert");
+    const foundationCta = document.getElementById("foundationCta");
+
+    function typesetMath(target) {
+      if (window.renderMathInElement && target) {
+        window.renderMathInElement(target, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "\\(", right: "\\)", display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function waitAndTypeset(target, retries = 10) {
+      if (window.renderMathInElement) {
+        mathFallbackNote.classList.add("hidden");
+        typesetMath(target);
+        return;
+      }
+      if (retries <= 0) {
+        mathFallbackNote.classList.remove("hidden");
+        return;
+      }
+      setTimeout(() => waitAndTypeset(target, retries - 1), 200);
+    }
+
+    function renderQuiz() {
+      form.innerHTML = "";
+      const fragment = document.createDocumentFragment();
+      let currentTopic = "";
+      questions.forEach((item, idx) => {
+        if (item.topic !== currentTopic) {
+          currentTopic = item.topic;
+          const divider = document.createElement("div");
+          divider.className = "topic-divider";
+          divider.textContent = currentTopic;
+          fragment.appendChild(divider);
+        }
+
+        const card = document.createElement("div");
+        card.className = "card quiz-card";
+        card.setAttribute("data-q-index", String(idx));
+        card.style.setProperty("--stagger", (idx % 8) * 35 + "ms");
+        const missingNote = document.createElement("div");
+        missingNote.className = "missing-note";
+        missingNote.textContent = "ยังไม่ได้ทำข้อนี้";
+        const fieldset = document.createElement("fieldset");
+        const legend = document.createElement("legend");
+        const topic = document.createElement("div");
+        topic.className = "topic-tag";
+        topic.textContent = item.topic;
+
+        const q = document.createElement("div");
+        q.className = "question";
+        q.id = "question_" + idx;
+        q.innerHTML = (idx + 1) + ". " + item.q;
+        legend.appendChild(q);
+
+        const choices = document.createElement("div");
+        choices.className = "choices";
+        item.choices.forEach((choice, cidx) => {
+          const label = document.createElement("label");
+          const radio = document.createElement("input");
+          const choiceSpan = document.createElement("span");
+          radio.type = "radio";
+          radio.name = "q_" + idx;
+          radio.value = cidx;
+          radio.setAttribute("aria-labelledby", q.id);
+          choiceSpan.innerHTML = " " + choice;
+          label.appendChild(radio);
+          label.appendChild(choiceSpan);
+          choices.appendChild(label);
+        });
+
+        card.appendChild(missingNote);
+        card.appendChild(topic);
+        fieldset.appendChild(legend);
+        fieldset.appendChild(choices);
+        card.appendChild(fieldset);
+        fragment.appendChild(card);
+      });
+      form.appendChild(fragment);
+      updateProgress();
+      updateSelectedStates();
+      waitAndTypeset(form);
+    }
+
+    function updateSelectedStates() {
+      const labels = form.querySelectorAll(".choices label");
+      labels.forEach((label) => label.classList.remove("selected"));
+      questions.forEach((_, idx) => {
+        const selected = document.querySelector('input[name="q_' + idx + '"]:checked');
+        if (selected) {
+          const parentLabel = selected.closest("label");
+          if (parentLabel) parentLabel.classList.add("selected");
+        }
+      });
+    }
+
+    function updateProgress() {
+      const answered = questions.reduce((count, _, idx) => {
+        const selected = document.querySelector('input[name="q_' + idx + '"]:checked');
+        return selected ? count + 1 : count;
+      }, 0);
+      progressText.textContent = "ตอบแล้ว " + answered + "/" + questions.length + " ข้อ";
+    }
+
+    function clearMissingHighlights() {
+      const cards = form.querySelectorAll(".card.missing");
+      cards.forEach((card) => card.classList.remove("missing"));
+    }
+
+    function highlightMissingQuestions(missing) {
+      clearMissingHighlights();
+      missing.forEach((questionNumber) => {
+        const idx = questionNumber - 1;
+        const card = form.querySelector('[data-q-index="' + idx + '"]');
+        if (card) card.classList.add("missing");
+      });
+    }
+
+    function findUnanswered() {
+      const missing = [];
+      questions.forEach((_, idx) => {
+        const selected = document.querySelector('input[name="q_' + idx + '"]:checked');
+        if (!selected) missing.push(idx + 1);
+      });
+      return missing;
+    }
+
+    function analyze() {
+      const missing = findUnanswered();
+      if (missing.length > 0) {
+        highlightMissingQuestions(missing);
+        validationText.classList.remove("hidden");
+        validationText.textContent = "ยังตอบไม่ครบ " + missing.length + " ข้อ (เช่น ข้อ " +
+          missing.slice(0, 5).join(", ") + (missing.length > 5 ? ", ..." : "") +
+          ") กรุณาตอบให้ครบก่อนตรวจคำตอบ";
+        resultCard.classList.remove("hidden");
+        const firstMissing = missing[0] - 1;
+        const firstMissingInput = document.querySelector('input[name="q_' + firstMissing + '"]');
+        if (firstMissingInput) {
+          firstMissingInput.focus();
+          firstMissingInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+      clearMissingHighlights();
+      validationText.classList.add("hidden");
+      validationText.textContent = "";
+
+      const topicMap = {};
+      let totalCorrect = 0;
+
+      questions.forEach((item, idx) => {
+        const key = item.topic;
+        if (!topicMap[key]) topicMap[key] = { total: 0, correct: 0 };
+        topicMap[key].total += 1;
+
+        const selected = document.querySelector('input[name="q_' + idx + '"]:checked');
+        if (selected && Number(selected.value) === item.answer) {
+          totalCorrect += 1;
+          topicMap[key].correct += 1;
+        }
+      });
+
+      const total = questions.length;
+      const percent = Math.round((totalCorrect / total) * 100);
+      scoreText.innerHTML = "คะแนนรวม: <span>" + totalCorrect + "/" + total + "</span> <span class='score-percent'>(" + percent + "%)</span>";
+      scoreRing.style.setProperty("--ring-value", String(percent));
+      scoreRingValue.textContent = percent + "%";
+      scoreRing.classList.remove("bump");
+      requestAnimationFrame(() => scoreRing.classList.add("bump"));
+      setTimeout(() => scoreRing.classList.remove("bump"), 320);
+      if (percent < 80) {
+        scoreAlert.classList.add("show");
+      } else {
+        scoreAlert.classList.remove("show");
+      }
+      if (percent < 60) {
+        foundationCta.classList.add("show");
+      } else {
+        foundationCta.classList.remove("show");
+      }
+
+      const topicArray = Object.entries(topicMap).map(([topic, data]) => {
+        const p = Math.round((data.correct / data.total) * 100);
+        return { topic, ...data, percent: p };
+      });
+
+      const urgentTopics = topicArray.filter(t => t.percent < 50);
+      const reviewTopics = topicArray.filter(t => t.percent >= 50 && t.percent < 80);
+      let profileText = "พื้นฐานโดยรวมอยู่ในเกณฑ์ดี เรียนต่อเนื่องตามลำดับบท 1-12 ได้เลย";
+      if (urgentTopics.length >= 3) {
+        profileText = "พื้นฐานยังไม่แน่นหลายจุด ควรย้อนทบทวนเป็นลำดับจากบทต้นก่อน";
+      } else if (urgentTopics.length > 0 || reviewTopics.length >= 3) {
+        profileText = "พื้นฐานเริ่มมาแล้ว แต่ยังมีบางบทที่ควรเสริมให้แน่นก่อนขึ้นบทถัดไป";
+      }
+
+      const urgentList = urgentTopics.length
+        ? "<p><strong>เรื่องที่ควรเร่งเสริม (ต่ำกว่า 50%):</strong></p><ul>" +
+          urgentTopics.map(t => "<li>" + t.topic + " (" + t.correct + "/" + t.total + ")</li>").join("") +
+          "</ul>"
+        : "<p><strong>เรื่องที่ควรเร่งเสริม (ต่ำกว่า 50%):</strong> ยังไม่มี</p>";
+
+      const reviewList = reviewTopics.length
+        ? "<p><strong>เรื่องที่ควรทบทวนต่อ (50-79%):</strong></p><ul>" +
+          reviewTopics.map(t => "<li>" + t.topic + " (" + t.correct + "/" + t.total + ")</li>").join("") +
+          "</ul>"
+        : "<p><strong>เรื่องที่ควรทบทวนต่อ (50-79%):</strong> ยังไม่มี</p>";
+
+      weaknessText.innerHTML =
+        "<div class='learning-plan'>" +
+          "<h3>วิเคราะห์พื้นฐานการเรียน</h3>" +
+          "<p>" + profileText + "</p>" +
+          "<p>แนะนำให้เรียนเรียงลำดับบท 01 → 12 เพื่อฝึกเซนส์ต่อเนื่อง</p>" +
+          urgentList +
+          reviewList +
+        "</div>";
+
+      topicResults.innerHTML = "";
+      topicArray.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "result-item";
+        let barClass = "";
+        let badgeText = "ทบทวนต่อเนื่อง";
+        let badgeClass = "recommend-badge";
+        if (t.percent === 100) {
+          badgeText = "เยี่ยมมาก!! ทบทวนให้ต่อเนื่องต่อไป";
+          badgeClass = "recommend-badge excellent";
+        } else if (t.percent < 60) {
+          barClass = "low";
+          badgeText = "ทบทวนเพิ่ม";
+          badgeClass = "recommend-badge priority";
+        } else if (t.percent < 80) {
+          barClass = "mid";
+          badgeText = "ทบทวนเพิ่ม";
+        }
+
+        div.innerHTML =
+          "<div class='topic-row'>" +
+            "<div class='topic-name'>" + t.topic + "</div>" +
+            "<div class='topic-percent'>" + t.percent + "%</div>" +
+          "</div>" +
+          "<div class='bar-track'><div class='bar-fill " + barClass + "' style='width:" + t.percent + "%'></div></div>" +
+          "<div class='topic-meta'>ทำถูก " + t.correct + "/" + t.total + " ข้อ</div>" +
+          "<span class='" + badgeClass + "'>" + badgeText + "</span>";
+        topicResults.appendChild(div);
+      });
+
+      resultCard.classList.remove("hidden");
+      resultCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    submitBtn.addEventListener("click", analyze);
+    form.addEventListener("change", (event) => {
+      updateProgress();
+      updateSelectedStates();
+      const target = event.target;
+      if (target && target.name && target.name.startsWith("q_")) {
+        const idx = Number(target.name.replace("q_", ""));
+        const card = form.querySelector('[data-q-index="' + idx + '"]');
+        if (card) card.classList.remove("missing");
+      }
+    });
+    resetBtn.addEventListener("click", () => {
+      form.reset();
+      resultCard.classList.add("hidden");
+      topicResults.innerHTML = "";
+      weaknessText.innerHTML = "";
+      scoreText.textContent = "";
+      scoreRing.style.setProperty("--ring-value", "0");
+      scoreRingValue.textContent = "0%";
+      scoreAlert.classList.remove("show");
+      foundationCta.classList.remove("show");
+      validationText.classList.add("hidden");
+      validationText.textContent = "";
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    window.addEventListener("load", renderQuiz);
+  </script>
+</body>
+</html>
