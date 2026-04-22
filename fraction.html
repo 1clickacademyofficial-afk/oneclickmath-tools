@@ -136,7 +136,7 @@
       pointer-events: none;
     }
     .chip-row label {
-      min-height: 42px;
+      min-height: 44px;
       padding: 0.4rem 0.9rem;
       border-radius: var(--radius-pill);
       border: 2px solid var(--rule);
@@ -212,6 +212,18 @@
       gap: var(--space-2);
       align-items: center;
     }
+    @media (max-width: 480px) {
+      .hud {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-2);
+        align-items: stretch;
+      }
+      .stat--time {
+        grid-column: 1 / -1;
+        justify-content: center;
+      }
+    }
     .stat {
       border: 1px solid var(--rule);
       border-radius: var(--radius-pill);
@@ -219,10 +231,21 @@
       font-size: 0.9rem;
       background: #fff;
       color: var(--ink-muted);
+      display: inline-flex;
+      align-items: center;
       transition: transform var(--dur-fast) var(--ease-out);
     }
     .stat--score.is-bump {
       animation: scoreBump var(--dur-normal) var(--ease-out);
+    }
+    #timeLabel {
+      display: inline-block;
+      min-width: 4.5ch;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat--time {
+      white-space: nowrap;
     }
     @keyframes scoreBump {
       from { transform: scale(1); }
@@ -595,7 +618,7 @@
         <div class="hud">
           <span class="stat stat--score">ถูก <strong id="score">0</strong> ข้อ</span>
           <span class="stat">ข้อ <strong id="qNum">1</strong> / <span id="qTotal">10</span></span>
-          <span class="stat">เหลือ <strong id="timeLabel">7.0</strong> วิ</span>
+          <span class="stat stat--time">เหลือ <strong id="timeLabel">7.0</strong> วิ</span>
         </div>
         <div class="timer-wrap" id="timerWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
           <div id="timerBar"></div>
@@ -684,6 +707,7 @@
       var nextId = null;
       var rafId = null;
       var deadline = 0;
+      var lastTimeLabelText = '';
       var NS = 'http://www.w3.org/2000/svg';
 
       function el(id) { return document.getElementById(id); }
@@ -896,7 +920,11 @@
         var ratio = Math.max(0, remainingMs / total);
         el('timerBar').style.transform = 'scaleX(' + ratio + ')';
         el('timerWrap').setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
-        el('timeLabel').textContent = (Math.max(0, remainingMs) / 1000).toFixed(1);
+        var nextTimeLabel = (Math.max(0, remainingMs) / 1000).toFixed(1);
+        if (nextTimeLabel !== lastTimeLabelText) {
+          el('timeLabel').textContent = nextTimeLabel;
+          lastTimeLabelText = nextTimeLabel;
+        }
         el('timerWrap').classList.toggle('danger', remainingMs < 1300);
       }
 
@@ -915,6 +943,7 @@
         deadline = performance.now() + questionSec * 1000;
         el('timerWrap').classList.remove('danger');
         el('timerBar').style.transform = 'scaleX(1)';
+        lastTimeLabelText = '';
         rafId = requestAnimationFrame(tick);
         timerId = setTimeout(onTimeout, questionSec * 1000 + 60);
       }
@@ -1172,6 +1201,8 @@
         wrongDetails = [];
         el('score').textContent = '0';
         el('qTotal').textContent = String(totalQuestions);
+        el('timeLabel').textContent = questionSec.toFixed(1);
+        lastTimeLabelText = questionSec.toFixed(1);
         el('startScreen').hidden = true;
         el('endScreen').hidden = true;
         el('gameArea').hidden = false;
