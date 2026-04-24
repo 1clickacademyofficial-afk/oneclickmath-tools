@@ -763,6 +763,9 @@
       var handleB = document.getElementById('handleB');
       var handleAHit = document.getElementById('handleAHit');
       var handleBHit = document.getElementById('handleBHit');
+      // Keep interactive panel geometry stable while dragging.
+      // Dynamic viewBox recalculation causes reflow/jumping layout.
+      var INTERACTIVE_VIEWBOX = '-50 -35 560 450';
 
       function renderInteractive() {
         var m = triMeshVisual(aVis, bVis);
@@ -834,65 +837,7 @@
         handleBHit.setAttribute('cy', by);
         handleBHit.setAttribute('r', hitR);
 
-        var swTri = parseFloat(path.getAttribute('stroke-width')) || 2.5;
-        var vbPad = 40 + swTri * 0.5;
-        var mxR = +mark.getAttribute('x'),
-          myR = +mark.getAttribute('y'),
-          mwR = +mark.getAttribute('width'),
-          mhR = +mark.getAttribute('height');
-        var vbPts = [
-          { x: ox, y: oy },
-          { x: ax, y: ay },
-          { x: bx, y: by },
-          { x: ax - hitR, y: ay - hitR },
-          { x: ax + hitR, y: ay + hitR },
-          { x: bx - hitR, y: by - hitR },
-          { x: bx + hitR, y: by + hitR },
-          { x: mxR, y: myR },
-          { x: mxR + mwR, y: myR + mhR }
-        ];
-        var vMinX = Math.min.apply(
-          null,
-          vbPts.map(function (p) {
-            return p.x;
-          })
-        );
-        var vMinY = Math.min.apply(
-          null,
-          vbPts.map(function (p) {
-            return p.y;
-          })
-        );
-        var vMaxX = Math.max.apply(
-          null,
-          vbPts.map(function (p) {
-            return p.x;
-          })
-        );
-        var vMaxY = Math.max.apply(
-          null,
-          vbPts.map(function (p) {
-            return p.y;
-          })
-        );
-        try {
-          [path, mark, handleAHit, handleBHit, handleA, handleB, labelA, labelB, labelC].forEach(function (el) {
-            var b = el.getBBox();
-            vMinX = Math.min(vMinX, b.x);
-            vMinY = Math.min(vMinY, b.y);
-            vMaxX = Math.max(vMaxX, b.x + b.width);
-            vMaxY = Math.max(vMaxY, b.y + b.height);
-          });
-        } catch (bboxErr) {}
-        if (tri.aLen > tri.bLen * 1.75) vMaxX += Math.max(12, hitR * 0.55);
-        if (tri.bLen > tri.aLen * 1.75) vMinY -= Math.max(12, hitR * 0.55);
-        vMinX -= vbPad;
-        vMinY -= vbPad;
-        vMaxX += vbPad;
-        vMaxY += vbPad;
-        var vW = Math.max(160, vMaxX - vMinX);
-        var vH = Math.max(160, vMaxY - vMinY);
-        svg.setAttribute('viewBox', vMinX + ' ' + vMinY + ' ' + vW + ' ' + vH);
+        svg.setAttribute('viewBox', INTERACTIVE_VIEWBOX);
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
 
