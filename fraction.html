@@ -852,6 +852,9 @@
         var qt = document.querySelector('input[name="qtime"]:checked');
         totalQuestions = qc ? parseInt(qc.value, 10) : 10;
         questionSec = qt ? parseInt(qt.value, 10) : 7;
+        if (!Number.isFinite(totalQuestions) || totalQuestions < 1) totalQuestions = 10;
+        totalQuestions = Math.min(totalQuestions, BANK.length);
+        if (!Number.isFinite(questionSec) || questionSec < 1) questionSec = 7;
       }
 
       function triggerCardEnter() {
@@ -1149,18 +1152,22 @@
           return;
         }
         box.hidden = false;
+        var manyMistakes = wrongDetails.length > 18;
+        var frag = document.createDocumentFragment();
         wrongDetails.forEach(function (item) {
           var li = document.createElement('li');
           li.className = 'wrong-item';
-          var thumb = document.createElement('div');
-          thumb.className = 'wrong-thumb';
-          var thumbSvg = document.createElementNS(NS, 'svg');
-          thumbSvg.setAttribute('viewBox', '0 0 300 170');
-          thumbSvg.setAttribute('role', 'img');
-          thumbSvg.setAttribute('aria-label', 'รูปโจทย์ข้อ ' + item.index);
-          drawFractionIntoSvg(thumbSvg, { n: item.questionN, d: item.questionD }, 300, 170, 42, 1.5);
-          thumb.appendChild(thumbSvg);
-          li.appendChild(thumb);
+          if (!manyMistakes) {
+            var thumb = document.createElement('div');
+            thumb.className = 'wrong-thumb';
+            var thumbSvg = document.createElementNS(NS, 'svg');
+            thumbSvg.setAttribute('viewBox', '0 0 300 170');
+            thumbSvg.setAttribute('role', 'img');
+            thumbSvg.setAttribute('aria-label', 'รูปโจทย์ข้อ ' + item.index);
+            drawFractionIntoSvg(thumbSvg, { n: item.questionN, d: item.questionD }, 300, 170, 42, 1.5);
+            thumb.appendChild(thumbSvg);
+            li.appendChild(thumb);
+          }
 
           var textWrap = document.createElement('div');
           var lead = document.createElement('span');
@@ -1185,8 +1192,9 @@
           renderLatexInto(texWrap, item.correctTex, false);
           textWrap.appendChild(texWrap);
           li.appendChild(textWrap);
-          list.appendChild(li);
+          frag.appendChild(li);
         });
+        list.appendChild(frag);
       }
 
       function showGame() {
